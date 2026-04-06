@@ -346,6 +346,7 @@ async function seed(): Promise<void> {
     operatorId: opIds[b._operatorIndex],
   }));
   // Xóa trường tạm
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   busDocs.forEach((b: any) => delete b._operatorIndex);
   const insertedBuses = await db.collection('buses').insertMany(busDocs);
   const busIds = Object.values(insertedBuses.insertedIds);
@@ -367,7 +368,7 @@ async function seed(): Promise<void> {
           stopPointId: BXMD,
           role: 'origin',
           name: 'Bến Xe Miền Đông Mới',
-          address: 'Xa l��� Hà Nội, TP. Thủ Đức',
+          address: 'Xa lộ Hà Nội, TP. Thủ Đức',
           coordinates: { lat: 10.8772, lng: 106.8211 },
           order: 0,
           estimatedArrivalMinutes: 0,
