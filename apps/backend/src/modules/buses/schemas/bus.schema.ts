@@ -123,7 +123,7 @@ function calculateTotalSeats(layout: string[][]): number {
 }
 
 // Pre-save
-(BusSchema as any).pre('save', function (this: BusDocument) {
+BusSchema.pre('save', function (this: BusDocument) {
   if (this.isModified('seatLayout') && this.seatLayout?.layout) {
     this.seatLayout.totalSeats = calculateTotalSeats(this.seatLayout.layout);
   }
@@ -137,22 +137,19 @@ interface BusUpdate {
 }
 
 // Pre-findOneAndUpdate
-(BusSchema as any).pre(
-  'findOneAndUpdate',
-  function (this: Query<unknown, BusDocument>) {
-    const update = this.getUpdate() as BusUpdate;
-    if (!update) return;
+BusSchema.pre('findOneAndUpdate', function (this: Query<unknown, BusDocument>) {
+  const update = this.getUpdate() as BusUpdate;
+  if (!update) return;
 
-    const seatLayout = update.seatLayout || update.$set?.seatLayout;
+  const seatLayout = update.seatLayout || update.$set?.seatLayout;
 
-    if (seatLayout?.layout) {
-      const totalSeats = calculateTotalSeats(seatLayout.layout);
-      if (update.seatLayout) {
-        update.seatLayout.totalSeats = totalSeats;
-      }
-      if (update.$set?.seatLayout) {
-        update.$set.seatLayout.totalSeats = totalSeats;
-      }
+  if (seatLayout?.layout) {
+    const totalSeats = calculateTotalSeats(seatLayout.layout);
+    if (update.seatLayout) {
+      update.seatLayout.totalSeats = totalSeats;
     }
-  },
-);
+    if (update.$set?.seatLayout) {
+      update.$set.seatLayout.totalSeats = totalSeats;
+    }
+  }
+});

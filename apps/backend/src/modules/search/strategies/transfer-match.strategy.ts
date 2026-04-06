@@ -11,7 +11,7 @@ import { SearchItinerary } from '../interfaces/search-result.interface';
 import { SubRouteStrategy } from './sub-route.strategy';
 
 /** Thời gian chờ tối thiểu giữa 2 chuyến khi đổi xe (phút) */
-const MIN_TRANSFER_BUFFER_MINUTES = 90;
+const MIN_TRANSFER_BUFFER_MINUTES = 10;
 /** Thời gian chờ tối đa (nếu chờ quá lâu thì không hợp lý) */
 const MAX_TRANSFER_WAIT_MINUTES = 480; // 8 tiếng
 /** Giới hạn kết quả */
@@ -55,6 +55,11 @@ export class TransferMatchStrategy {
     const results: SearchItinerary[] = [];
 
     const hubSearches = hubIds.map(async (hubId) => {
+      // Chặng 2 có thể khởi hành ngày hôm sau (chuyến đêm qua Hub lúc rạng sáng)
+      const nextDay = new Date(date);
+      nextDay.setDate(nextDay.getDate() + 2); // Mở rộng tìm kiếm đến D+2
+      const nextDayStr = nextDay.toISOString().split('T')[0];
+
       const [firstLegSegments, secondLegSegments] = await Promise.all([
         this.subRoute.findDirectAndSubRoutes(originId, hubId, date, minSeats),
         this.subRoute.findDirectAndSubRoutes(
@@ -62,6 +67,7 @@ export class TransferMatchStrategy {
           destinationId,
           date,
           minSeats,
+          nextDayStr,
         ),
       ]);
 
@@ -85,7 +91,9 @@ export class TransferMatchStrategy {
           const totalDuration =
             (seg2.arrivalTime.getTime() - seg1.departureTime.getTime()) /
             60_000;
-          const isSameOperator = seg1.operatorId === seg2.operatorId;
+          const isSameOperator =
+            (seg1.operator as { id: string })?.id ===
+            (seg2.operator as { id: string })?.id;
 
           pairs.push({
             journeyType: JourneyType.TRANSFER,
@@ -95,7 +103,7 @@ export class TransferMatchStrategy {
             transferCount: 1,
             transferWaitMinutes: Math.round(waitMinutes),
             transitNote: isSameOperator
-              ? `Đổi xe tại ${hubName}. Cùng nhà xe ${seg1.operatorName}.`
+              ? `Đổi xe tại ${hubName}. Cùng nhà xe ${(seg1.operator as { id: string; name: string }).name}.`
               : `Đổi xe tại ${hubName}. Quý khách tự di chuyển hành lý giữa 2 nhà xe khác nhau.`,
           });
         }

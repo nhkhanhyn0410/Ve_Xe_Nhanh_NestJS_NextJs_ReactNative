@@ -15,9 +15,10 @@ import {
   ApiBearerAuth,
   ApiQuery,
 } from '@nestjs/swagger';
-import { TripsService } from './trips.service';
+import { TripQuery, TripsService } from './trips.service';
 import { CreateTripDto } from './dto/create-trip.dto';
 import { UpdateTripDto } from './dto/update-trip.dto';
+import { TripMapper } from './mappers/trip.mapper';
 import { MongoIdPipe } from '@common/pipes/mongo-id.pipe';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '@common/guards/roles.guard';
@@ -41,16 +42,16 @@ export class TripsController {
   @ApiQuery({ name: 'busId', required: false })
   @ApiQuery({ name: 'date', required: false, description: 'YYYY-MM-DD' })
   @ApiQuery({ name: 'status', required: false, enum: TripStatus })
-  async findAll(@Query() query: any) {
-    const data = await this.tripsService.findAll(query);
-    return { success: true, data };
+  async findAll(@Query() query: TripQuery) {
+    const docs = await this.tripsService.findAll(query);
+    return { success: true, data: docs.map(TripMapper.toList) };
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Xem chi tiết chuyến xe (sơ đồ ghế thực tế)' })
   async findOne(@Param('id', MongoIdPipe) id: string) {
-    const data = await this.tripsService.findOne(id);
-    return { success: true, data };
+    const doc = await this.tripsService.findOne(id);
+    return { success: true, data: TripMapper.toDetail(doc) };
   }
 
   @Post()

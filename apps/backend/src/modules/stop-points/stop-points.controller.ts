@@ -23,6 +23,8 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { StopPointType, SystemRole } from '@ve_xe_nhanh_ts/shared-types';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { JwtPayload } from '../../common/interfaces/jwt-payload.interface';
 
 @ApiTags('Stop Points')
 @Controller('stop-points')
@@ -51,34 +53,41 @@ export class StopPointsController {
   // ===== ADMIN ENDPOINTS =====
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.ADMIN)
+  @Roles(SystemRole.ADMIN, SystemRole.OPERATOR)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[Admin] Thêm điểm dừng mới' })
-  async create(@Body() createDto: CreateStopPointDto) {
-    const data = await this.stopPointsService.create(createDto);
+  @ApiOperation({ summary: '[Admin/Operator] Thêm điểm dừng mới' })
+  async create(
+    @Body() createDto: CreateStopPointDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    const data = await this.stopPointsService.create(createDto, user);
     return { success: true, data };
   }
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.ADMIN)
+  @Roles(SystemRole.ADMIN, SystemRole.OPERATOR)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[Admin] Cập nhật điểm dừng' })
+  @ApiOperation({ summary: '[Admin/Operator] Cập nhật điểm dừng' })
   async update(
     @Param('id', MongoIdPipe) id: string,
     @Body() updateDto: UpdateStopPointDto,
+    @CurrentUser() user: JwtPayload,
   ) {
-    const data = await this.stopPointsService.update(id, updateDto);
+    const data = await this.stopPointsService.update(id, updateDto, user);
     return { success: true, data };
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.ADMIN)
+  @Roles(SystemRole.ADMIN, SystemRole.OPERATOR)
   @ApiBearerAuth()
-  @ApiOperation({ summary: '[Admin] Xóa điểm dừng' })
-  async remove(@Param('id', MongoIdPipe) id: string) {
-    await this.stopPointsService.remove(id);
+  @ApiOperation({ summary: '[Admin/Operator] Xóa điểm dừng' })
+  async remove(
+    @Param('id', MongoIdPipe) id: string,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    await this.stopPointsService.remove(id, user);
     return { success: true, message: 'Đã xóa điểm dừng' };
   }
 }

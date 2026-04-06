@@ -156,14 +156,14 @@ export class SearchService {
     // Filter theo nhà xe
     if (dto.operatorId) {
       result = result.filter((it) =>
-        it.segments.some((s) => s.operatorId === dto.operatorId),
+        it.segments.some((s) => s.operator.id === dto.operatorId),
       );
     }
 
     // Filter theo loại xe
     if (dto.busType) {
       result = result.filter((it) =>
-        it.segments.some((s) => s.busType === dto.busType),
+        it.segments.some((s) => s.bus.type === dto.busType),
       );
     }
 

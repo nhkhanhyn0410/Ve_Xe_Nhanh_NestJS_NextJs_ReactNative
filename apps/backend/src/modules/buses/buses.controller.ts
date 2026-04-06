@@ -15,7 +15,7 @@ import {
   ApiBearerAuth,
   ApiQuery,
 } from '@nestjs/swagger';
-import { BusesService } from './buses.service';
+import { BusesService, BusQuery } from './buses.service';
 import { CreateBusDto } from './dto/create-bus.dto';
 import { UpdateBusDto } from './dto/update-bus.dto';
 import { MongoIdPipe } from '@common/pipes/mongo-id.pipe';
@@ -37,7 +37,7 @@ export class BusesController {
   @ApiQuery({ name: 'status', required: false, enum: BusStatus })
   @ApiQuery({ name: 'busType', required: false, enum: BusType })
   @ApiQuery({ name: 'busNumber', required: false, type: String })
-  async findAll(@Query() query: any) {
+  async findAll(@Query() query: BusQuery) {
     const data = await this.busesService.findAll(query);
     return { success: true, data };
   }
