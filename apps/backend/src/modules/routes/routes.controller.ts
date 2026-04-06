@@ -68,9 +68,9 @@ export class RoutesController {
   @ApiOperation({ summary: '[Nhà Xe] Tạo tuyến đường mới' })
   async create(
     @Body() createDto: CreateRouteDto,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() operator: JwtPayload,
   ) {
-    const operatorId = user.sub;
+    const operatorId = operator.sub;
     const data = await this.routesService.create(operatorId, createDto);
     return { success: true, data };
   }
