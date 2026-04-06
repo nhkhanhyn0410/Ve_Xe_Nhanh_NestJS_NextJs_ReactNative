@@ -12,10 +12,7 @@ import {
 import { Route, RouteSchema } from '../routes/schemas/route.schema';
 import { Trip, TripSchema } from '../trips/schemas/trip.schema';
 import { Booking, BookingSchema } from '../bookings/schemas/booking.schema';
-import {
-  Operator,
-  OperatorSchema,
-} from '../operators/schemas/operator.schema';
+import { Operator, OperatorSchema } from '../operators/schemas/operator.schema';
 import { Bus, BusSchema } from '../buses/schemas/bus.schema';
 
 @Module({

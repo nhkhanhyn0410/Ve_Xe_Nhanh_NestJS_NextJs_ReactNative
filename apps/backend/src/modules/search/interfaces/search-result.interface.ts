@@ -1,4 +1,7 @@
 import { JourneyType } from '@ve_xe_nhanh_ts/shared-types';
+import { RefInfo, BusInfo } from '@common/interfaces/ref-info.interface';
+
+export type { RefInfo, BusInfo };
 
 // ─── Tầng 1: Kết quả tìm StopPoint gần nhất ────────────────────────
 
@@ -44,15 +47,15 @@ export interface TransitPickupInfo {
 export interface SearchSegment {
   readonly tripId: string;
   readonly routeId: string;
-  readonly operatorId: string;
-  readonly operatorName: string;
-  readonly busType: string;
-  readonly busNumber: string;
 
-  readonly pickupPointId: string;
-  readonly pickupPointName: string;
-  readonly dropoffPointId: string;
-  readonly dropoffPointName: string;
+  /** Nhà xe */
+  readonly operator: RefInfo;
+  /** Xe */
+  readonly bus: BusInfo;
+  /** Điểm đón */
+  readonly pickup: RefInfo;
+  /** Điểm trả */
+  readonly dropoff: RefInfo;
 
   readonly departureTime: Date;
   readonly arrivalTime: Date;

@@ -26,6 +26,7 @@ interface StopPosition {
   order: number;
   arrivalMinutes: number;
   name: string;
+  role: string;
 }
 
 /**
@@ -58,28 +59,36 @@ export class SubRouteStrategy {
 
   /**
    * Tìm tất cả chuyến xe (trực tiếp + sub-route) cho cặp origin-destination.
+   *
+   * @param endDate - Ngày kết thúc tìm kiếm (mặc định = date + 1 ngày).
+   *   Dùng cho Transfer: chặng 2 có thể khởi hành ngày hôm sau.
    */
   async findDirectAndSubRoutes(
     originId: string,
     destinationId: string,
     date: string,
     minSeats: number = 1,
+    endDate?: string,
   ): Promise<readonly SearchSegment[]> {
     const validRoutes = await this.findMatchingRoutes(originId, destinationId);
     if (validRoutes.length === 0) return [];
 
-    // Tìm Trips trong ngày
+    // Tìm Trips trong khoảng ngày (mặc định: từ đầu ngày date đến cuối ngày date+1)
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
+
+    const endSearch = endDate ? new Date(endDate) : new Date(date);
+    if (!endDate) {
+      endSearch.setDate(endSearch.getDate() + 1);
+    }
+    endSearch.setHours(23, 59, 59, 999);
 
     const routeIds = validRoutes.map((vr) => vr.route._id);
 
     const trips = await this.tripModel
       .find({
         routeId: { $in: routeIds },
-        departureTime: { $gte: startOfDay, $lte: endOfDay },
+        departureTime: { $gte: startOfDay, $lte: endSearch },
         status: TripStatus.SCHEDULED,
       })
       .populate('operatorId', 'companyName')
@@ -98,12 +107,22 @@ export class SubRouteStrategy {
       const vr = routeMap.get(String(trip.routeId));
       if (!vr) continue;
 
-      const segDeparture = new Date(
-        trip.departureTime.getTime() + vr.originPos.arrivalMinutes * 60_000,
-      );
-      const segArrival = new Date(
-        trip.departureTime.getTime() + vr.destPos.arrivalMinutes * 60_000,
-      );
+      // Nếu là Exact Match (origin=stop đầu, dest=stop cuối),
+      // dùng trực tiếp trip.departureTime / arrivalTime (chính xác hơn estimatedArrivalMinutes)
+      let segDeparture: Date;
+      let segArrival: Date;
+
+      if (vr.isExactMatch) {
+        segDeparture = trip.departureTime;
+        segArrival = trip.arrivalTime;
+      } else {
+        segDeparture = new Date(
+          trip.departureTime.getTime() + vr.originPos.arrivalMinutes * 60_000,
+        );
+        segArrival = new Date(
+          trip.departureTime.getTime() + vr.destPos.arrivalMinutes * 60_000,
+        );
+      }
 
       const price = Math.round(trip.finalPrice * vr.durationRatio);
 
@@ -111,27 +130,39 @@ export class SubRouteStrategy {
         trip,
         vr.originPos.order,
         vr.destPos.order,
-        minSeats,
       );
       if (available < minSeats) continue;
 
-      const operator = trip.operatorId as unknown as { companyName?: string };
-      const bus = trip.busId as unknown as {
+      const operatorDoc = trip.operatorId as unknown as {
+        _id?: unknown;
+        companyName?: string;
+      };
+      const busDoc = trip.busId as unknown as {
+        _id?: unknown;
         busNumber?: string;
         busType?: string;
       };
 
       segments.push({
         tripId: String(trip._id),
-        routeId: String(trip.routeId),
-        operatorId: String(trip.operatorId),
-        operatorName: operator?.companyName ?? 'N/A',
-        busType: bus?.busType ?? 'N/A',
-        busNumber: bus?.busNumber ?? 'N/A',
-        pickupPointId: originId,
-        pickupPointName: vr.originPos.name,
-        dropoffPointId: destinationId,
-        dropoffPointName: vr.destPos.name,
+        routeId: this.resolveId(trip.routeId) ?? String(trip.routeId),
+        operator: {
+          id: this.resolveId(trip.operatorId) ?? '',
+          name: operatorDoc?.companyName ?? 'N/A',
+        },
+        bus: {
+          id: this.resolveId(trip.busId) ?? '',
+          type: busDoc?.busType ?? 'N/A',
+          number: busDoc?.busNumber ?? 'N/A',
+        },
+        pickup: {
+          id: originId,
+          name: vr.originPos.name,
+        },
+        dropoff: {
+          id: destinationId,
+          name: vr.destPos.name,
+        },
         departureTime: segDeparture,
         arrivalTime: segArrival,
         price,
@@ -172,7 +203,16 @@ export class SubRouteStrategy {
       const destPos = this.findStopPosition(route, destinationId);
 
       if (!originPos || !destPos) continue;
-      if (originPos.order >= destPos.order) continue;
+
+      // Phòng thủ: nếu order trùng nhau (dữ liệu lỗi), dùng role để xác định thứ tự
+      // origin luôn phải đứng trước destination
+      const effectiveOriginOrder = originPos.order;
+      const effectiveDestOrder =
+        destPos.order === originPos.order && destPos.role === 'destination'
+          ? originPos.order + 1 // Tự sửa: destination luôn sau origin
+          : destPos.order;
+
+      if (effectiveOriginOrder >= effectiveDestOrder) continue;
 
       const segmentDuration = destPos.arrivalMinutes - originPos.arrivalMinutes;
       const totalDuration = route.estimatedDuration;
@@ -213,16 +253,25 @@ export class SubRouteStrategy {
       order: stop.order,
       arrivalMinutes: stop.estimatedArrivalMinutes,
       name: this.resolveName(stop.stopPointId),
+      role: stop.role,
     };
   }
 
   /** Lấy ID string từ ObjectId hoặc populated document */
   private resolveId(ref: unknown): string | null {
     if (!ref) return null;
-    if (typeof ref === 'object' && ref !== null && '_id' in ref) {
-      return String((ref as { _id: unknown })._id);
+    if (typeof ref === 'string') return ref;
+
+    if (ref instanceof Types.ObjectId) {
+      return ref.toHexString();
     }
-    return String(ref);
+
+    if (typeof ref === 'object' && ref !== null && '_id' in ref) {
+      const id = (ref as { _id: unknown })._id;
+      return id instanceof Types.ObjectId ? id.toHexString() : String(id);
+    }
+
+    return null;
   }
 
   /** Lấy name từ populated document, trả '' nếu chưa populate */
@@ -243,7 +292,6 @@ export class SubRouteStrategy {
     trip: TripDocument,
     originOrder: number,
     destOrder: number,
-    _minSeats: number,
   ): Promise<number> {
     const bookings = await this.bookingModel
       .find({

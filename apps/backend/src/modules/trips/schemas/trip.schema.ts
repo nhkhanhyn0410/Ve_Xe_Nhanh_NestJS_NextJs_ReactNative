@@ -217,7 +217,10 @@ TripSchema.pre('validate', async function (this: TripDocument) {
     }
   }
 
-  if (this.isNew && (this.availableSeats === undefined || this.availableSeats === null)) {
+  if (
+    this.isNew &&
+    (this.availableSeats === undefined || this.availableSeats === null)
+  ) {
     this.availableSeats = this.totalSeats;
   }
 

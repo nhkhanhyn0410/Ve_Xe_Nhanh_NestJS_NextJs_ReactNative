@@ -14,7 +14,7 @@ import {
   ApiBearerAuth,
   ApiQuery,
 } from '@nestjs/swagger';
-import { BookingsService } from './bookings.service';
+import { BookingQuery, BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { MongoIdPipe } from '@common/pipes/mongo-id.pipe';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -36,7 +36,7 @@ export class BookingsController {
   @ApiOperation({ summary: '[Admin/Nhà Xe] Xem danh sách đơn đặt vé' })
   @ApiQuery({ name: 'userId', required: false })
   @ApiQuery({ name: 'status', required: false, enum: BookingStatus })
-  async findAll(@Query() query: any) {
+  async findAll(@Query() query: BookingQuery) {
     const data = await this.bookingsService.findAll(query);
     return { success: true, data };
   }
@@ -45,7 +45,10 @@ export class BookingsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Khách hàng] Lấy danh sách vé đã đặt của tôi' })
-  async findMyBookings(@CurrentUser() user: JwtPayload, @Query() query: any) {
+  async findMyBookings(
+    @CurrentUser() user: JwtPayload,
+    @Query() query: BookingQuery,
+  ) {
     const data = await this.bookingsService.findAll({
       ...query,
       userId: user.sub,

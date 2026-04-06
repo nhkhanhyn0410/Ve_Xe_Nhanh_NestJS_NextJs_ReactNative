@@ -105,16 +105,26 @@ export class TripsService {
 
     return this.tripModel
       .find(filter)
-      .populate('routeId')
+      .populate({
+        path: 'routeId',
+        select: 'routeName routeCode stops distance estimatedDuration',
+        populate: { path: 'stops.stopPointId', select: 'name' },
+      })
+      .populate('operatorId', 'companyName')
       .populate('busId', 'busNumber busType')
       .sort({ departureTime: 1 })
       .exec();
   }
 
-  async findOne(id: string): Promise<Trip> {
+  async findOne(id: string): Promise<TripDocument> {
     const trip = await this.tripModel
       .findById(id)
-      .populate('routeId')
+      .populate({
+        path: 'routeId',
+        select: 'routeName routeCode stops distance estimatedDuration',
+        populate: { path: 'stops.stopPointId', select: 'name' },
+      })
+      .populate('operatorId', 'companyName')
       .populate('busId', 'busNumber busType seatLayout')
       .exec();
 
