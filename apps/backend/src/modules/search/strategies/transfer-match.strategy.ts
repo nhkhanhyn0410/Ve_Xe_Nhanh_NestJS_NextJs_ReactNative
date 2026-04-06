@@ -126,32 +126,43 @@ export class TransferMatchStrategy {
     const oid = new Types.ObjectId(originId);
     const did = new Types.ObjectId(destinationId);
 
-    // Routes chứa originId trong stops[]
+    // Routes chứa originId / destinationId trong stops[]
     const [originRoutes, destRoutes] = await Promise.all([
       this.routeModel
         .find({ isActive: true, 'stops.stopPointId': oid })
-        .select('stops.stopPointId')
+        .select('stops.stopPointId stops.order')
         .exec(),
       this.routeModel
         .find({ isActive: true, 'stops.stopPointId': did })
-        .select('stops.stopPointId')
+        .select('stops.stopPointId stops.order')
         .exec(),
     ]);
 
-    // Thu thập StopPoint IDs mà origin có thể đến được
+    // Thu thập StopPoint IDs mà origin có thể đến được (chỉ stop SAU origin)
     const reachableFromOrigin = new Set<string>();
     for (const route of originRoutes) {
+      const originStop = route.stops.find(
+        (s) => s.stopPointId?.toString() === originId,
+      );
+      if (!originStop) continue;
       for (const stop of route.stops) {
-        if (stop.stopPointId)
+        if (stop.stopPointId && stop.order > originStop.order) {
           reachableFromOrigin.add(stop.stopPointId.toString());
+        }
       }
     }
 
-    // Thu thập StopPoint IDs mà có thể đến destination
+    // Thu thập StopPoint IDs mà có thể đến destination (chỉ stop TRƯỚC destination)
     const canReachDest = new Set<string>();
     for (const route of destRoutes) {
+      const destStop = route.stops.find(
+        (s) => s.stopPointId?.toString() === destinationId,
+      );
+      if (!destStop) continue;
       for (const stop of route.stops) {
-        if (stop.stopPointId) canReachDest.add(stop.stopPointId.toString());
+        if (stop.stopPointId && stop.order < destStop.order) {
+          canReachDest.add(stop.stopPointId.toString());
+        }
       }
     }
 

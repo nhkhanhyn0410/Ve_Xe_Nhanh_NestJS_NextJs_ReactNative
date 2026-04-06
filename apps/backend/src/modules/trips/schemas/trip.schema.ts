@@ -128,12 +128,9 @@ export class Trip {
   })
   operatorId: Types.ObjectId;
 
-  // OPTIONAL CREW
-  @Prop({ type: Types.ObjectId })
-  driverId?: Types.ObjectId;
-
-  @Prop({ type: Types.ObjectId })
-  tripManagerId?: Types.ObjectId;
+  /** Phi hành đoàn (tài xế + quản lý chuyến) → ref Employee[] */
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Employee' }], default: [] })
+  crew: Types.ObjectId[];
 
   @Prop({ required: true, index: true })
   departureTime: Date;

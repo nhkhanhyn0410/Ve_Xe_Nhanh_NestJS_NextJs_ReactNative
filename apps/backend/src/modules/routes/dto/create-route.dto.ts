@@ -15,7 +15,6 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { CoordinatesDto } from '../../stop-points/dto/create-stop-point.dto';
 import { RouteStopRole } from '@ve_xe_nhanh_ts/shared-types';
 
 export class RouteStopDto {
@@ -30,20 +29,6 @@ export class RouteStopDto {
   @IsEnum(RouteStopRole)
   role: RouteStopRole;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
-  @ApiProperty()
-  @IsString()
-  address: string;
-
-  @ApiProperty()
-  @ValidateNested()
-  @Type(() => CoordinatesDto)
-  coordinates: CoordinatesDto;
-
   @ApiProperty({ description: 'Thứ tự: 0 = origin, N = destination' })
   @IsNumber()
   @Min(0)
@@ -54,11 +39,12 @@ export class RouteStopDto {
   @Min(0)
   estimatedArrivalMinutes: number;
 
-  @ApiProperty()
+  @ApiProperty({ default: 15 })
   @IsNumber()
   @Min(0)
   @Max(120)
-  stopDuration: number;
+  @IsOptional()
+  stopDuration?: number;
 
   @ApiProperty({
     type: [String],
