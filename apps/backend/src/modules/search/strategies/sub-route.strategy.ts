@@ -82,7 +82,7 @@ export class SubRouteStrategy {
         departureTime: { $gte: startOfDay, $lte: endOfDay },
         status: TripStatus.SCHEDULED,
       })
-      .populate('operatorId', 'businessName')
+      .populate('operatorId', 'companyName')
       .populate('busId', 'busNumber busType')
       .exec();
 
@@ -115,7 +115,7 @@ export class SubRouteStrategy {
       );
       if (available < minSeats) continue;
 
-      const operator = trip.operatorId as unknown as { businessName?: string };
+      const operator = trip.operatorId as unknown as { companyName?: string };
       const bus = trip.busId as unknown as {
         busNumber?: string;
         busType?: string;
@@ -125,7 +125,7 @@ export class SubRouteStrategy {
         tripId: String(trip._id),
         routeId: String(trip.routeId),
         operatorId: String(trip.operatorId),
-        operatorName: operator?.businessName ?? 'N/A',
+        operatorName: operator?.companyName ?? 'N/A',
         busType: bus?.busType ?? 'N/A',
         busNumber: bus?.busNumber ?? 'N/A',
         pickupPointId: originId,
@@ -162,6 +162,7 @@ export class SubRouteStrategy {
         isActive: true,
         'stops.stopPointId': { $all: [oid, did] },
       })
+      .populate('stops.stopPointId', 'name')
       .exec();
 
     const results: ValidRoute[] = [];
@@ -180,10 +181,10 @@ export class SubRouteStrategy {
 
       // Exact match: origin là role=origin VÀ destination là role=destination
       const originStop = route.stops.find(
-        (s: RouteStop) => s.stopPointId?.toString() === originId,
+        (s: RouteStop) => this.resolveId(s.stopPointId) === originId,
       );
       const destStop = route.stops.find(
-        (s: RouteStop) => s.stopPointId?.toString() === destinationId,
+        (s: RouteStop) => this.resolveId(s.stopPointId) === destinationId,
       );
       const isExactMatch =
         originStop?.role === RouteStopRole.ORIGIN &&
@@ -197,23 +198,39 @@ export class SubRouteStrategy {
 
   /**
    * Tìm vị trí (order + arrivalMinutes) của 1 StopPoint ID trong Route.
-   * Unified: chỉ cần 1 lookup trong stops[] (bao gồm origin/destination).
+   * Hỗ trợ cả populated (object) và unpopulated (ObjectId) stopPointId.
    */
   private findStopPosition(
     route: RouteDocument,
     stopPointId: string,
   ): StopPosition | null {
     const stop = route.stops.find(
-      (s: RouteStop) =>
-        s.stopPointId && s.stopPointId.toString() === stopPointId,
+      (s: RouteStop) => this.resolveId(s.stopPointId) === stopPointId,
     );
     if (!stop) return null;
 
     return {
       order: stop.order,
       arrivalMinutes: stop.estimatedArrivalMinutes,
-      name: stop.name,
+      name: this.resolveName(stop.stopPointId),
     };
+  }
+
+  /** Lấy ID string từ ObjectId hoặc populated document */
+  private resolveId(ref: unknown): string | null {
+    if (!ref) return null;
+    if (typeof ref === 'object' && ref !== null && '_id' in ref) {
+      return String((ref as { _id: unknown })._id);
+    }
+    return String(ref);
+  }
+
+  /** Lấy name từ populated document, trả '' nếu chưa populate */
+  private resolveName(ref: unknown): string {
+    if (typeof ref === 'object' && ref !== null && 'name' in ref) {
+      return String((ref as { name: unknown }).name);
+    }
+    return '';
   }
 
   /**

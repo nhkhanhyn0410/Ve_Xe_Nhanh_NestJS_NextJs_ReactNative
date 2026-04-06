@@ -158,43 +158,41 @@ export class RoutesService {
   }
 
   /**
-   * Lookup StopPoints và tự điền name, address, coordinates cho mỗi stop.
-   * Client chỉ cần gửi stopPointId — không cần gửi thông tin trùng lặp.
+   * Validate tất cả stopPointIds tồn tại, convert ObjectId.
+   * name/address/coordinates lấy từ StopPoint qua populate — không lưu trùng.
    */
   private async buildStopsWithStopPointData(stops: RouteStopDto[]) {
     const allIds = stops.map((s) => new Types.ObjectId(s.stopPointId));
-    const stopPoints = await this.stopPointModel
-      .find({ _id: { $in: allIds } })
-      .exec();
-    const spMap = new Map(stopPoints.map((sp) => [String(sp._id), sp]));
+    const count = await this.stopPointModel.countDocuments({
+      _id: { $in: allIds },
+    });
 
-    // Validate: tất cả stopPointId phải tồn tại
-    const missingIds = stops
-      .filter((s) => !spMap.has(s.stopPointId))
-      .map((s) => s.stopPointId);
-    if (missingIds.length > 0) {
+    if (count !== allIds.length) {
+      // Tìm ID nào bị thiếu
+      const found = await this.stopPointModel
+        .find({ _id: { $in: allIds } })
+        .select('_id')
+        .exec();
+      const foundSet = new Set(found.map((sp) => String(sp._id)));
+      const missingIds = stops
+        .filter((s) => !foundSet.has(s.stopPointId))
+        .map((s) => s.stopPointId);
       throw new BadRequestException(
         `StopPoint không tồn tại: ${missingIds.join(', ')}`,
       );
     }
 
-    return stops.map((s) => {
-      const sp = spMap.get(s.stopPointId)!;
-      return {
-        stopPointId: new Types.ObjectId(s.stopPointId),
-        role: s.role,
-        name: sp.name,
-        address: sp.address ?? '',
-        coordinates: sp.coordinates,
-        order: s.order,
-        estimatedArrivalMinutes: s.estimatedArrivalMinutes,
-        stopDuration: s.stopDuration ?? 15,
-        transitPickupIds:
-          s.transitPickupIds?.map((id) => new Types.ObjectId(id)) ?? [],
-        transitDropoffIds:
-          s.transitDropoffIds?.map((id) => new Types.ObjectId(id)) ?? [],
-      };
-    });
+    return stops.map((s) => ({
+      stopPointId: new Types.ObjectId(s.stopPointId),
+      role: s.role,
+      order: s.order,
+      estimatedArrivalMinutes: s.estimatedArrivalMinutes,
+      stopDuration: s.stopDuration ?? 15,
+      transitPickupIds:
+        s.transitPickupIds?.map((id) => new Types.ObjectId(id)) ?? [],
+      transitDropoffIds:
+        s.transitDropoffIds?.map((id) => new Types.ObjectId(id)) ?? [],
+    }));
   }
 
   async remove(
