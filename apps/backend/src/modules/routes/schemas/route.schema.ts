@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { ICoordinates, RouteStopRole } from '@ve_xe_nhanh_ts/shared-types';
+import { RouteStopRole } from '@ve_xe_nhanh_ts/shared-types';
 
 export type RouteDocument = Route & Document;
 
@@ -18,21 +18,6 @@ export class RouteStop {
     default: RouteStopRole.STOP,
   })
   role: RouteStopRole;
-
-  @Prop({ required: true, trim: true })
-  name: string;
-
-  @Prop({ trim: true })
-  address: string;
-
-  @Prop({
-    type: {
-      lat: { type: Number, required: true },
-      lng: { type: Number, required: true },
-    },
-    required: true,
-  })
-  coordinates: ICoordinates;
 
   /** Thứ tự trên tuyến: 0 = origin, N = destination */
   @Prop({ required: true, min: 0 })
@@ -59,7 +44,7 @@ export const RouteStopSchema = SchemaFactory.createForClass(RouteStop);
 export class Route {
   @Prop({
     type: Types.ObjectId,
-    ref: 'BusOperator',
+    ref: 'Operator',
     required: true,
     index: true,
   })

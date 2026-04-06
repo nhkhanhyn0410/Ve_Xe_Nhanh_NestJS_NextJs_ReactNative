@@ -367,9 +367,6 @@ async function seed(): Promise<void> {
         {
           stopPointId: BXMD,
           role: 'origin',
-          name: 'Bến Xe Miền Đông Mới',
-          address: 'Xa lộ Hà Nội, TP. Thủ Đức',
-          coordinates: { lat: 10.8772, lng: 106.8211 },
           order: 0,
           estimatedArrivalMinutes: 0,
           stopDuration: 0,
@@ -379,9 +376,6 @@ async function seed(): Promise<void> {
         {
           stopPointId: TRAM_BL,
           role: 'stop',
-          name: 'Trạm Dừng Bảo Lộc',
-          address: 'QL20, Bảo Lộc',
-          coordinates: { lat: 11.5412, lng: 107.8098 },
           order: 1,
           estimatedArrivalMinutes: 240,
           stopDuration: 20,
@@ -391,9 +385,6 @@ async function seed(): Promise<void> {
         {
           stopPointId: BXDL,
           role: 'destination',
-          name: 'Bến Xe Đà Lạt',
-          address: '01 Tô Hiến Thành, Phường 3',
-          coordinates: { lat: 11.9404, lng: 108.4419 },
           order: 2,
           estimatedArrivalMinutes: 420,
           stopDuration: 0,
@@ -413,9 +404,6 @@ async function seed(): Promise<void> {
         {
           stopPointId: BXMD,
           role: 'origin',
-          name: 'Bến Xe Miền Đông Mới',
-          address: 'Xa lộ Hà Nội, TP. Thủ Đức',
-          coordinates: { lat: 10.8772, lng: 106.8211 },
           order: 0,
           estimatedArrivalMinutes: 0,
           stopDuration: 0,
@@ -425,9 +413,6 @@ async function seed(): Promise<void> {
         {
           stopPointId: TRAM_PR,
           role: 'stop',
-          name: 'Trạm Dừng Phan Rang',
-          address: 'QL1A, Phan Rang',
-          coordinates: { lat: 11.5712, lng: 108.9869 },
           order: 1,
           estimatedArrivalMinutes: 360,
           stopDuration: 20,
@@ -437,9 +422,6 @@ async function seed(): Promise<void> {
         {
           stopPointId: BXNT,
           role: 'destination',
-          name: 'Bến Xe Nha Trang',
-          address: '58 Nguyễn Trãi, Phước Tân',
-          coordinates: { lat: 12.2579, lng: 109.1826 },
           order: 2,
           estimatedArrivalMinutes: 540,
           stopDuration: 0,
@@ -459,9 +441,6 @@ async function seed(): Promise<void> {
         {
           stopPointId: BXMD,
           role: 'origin',
-          name: 'Bến Xe Miền Đông Mới',
-          address: 'Xa lộ Hà Nội, TP. Thủ Đức',
-          coordinates: { lat: 10.8772, lng: 106.8211 },
           order: 0,
           estimatedArrivalMinutes: 0,
           stopDuration: 0,
@@ -471,9 +450,6 @@ async function seed(): Promise<void> {
         {
           stopPointId: BXNT,
           role: 'stop',
-          name: 'Bến Xe Nha Trang',
-          address: 'BX Nha Trang',
-          coordinates: { lat: 12.2579, lng: 109.1826 },
           order: 1,
           estimatedArrivalMinutes: 540,
           stopDuration: 30,
@@ -483,9 +459,6 @@ async function seed(): Promise<void> {
         {
           stopPointId: BXMT, // Dùng BX Miền Tây làm proxy cho Đà Nẵng (seed data)
           role: 'stop',
-          name: 'Trạm Dừng Đà Nẵng',
-          address: 'BX Đà Nẵng',
-          coordinates: { lat: 16.0544, lng: 108.2022 },
           order: 2,
           estimatedArrivalMinutes: 1080,
           stopDuration: 30,
@@ -495,9 +468,6 @@ async function seed(): Promise<void> {
         {
           stopPointId: BXNN,
           role: 'destination',
-          name: 'Bến Xe Nước Ngầm',
-          address: '1 Ngọc Hồi, Hoàng Liệt, Hoàng Mai',
-          coordinates: { lat: 20.9708, lng: 105.8413 },
           order: 3,
           estimatedArrivalMinutes: 2040,
           stopDuration: 0,
@@ -518,9 +488,6 @@ async function seed(): Promise<void> {
         {
           stopPointId: BXNN,
           role: 'origin',
-          name: 'Bến Xe Nước Ngầm',
-          address: '1 Ngọc Hồi, Hoàng Liệt, Hoàng Mai',
-          coordinates: { lat: 20.9708, lng: 105.8413 },
           order: 0,
           estimatedArrivalMinutes: 0,
           stopDuration: 0,
@@ -530,9 +497,6 @@ async function seed(): Promise<void> {
         {
           stopPointId: BXHP,
           role: 'destination',
-          name: 'Bến Xe Niệm Nghĩa - Hải Phòng',
-          address: '34 Đường Trần Nguyên Hãn, Niệm Ngh��a',
-          coordinates: { lat: 20.8448, lng: 106.6881 },
           order: 1,
           estimatedArrivalMinutes: 150,
           stopDuration: 0,
@@ -552,9 +516,6 @@ async function seed(): Promise<void> {
         {
           stopPointId: BXNN,
           role: 'origin',
-          name: 'Bến Xe Nước Ng��m',
-          address: '1 Ngọc Hồi, Hoàng Liệt, Hoàng Mai',
-          coordinates: { lat: 20.9708, lng: 105.8413 },
           order: 0,
           estimatedArrivalMinutes: 0,
           stopDuration: 0,
@@ -564,9 +525,6 @@ async function seed(): Promise<void> {
         {
           stopPointId: BXMD,
           role: 'destination',
-          name: 'Bến Xe Miền Đông Mới',
-          address: 'Xa l�� Hà N���i, TP. Thủ Đức',
-          coordinates: { lat: 10.8772, lng: 106.8211 },
           order: 1,
           estimatedArrivalMinutes: 2040,
           stopDuration: 0,
@@ -586,9 +544,6 @@ async function seed(): Promise<void> {
         {
           stopPointId: BXMD,
           role: 'origin',
-          name: 'Bến Xe Miền Đông Mới',
-          address: 'Xa lộ Hà Nội, TP. Thủ Đức',
-          coordinates: { lat: 10.8772, lng: 106.8211 },
           order: 0,
           estimatedArrivalMinutes: 0,
           stopDuration: 0,
@@ -598,9 +553,6 @@ async function seed(): Promise<void> {
         {
           stopPointId: BXNN,
           role: 'destination',
-          name: 'Bến Xe Nước Ngầm',
-          address: '1 Ngọc Hồi, Hoàng Liệt, Hoàng Mai',
-          coordinates: { lat: 20.9708, lng: 105.8413 },
           order: 1,
           estimatedArrivalMinutes: 2040,
           stopDuration: 0,
@@ -810,8 +762,6 @@ async function seed(): Promise<void> {
   console.log('\nROUTES (unified format):');
   routeIds.forEach((id, i) => {
     const r = routes[i];
-    const origin = r.stops.find((s) => s.role === 'origin')?.name ?? '?';
-    const dest = r.stops.find((s) => s.role === 'destination')?.name ?? '?';
     const transitCount = r.stops.reduce(
       (sum, s) =>
         sum +
@@ -820,7 +770,7 @@ async function seed(): Promise<void> {
       0,
     );
     console.log(
-      `  [${i}] ${r.routeCode} | ${origin} -> ${dest} | ${r.stops.length} stops | ${transitCount} transit points | ${id.toString()}`,
+      `  [${i}] ${r.routeCode} | ${r.routeName} | ${r.stops.length} stops | ${transitCount} transit points | ${id.toString()}`,
     );
   });
 

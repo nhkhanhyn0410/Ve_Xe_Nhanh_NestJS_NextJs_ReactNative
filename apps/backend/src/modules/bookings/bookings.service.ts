@@ -125,7 +125,7 @@ export class BookingsService {
   async findOne(id: string): Promise<BookingDocument> {
     const booking = await this.bookingModel
       .findById(id)
-      .populate('tickets.operatorId', 'businessName')
+      .populate('tickets.operatorId', 'companyName')
       .populate('tickets.pickupPointId', 'name address')
       .populate('tickets.dropoffPointId', 'name address')
       .exec();

@@ -1,18 +1,14 @@
-import { ICoordinates, IStopPoint } from './stop-point.types.js';
+import { IStopPoint } from './stop-point.types.js';
 import { RouteStopRole } from './enums.js';
 
 /**
- * Unified RouteStop — đại diện cho MỌI điểm trên tuyến:
- * origin (bến đi), stop (trung gian), destination (bến đến).
- * Mỗi stop có thể gắn điểm đón/trả trung chuyển qua transitPickupIds/transitDropoffIds.
+ * Unified RouteStop — đại diện cho MỌI điểm trên tuyến.
+ * name/address/coordinates lấy từ StopPoint qua populate — không lưu trùng.
  */
 export interface IRouteStop {
   _id?: string;
-  stopPointId: string | IStopPoint; // BẮT BUỘC — ref StopPoint
+  stopPointId: string | IStopPoint; // BẮT BUỘC — ref StopPoint (populate để lấy name, address, coordinates)
   role: RouteStopRole;
-  name: string;
-  address: string;
-  coordinates: ICoordinates;
   order: number; // 0 = origin, N = destination
   estimatedArrivalMinutes: number; // Phút từ lúc khởi hành
   stopDuration: number; // Thời gian dừng (phút)

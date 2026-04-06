@@ -56,16 +56,11 @@ StopPointSchema.index({ name: 'text', city: 'text' });
 StopPointSchema.index({ location: '2dsphere' });
 
 // Tự động đồng bộ coordinates -> GeoJSON location
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-(StopPointSchema as any).pre(
-  'save',
-  function (this: StopPointDocument, next: (err?: Error) => void) {
-    if (this.coordinates) {
-      this.location = {
-        type: 'Point',
-        coordinates: [this.coordinates.lng, this.coordinates.lat],
-      };
-    }
-    next();
-  },
-);
+(StopPointSchema as any).pre('save', function (this: StopPointDocument) {
+  if (this.coordinates) {
+    this.location = {
+      type: 'Point',
+      coordinates: [this.coordinates.lng, this.coordinates.lat],
+    };
+  }
+});

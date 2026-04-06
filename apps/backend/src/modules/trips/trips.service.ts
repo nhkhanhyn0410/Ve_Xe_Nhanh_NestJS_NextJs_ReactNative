@@ -69,7 +69,10 @@ export class TripsService {
 
     const trip = new this.tripModel({
       ...createDto,
+      routeId: new Types.ObjectId(createDto.routeId),
+      busId: new Types.ObjectId(createDto.busId),
       operatorId: new Types.ObjectId(operatorId),
+      crew: createDto.crew?.map((id) => new Types.ObjectId(id)) ?? [],
     });
 
     // Mongoose pre-save hook will pull `totalSeats` and calculate `finalPrice`
