@@ -21,6 +21,7 @@ import Joi from 'joi';
         ALLOWED_ORIGINS: Joi.string(),
         THROTTLE_TTL: Joi.number(),
         THROTTLE_LIMIT: Joi.number(),
+        OSRM_URL: Joi.string().uri().default('http://localhost:5000'),
       }),
     }),
   ],

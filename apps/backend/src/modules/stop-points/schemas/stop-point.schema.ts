@@ -32,8 +32,40 @@ export class StopPoint {
 
   @Prop({ default: true })
   isActive: boolean;
+
+  /**
+   * Trường GeoJSON chuẩn cho MongoDB $geoNear.
+   * Được tự động đồng bộ từ `coordinates` qua pre-save hook.
+   */
+  @Prop({
+    type: {
+      type: String,
+      enum: ['Point'],
+      default: 'Point',
+    },
+    coordinates: {
+      type: [Number], // [lng, lat] - GeoJSON format
+    },
+  })
+  location?: { type: string; coordinates: number[] };
 }
 
 export const StopPointSchema = SchemaFactory.createForClass(StopPoint);
 StopPointSchema.index({ city: 1, type: 1 });
 StopPointSchema.index({ name: 'text', city: 'text' });
+StopPointSchema.index({ location: '2dsphere' });
+
+// Tự động đồng bộ coordinates -> GeoJSON location
+// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+(StopPointSchema as any).pre(
+  'save',
+  function (this: StopPointDocument, next: (err?: Error) => void) {
+    if (this.coordinates) {
+      this.location = {
+        type: 'Point',
+        coordinates: [this.coordinates.lng, this.coordinates.lat],
+      };
+    }
+    next();
+  },
+);

@@ -131,4 +131,12 @@ export enum StopPointType {
   STATION = 'station', // Bến xe lớn (VD: Bến Xe Miền Đông)
   POINT = 'point', // Điểm đón trả dọc đường / văn phòng phụ
   REST_STOP = 'rest_stop', // Trạm dừng chân
+  PICKUP = 'pickup', // Điểm đón trung chuyển (shuttle đón khách)
+  DROPOFF = 'dropoff', // Điểm trả trung chuyển (shuttle trả khách)
+}
+
+export enum RouteStopRole {
+  ORIGIN = 'origin', // Bến đi (order = 0)
+  STOP = 'stop', // Điểm dừng trung gian
+  DESTINATION = 'destination', // Bến đến (order cuối)
 }

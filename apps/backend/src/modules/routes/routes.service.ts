@@ -9,11 +9,11 @@ import { Model, Types } from 'mongoose';
 import { Route, RouteDocument } from './schemas/route.schema';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { UpdateRouteDto } from './dto/update-route.dto';
-import { SystemRole } from '@ve_xe_nhanh_ts/shared-types';
+import { SystemRole, RouteStopRole } from '@ve_xe_nhanh_ts/shared-types';
 
 export interface RouteQuery {
-  originId?: string;
-  destinationId?: string;
+  originStopPointId?: string;
+  destinationStopPointId?: string;
   operatorId?: string;
   isActive?: string | boolean;
 }
@@ -32,17 +32,58 @@ export class RoutesService {
       throw new ConflictException('Mã tuyến đường này đã tồn tại');
     }
 
-    return this.routeModel.create({
+    const data = {
       ...createDto,
       operatorId: new Types.ObjectId(operatorId),
-    });
+      stops: createDto.stops.map((s) => ({
+        ...s,
+        stopPointId: new Types.ObjectId(s.stopPointId),
+        transitPickupIds:
+          s.transitPickupIds?.map((id) => new Types.ObjectId(id)) ?? [],
+        transitDropoffIds:
+          s.transitDropoffIds?.map((id) => new Types.ObjectId(id)) ?? [],
+      })),
+    };
+
+    return this.routeModel.create(data);
   }
 
   async findAll(query: RouteQuery = {}): Promise<RouteDocument[]> {
     const filter: Record<string, unknown> = {};
-    if (query.originId) filter.originId = new Types.ObjectId(query.originId);
-    if (query.destinationId)
-      filter.destinationId = new Types.ObjectId(query.destinationId);
+
+    if (query.originStopPointId) {
+      filter['stops'] = {
+        $elemMatch: {
+          role: RouteStopRole.ORIGIN,
+          stopPointId: new Types.ObjectId(query.originStopPointId),
+        },
+      };
+    }
+    if (query.destinationStopPointId) {
+      // Nếu đã có $elemMatch cho origin, dùng $and
+      if (filter['stops']) {
+        const originFilter = filter['stops'];
+        delete filter['stops'];
+        filter['$and'] = [
+          { stops: originFilter },
+          {
+            stops: {
+              $elemMatch: {
+                role: RouteStopRole.DESTINATION,
+                stopPointId: new Types.ObjectId(query.destinationStopPointId),
+              },
+            },
+          },
+        ];
+      } else {
+        filter['stops'] = {
+          $elemMatch: {
+            role: RouteStopRole.DESTINATION,
+            stopPointId: new Types.ObjectId(query.destinationStopPointId),
+          },
+        };
+      }
+    }
     if (query.operatorId)
       filter.operatorId = new Types.ObjectId(query.operatorId);
     if (query.isActive !== undefined && query.isActive !== '') {
@@ -55,8 +96,9 @@ export class RoutesService {
 
     return this.routeModel
       .find(queryFilter)
-      .populate('originId', 'name city province')
-      .populate('destinationId', 'name city province')
+      .populate('stops.stopPointId', 'name city province coordinates')
+      .populate('stops.transitPickupIds', 'name address coordinates type')
+      .populate('stops.transitDropoffIds', 'name address coordinates type')
       .populate('operatorId', 'companyName')
       .sort({ createdAt: -1 })
       .exec();
@@ -65,8 +107,9 @@ export class RoutesService {
   async findOne(id: string): Promise<Route> {
     const route = await this.routeModel
       .findById(id)
-      .populate('originId', 'name city province coordinates')
-      .populate('destinationId', 'name city province coordinates')
+      .populate('stops.stopPointId', 'name city province coordinates')
+      .populate('stops.transitPickupIds', 'name address coordinates type')
+      .populate('stops.transitDropoffIds', 'name address coordinates type')
       .exec();
 
     if (!route) {
@@ -83,7 +126,6 @@ export class RoutesService {
   ): Promise<Route> {
     const route = await this.findOne(id);
 
-    // Kiểm tra quyền
     if (
       role !== SystemRole.ADMIN &&
       route.operatorId.toString() !== operatorId
@@ -93,7 +135,6 @@ export class RoutesService {
       );
     }
 
-    // Check unique routeCode nếu có đổi
     if (updateDto.routeCode && updateDto.routeCode !== route.routeCode) {
       const existingCode = await this.routeModel.findOne({
         routeCode: updateDto.routeCode,
@@ -103,8 +144,21 @@ export class RoutesService {
       }
     }
 
+    // Convert ObjectId cho stops nếu có update
+    const data: Record<string, unknown> = { ...updateDto };
+    if (updateDto.stops) {
+      data.stops = updateDto.stops.map((s) => ({
+        ...s,
+        stopPointId: new Types.ObjectId(s.stopPointId),
+        transitPickupIds:
+          s.transitPickupIds?.map((id) => new Types.ObjectId(id)) ?? [],
+        transitDropoffIds:
+          s.transitDropoffIds?.map((id) => new Types.ObjectId(id)) ?? [],
+      }));
+    }
+
     return this.routeModel
-      .findByIdAndUpdate(id, updateDto, { new: true })
+      .findByIdAndUpdate(id, data, { new: true })
       .exec() as unknown as Route;
   }
 
