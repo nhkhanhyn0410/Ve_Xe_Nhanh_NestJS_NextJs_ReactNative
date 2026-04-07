@@ -8,8 +8,10 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Trip, TripDocument } from './schemas/trip.schema';
+import { Bus, BusDocument } from '../buses/schemas/bus.schema';
 import { CreateTripDto } from './dto/create-trip.dto';
 import { UpdateTripDto } from './dto/update-trip.dto';
+import { AssignBusDto, AssignCrewDto } from './dto/assign-resource.dto';
 import { SystemRole, TripStatus } from '@ve_xe_nhanh_ts/shared-types';
 
 export interface TripQuery {
@@ -22,7 +24,12 @@ export interface TripQuery {
 
 @Injectable()
 export class TripsService {
-  constructor(@InjectModel(Trip.name) private tripModel: Model<TripDocument>) {}
+  constructor(
+    @InjectModel(Trip.name) private tripModel: Model<TripDocument>,
+    @InjectModel(Bus.name) private busModel: Model<BusDocument>,
+  ) {}
+
+  // ─── Overlap check ────────────────────────────────────────────────
 
   private async checkBusOverlap(
     busId: string,
@@ -37,61 +44,67 @@ export class TripsService {
       throw new BadRequestException('Giờ đến phải sau giờ khởi hành');
     }
 
-    const query = {
+    const query: Record<string, unknown> = {
       busId: new Types.ObjectId(busId),
-      $or: [
-        {
-          departureTime: { $lt: arrTime },
-          arrivalTime: { $gt: depTime },
-        },
-      ],
-      status: { $ne: 'cancelled' },
-      ...(excludeTripId
-        ? { _id: { $ne: new Types.ObjectId(excludeTripId) } }
-        : {}),
+      departureTime: { $lt: arrTime },
+      arrivalTime: { $gt: depTime },
+      status: { $nin: [TripStatus.CANCELLED, TripStatus.DRAFT] },
     };
+    if (excludeTripId) {
+      query._id = { $ne: new Types.ObjectId(excludeTripId) };
+    }
 
     const overlappingTrip = await this.tripModel.findOne(query);
 
     if (overlappingTrip) {
       throw new ConflictException(
-        `Chiếc xe này đã được xếp lịch chạy trong khoảng thời gian từ ${overlappingTrip.departureTime.toLocaleString()} đến ${overlappingTrip.arrivalTime.toLocaleString()}`,
+        `Xe này đã có chuyến từ ${overlappingTrip.departureTime.toLocaleString()} đến ${overlappingTrip.arrivalTime.toLocaleString()}`,
       );
     }
   }
 
-  async create(operatorId: string, createDto: CreateTripDto): Promise<Trip> {
-    await this.checkBusOverlap(
-      createDto.busId,
-      createDto.departureTime,
-      createDto.arrivalTime,
-    );
+  // ─── CRUD ─────────────────────────────────────────────────────────
 
-    const trip = new this.tripModel({
+  async create(
+    operatorId: string,
+    createDto: CreateTripDto,
+  ): Promise<TripDocument> {
+    // Overlap check chỉ khi có busId
+    if (createDto.busId) {
+      await this.checkBusOverlap(
+        createDto.busId,
+        createDto.departureTime,
+        createDto.arrivalTime,
+      );
+    }
+
+    const tripData: Record<string, unknown> = {
       ...createDto,
+      routeId: new Types.ObjectId(createDto.routeId),
       operatorId: new Types.ObjectId(operatorId),
-    });
+      crew: createDto.crew?.map((id) => new Types.ObjectId(id)) ?? [],
+    };
 
-    // Mongoose pre-save hook will pull `totalSeats` and calculate `finalPrice`
+    // busId + status tùy thuộc vào việc gắn xe ngay hay không
+    if (createDto.busId) {
+      tripData.busId = new Types.ObjectId(createDto.busId);
+      tripData.status = TripStatus.SCHEDULED;
+    }
+    // Không có busId → status = DRAFT (default từ schema)
+
+    const trip = new this.tripModel(tripData);
     return trip.save();
   }
 
   async findAll(query: TripQuery = {}): Promise<TripDocument[]> {
     const { operatorId, routeId, busId, status, date } = query;
 
-    const filter: {
-      operatorId?: Types.ObjectId;
-      routeId?: Types.ObjectId;
-      busId?: Types.ObjectId;
-      status?: TripStatus;
-      departureTime?: { $gte: Date; $lte: Date };
-    } = {};
+    const filter: Record<string, unknown> = {};
     if (operatorId) filter.operatorId = new Types.ObjectId(operatorId);
     if (routeId) filter.routeId = new Types.ObjectId(routeId);
     if (busId) filter.busId = new Types.ObjectId(busId);
     if (status) filter.status = status;
 
-    // Filtering by date
     if (date) {
       const startOfDay = new Date(date);
       startOfDay.setHours(0, 0, 0, 0);
@@ -102,16 +115,26 @@ export class TripsService {
 
     return this.tripModel
       .find(filter)
-      .populate('routeId')
+      .populate({
+        path: 'routeId',
+        select: 'routeName routeCode stops distance estimatedDuration',
+        populate: { path: 'stops.stopPointId', select: 'name' },
+      })
+      .populate('operatorId', 'companyName')
       .populate('busId', 'busNumber busType')
       .sort({ departureTime: 1 })
       .exec();
   }
 
-  async findOne(id: string): Promise<Trip> {
+  async findOne(id: string): Promise<TripDocument> {
     const trip = await this.tripModel
       .findById(id)
-      .populate('routeId')
+      .populate({
+        path: 'routeId',
+        select: 'routeName routeCode stops distance estimatedDuration',
+        populate: { path: 'stops.stopPointId', select: 'name' },
+      })
+      .populate('operatorId', 'companyName')
       .populate('busId', 'busNumber busType seatLayout')
       .exec();
 
@@ -126,30 +149,29 @@ export class TripsService {
     operatorId: string,
     role: SystemRole,
     updateDto: UpdateTripDto,
-  ): Promise<Trip> {
+  ): Promise<TripDocument> {
     const trip = await this.findOne(id);
+    this.assertOwnership(trip, operatorId, role);
+
+    // Overlap check nếu thay đổi xe/thời gian VÀ có busId
+    const effectiveBusId =
+      updateDto.busId ?? trip.busId?.toString() ?? undefined;
 
     if (
-      role !== SystemRole.ADMIN &&
-      trip.operatorId.toString() !== operatorId
+      effectiveBusId &&
+      (updateDto.busId || updateDto.departureTime || updateDto.arrivalTime)
     ) {
-      throw new ForbiddenException(
-        'Bạn không có quyền sửa chuyến xe của nhà cung cấp khác',
+      await this.checkBusOverlap(
+        effectiveBusId,
+        updateDto.departureTime || trip.departureTime,
+        updateDto.arrivalTime || trip.arrivalTime,
+        id,
       );
-    }
-
-    // Check time overlap if time or bus is changed
-    const newBusId = updateDto.busId || trip.busId.toString();
-    const newDep = updateDto.departureTime || trip.departureTime;
-    const newArr = updateDto.arrivalTime || trip.arrivalTime;
-
-    if (updateDto.busId || updateDto.departureTime || updateDto.arrivalTime) {
-      await this.checkBusOverlap(newBusId, newDep, newArr, id);
     }
 
     return this.tripModel
       .findByIdAndUpdate(id, updateDto, { new: true })
-      .exec() as unknown as Trip;
+      .exec() as unknown as TripDocument;
   }
 
   async remove(
@@ -158,16 +180,126 @@ export class TripsService {
     role: SystemRole,
   ): Promise<void> {
     const trip = await this.findOne(id);
+    this.assertOwnership(trip, operatorId, role);
+    await this.tripModel.findByIdAndDelete(id).exec();
+  }
 
+  // ─── Phân công xe ─────────────────────────────────────────────────
+
+  async assignBus(
+    id: string,
+    operatorId: string,
+    role: SystemRole,
+    dto: AssignBusDto,
+  ): Promise<TripDocument> {
+    const trip = await this.findOne(id);
+    this.assertOwnership(trip, operatorId, role);
+
+    // Kiểm tra bus tồn tại + lấy totalSeats
+    const bus = await this.busModel.findById(dto.busId).exec();
+    if (!bus) {
+      throw new NotFoundException('Không tìm thấy xe');
+    }
+    if (!bus.seatLayout?.totalSeats) {
+      throw new BadRequestException('Xe chưa có sơ đồ ghế hợp lệ');
+    }
+
+    // Overlap check
+    await this.checkBusOverlap(
+      dto.busId,
+      trip.departureTime,
+      trip.arrivalTime,
+      id,
+    );
+
+    // Update
+    const totalSeats = bus.seatLayout.totalSeats;
+    const bookedCount = trip.bookedSeats?.length ?? 0;
+
+    const updated = await this.tripModel
+      .findByIdAndUpdate(
+        id,
+        {
+          busId: new Types.ObjectId(dto.busId),
+          totalSeats,
+          availableSeats: totalSeats - bookedCount,
+          // Auto-transition DRAFT → SCHEDULED khi gắn xe
+          ...(trip.status === TripStatus.DRAFT
+            ? { status: TripStatus.SCHEDULED }
+            : {}),
+        },
+        { new: true },
+      )
+      .exec();
+
+    return this.findOne(String(updated!._id));
+  }
+
+  // ─── Bỏ gắn xe (SCHEDULED → DRAFT) ────────────────────────────────
+
+  async unassignBus(
+    id: string,
+    operatorId: string,
+    role: SystemRole,
+  ): Promise<TripDocument> {
+    const trip = await this.findOne(id);
+    this.assertOwnership(trip, operatorId, role);
+
+    if (trip.bookedSeats && trip.bookedSeats.length > 0) {
+      throw new ConflictException(
+        'Không thể bỏ gắn xe khi đã có hành khách đặt vé',
+      );
+    }
+
+    const allowedStatuses = [TripStatus.DRAFT, TripStatus.SCHEDULED];
+    if (!allowedStatuses.includes(trip.status)) {
+      throw new BadRequestException(
+        `Không thể bỏ gắn xe khi chuyến đang ở trạng thái ${trip.status}`,
+      );
+    }
+
+    await this.tripModel.findByIdAndUpdate(id, {
+      $unset: { busId: 1, totalSeats: 1, availableSeats: 1 },
+      status: TripStatus.DRAFT,
+    });
+
+    return this.findOne(id);
+  }
+
+  // ─── Phân công nhân viên ──────────────────────────────────────────
+
+  async assignCrew(
+    id: string,
+    operatorId: string,
+    role: SystemRole,
+    dto: AssignCrewDto,
+  ): Promise<TripDocument> {
+    const trip = await this.findOne(id);
+    this.assertOwnership(trip, operatorId, role);
+
+    // TODO: Khi có Employee module → validate employee IDs tồn tại + check overlap
+
+    await this.tripModel.findByIdAndUpdate(id, {
+      crew: dto.crew.map((crewId) => new Types.ObjectId(crewId)),
+    });
+
+    return this.findOne(id);
+  }
+
+  // ─── Helpers ──────────────────────────────────────────────────────
+
+  private assertOwnership(
+    trip: TripDocument,
+    operatorId: string,
+    role: SystemRole,
+  ): void {
     if (
       role !== SystemRole.ADMIN &&
       trip.operatorId.toString() !== operatorId
     ) {
       throw new ForbiddenException(
-        'Bạn không có quyền xóa chuyến xe của nhà cung cấp khác',
+        'Bạn không có quyền thao tác chuyến xe của nhà cung cấp khác',
       );
     }
-
-    await this.tripModel.findByIdAndDelete(id).exec();
   }
 }

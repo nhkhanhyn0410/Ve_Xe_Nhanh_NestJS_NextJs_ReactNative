@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import { StopPointType, ICoordinates } from '@ve_xe_nhanh_ts/shared-types';
 
 export type StopPointDocument = StopPoint & Document;
@@ -32,8 +32,38 @@ export class StopPoint {
 
   @Prop({ default: true })
   isActive: boolean;
+
+  @Prop({ type: Types.ObjectId, ref: 'Operator', index: true })
+  operatorId?: Types.ObjectId;
+
+  /**
+   * Trường GeoJSON chuẩn cho MongoDB $geoNear.
+   * Được tự động đồng bộ từ `coordinates` qua pre-save hook.
+   */
+  @Prop({
+    type: {
+      type: String,
+      enum: ['Point'],
+      default: 'Point',
+    },
+    coordinates: {
+      type: [Number], // [lng, lat] - GeoJSON format
+    },
+  })
+  location?: { type: string; coordinates: number[] };
 }
 
 export const StopPointSchema = SchemaFactory.createForClass(StopPoint);
 StopPointSchema.index({ city: 1, type: 1 });
 StopPointSchema.index({ name: 'text', city: 'text' });
+StopPointSchema.index({ location: '2dsphere' });
+
+// Tự động đồng bộ coordinates -> GeoJSON location
+StopPointSchema.pre('save', function (this: StopPointDocument) {
+  if (this.coordinates) {
+    this.location = {
+      type: 'Point',
+      coordinates: [this.coordinates.lng, this.coordinates.lat],
+    };
+  }
+});

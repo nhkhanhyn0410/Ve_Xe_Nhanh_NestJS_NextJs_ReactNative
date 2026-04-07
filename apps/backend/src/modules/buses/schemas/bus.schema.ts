@@ -51,7 +51,7 @@ export const RegistrationInfoSchema =
 export class Bus {
   @Prop({
     type: Types.ObjectId,
-    ref: 'BusOperator',
+    ref: 'Operator',
     required: true,
     index: true,
   })
@@ -123,16 +123,11 @@ function calculateTotalSeats(layout: string[][]): number {
 }
 
 // Pre-save
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-(BusSchema as any).pre(
-  'save',
-  function (this: BusDocument, next: (err?: Error) => void) {
-    if (this.isModified('seatLayout') && this.seatLayout?.layout) {
-      this.seatLayout.totalSeats = calculateTotalSeats(this.seatLayout.layout);
-    }
-    next();
-  },
-);
+BusSchema.pre('save', function (this: BusDocument) {
+  if (this.isModified('seatLayout') && this.seatLayout?.layout) {
+    this.seatLayout.totalSeats = calculateTotalSeats(this.seatLayout.layout);
+  }
+});
 
 interface BusUpdate {
   seatLayout?: SeatLayout;
@@ -142,25 +137,19 @@ interface BusUpdate {
 }
 
 // Pre-findOneAndUpdate
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-(BusSchema as any).pre(
-  'findOneAndUpdate',
-  function (this: Query<unknown, BusDocument>, next: (err?: Error) => void) {
-    const update = this.getUpdate() as BusUpdate;
-    if (!update) return next();
+BusSchema.pre('findOneAndUpdate', function (this: Query<unknown, BusDocument>) {
+  const update = this.getUpdate() as BusUpdate;
+  if (!update) return;
 
-    // Kiểm tra cả update trực tiếp và $set
-    const seatLayout = update.seatLayout || update.$set?.seatLayout;
+  const seatLayout = update.seatLayout || update.$set?.seatLayout;
 
-    if (seatLayout?.layout) {
-      const totalSeats = calculateTotalSeats(seatLayout.layout);
-      if (update.seatLayout) {
-        update.seatLayout.totalSeats = totalSeats;
-      }
-      if (update.$set?.seatLayout) {
-        update.$set.seatLayout.totalSeats = totalSeats;
-      }
+  if (seatLayout?.layout) {
+    const totalSeats = calculateTotalSeats(seatLayout.layout);
+    if (update.seatLayout) {
+      update.seatLayout.totalSeats = totalSeats;
     }
-    next();
-  },
-);
+    if (update.$set?.seatLayout) {
+      update.$set.seatLayout.totalSeats = totalSeats;
+    }
+  }
+});

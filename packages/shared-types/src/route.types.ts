@@ -1,44 +1,35 @@
-import { ICoordinates, IStopPoint } from './stop-point.types.js';
+import { IStopPoint } from './stop-point.types.js';
+import { RouteStopRole } from './enums.js';
 
-// Embedded point for pickup/dropoff with flexible names
-export interface IRoutePoint {
-  _id?: string;
-  name: string; // Tên điểm (VD: VP Hoàng Long, Ngã 4 Hàng Xanh)
-  address: string;
-  coordinates: ICoordinates;
-}
-
-// Embedded point for rest stops
+/**
+ * Unified RouteStop — đại diện cho MỌI điểm trên tuyến.
+ * name/address/coordinates lấy từ StopPoint qua populate — không lưu trùng.
+ */
 export interface IRouteStop {
   _id?: string;
-  name: string;
-  address: string;
-  coordinates: ICoordinates;
-  order: number;
-  estimatedArrivalMinutes: number; // Số phút ước tính từ lúc xuất phát
+  stopPointId: string | IStopPoint; // BẮT BUỘC — ref StopPoint (populate để lấy name, address, coordinates)
+  role: RouteStopRole;
+  order: number; // 0 = origin, N = destination
+  estimatedArrivalMinutes: number; // Phút từ lúc khởi hành
   stopDuration: number; // Thời gian dừng (phút)
+  transitPickupIds?: (string | IStopPoint)[]; // Điểm đón trung chuyển phục vụ stop này
+  transitDropoffIds?: (string | IStopPoint)[]; // Điểm trả trung chuyển phục vụ stop này
 }
 
 export interface IRoute {
   id: string;
-  operatorId: string; // Tham chiếu sang BusOperator
-  
+  operatorId: string;
+
   routeName: string;
-  routeCode: string; // VD: HN-SG-01
+  routeCode: string; // VD: PT-SGN-DL
 
-  // Tham chiếu (Ref) tới collection StopPoints
-  originId: string | IStopPoint; 
-  destinationId: string | IStopPoint;
-
-  pickupPoints: IRoutePoint[];
-  dropoffPoints: IRoutePoint[];
-  stops: IRouteStop[];
+  stops: IRouteStop[]; // Tất cả điểm trên tuyến (origin + stops + destination)
 
   distance: number; // Km
   estimatedDuration: number; // Phút
 
   isActive: boolean;
-  
+
   createdAt: string;
   updatedAt: string;
 

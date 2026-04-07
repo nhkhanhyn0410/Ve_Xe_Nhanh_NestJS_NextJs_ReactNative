@@ -13,13 +13,17 @@ import { RoutesModule } from './modules/routes/routes.module';
 import { BusesModule } from './modules/buses/buses.module';
 import { TripsModule } from './modules/trips/trips.module';
 import { RedisModule } from './modules/redis/redis.module';
+import { OsrmModule } from './modules/osrm/osrm.module';
 import { BookingsModule } from '@modules/bookings/bookings.module';
+import { SearchModule } from './modules/search/search.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
     AppConfigModule,
     DatabaseModule,
     RedisModule,
+    OsrmModule,
     UsersModule,
     AuthModule,
     AdminModule,
@@ -29,6 +33,8 @@ import { BookingsModule } from '@modules/bookings/bookings.module';
     BusesModule,
     TripsModule,
     BookingsModule,
+    SearchModule,
+    HttpModule,
   ],
   controllers: [AppController],
   providers: [AppService],

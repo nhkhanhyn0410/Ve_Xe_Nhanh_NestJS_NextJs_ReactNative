@@ -117,23 +117,20 @@ export class Trip {
   @Prop({ type: Types.ObjectId, ref: 'Route', required: true, index: true })
   routeId: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'Bus', required: true, index: true })
-  busId: Types.ObjectId;
+  @Prop({ type: Types.ObjectId, ref: 'Bus', index: true })
+  busId?: Types.ObjectId;
 
   @Prop({
     type: Types.ObjectId,
-    ref: 'BusOperator',
+    ref: 'Operator',
     required: true,
     index: true,
   })
   operatorId: Types.ObjectId;
 
-  // OPTIONAL CREW
-  @Prop({ type: Types.ObjectId })
-  driverId?: Types.ObjectId;
-
-  @Prop({ type: Types.ObjectId })
-  tripManagerId?: Types.ObjectId;
+  /** Phi hành đoàn (tài xế + quản lý chuyến) → ref Employee[] */
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Employee' }], default: [] })
+  crew: Types.ObjectId[];
 
   @Prop({ required: true, index: true })
   departureTime: Date;
@@ -153,11 +150,13 @@ export class Trip {
   @Prop({ type: DynamicPricingSchema })
   dynamicPricing?: DynamicPricing;
 
-  @Prop({ required: true, min: 1 })
-  totalSeats: number;
+  /** Set khi gắn bus — null khi DRAFT */
+  @Prop({ min: 1 })
+  totalSeats?: number;
 
-  @Prop({ required: true, min: 0 })
-  availableSeats: number;
+  /** Set khi gắn bus — null khi DRAFT */
+  @Prop({ min: 0 })
+  availableSeats?: number;
 
   @Prop({ type: [BookedSeatSchema], default: [] })
   bookedSeats: BookedSeat[];
@@ -165,7 +164,7 @@ export class Trip {
   @Prop({
     type: String,
     enum: TripStatus,
-    default: TripStatus.SCHEDULED,
+    default: TripStatus.DRAFT,
     index: true,
   })
   status: TripStatus;
@@ -190,54 +189,42 @@ TripSchema.index({ operatorId: 1, departureTime: 1 });
 TripSchema.index({ routeId: 1, departureTime: 1 });
 TripSchema.index({ status: 1, departureTime: 1, availableSeats: 1 });
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-(TripSchema as any).pre(
-  'validate',
-  function (this: TripDocument, next: (err?: Error) => void) {
-    if (this.departureTime && this.arrivalTime) {
-      if (this.arrivalTime <= this.departureTime) {
-        this.invalidate('arrivalTime', 'Giờ đến phải sau giờ khởi hành');
-      }
+// Mongoose 7+: pre('validate') chạy trước validate → set computed fields ở đây
+TripSchema.pre('validate', async function (this: TripDocument) {
+  // Validate thời gian
+  if (this.departureTime && this.arrivalTime) {
+    if (this.arrivalTime <= this.departureTime) {
+      this.invalidate('arrivalTime', 'Giờ đến phải sau giờ khởi hành');
     }
-    next();
-  },
-);
+  }
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-(TripSchema as any).pre(
-  'save',
-  async function (this: TripDocument, next: (err?: Error) => void) {
-    // Calc final price
-    if (
-      this.isModified('basePrice') ||
-      this.isModified('discount') ||
-      !this.finalPrice
-    ) {
-      const discount = this.discount || 0;
-      this.finalPrice = this.basePrice * (1 - discount / 100);
+  // Calc finalPrice
+  if (
+    this.isModified('basePrice') ||
+    this.isModified('discount') ||
+    !this.finalPrice
+  ) {
+    const discount = this.discount || 0;
+    this.finalPrice = this.basePrice * (1 - discount / 100);
+  }
+
+  // Init totalSeats + availableSeats từ Bus.seatLayout (chỉ khi có busId)
+  if (this.busId && !this.totalSeats) {
+    const BusModel = this.model('Bus');
+    const bus = (await BusModel.findById(this.busId)) as BusDocument;
+    if (bus && bus.seatLayout && bus.seatLayout.totalSeats) {
+      this.totalSeats = bus.seatLayout.totalSeats;
+    } else {
+      this.invalidate('totalSeats', 'Bus không có thông tin sơ đồ ghế hợp lệ.');
     }
+  }
 
-    // Handle totalSeats initialization
-    if (this.isNew) {
-      if (!this.totalSeats) {
-        const BusModel = this.model('Bus');
-        const bus = (await BusModel.findById(this.busId)) as BusDocument;
-        if (bus && bus.seatLayout && bus.seatLayout.totalSeats) {
-          this.totalSeats = bus.seatLayout.totalSeats;
-        } else {
-          throw new Error('Bus không có thông tin sơ đồ ghế hợp lệ.');
-        }
-      }
-      if (this.availableSeats === undefined || this.availableSeats === null) {
-        this.availableSeats = this.totalSeats;
-      }
-    }
+  if (this.busId && this.totalSeats && this.availableSeats == null) {
+    this.availableSeats = this.totalSeats;
+  }
 
-    // Update availableSeats if bookedSeats are modified
-    if (this.isModified('bookedSeats')) {
-      this.availableSeats = this.totalSeats - this.bookedSeats.length;
-    }
-
-    next();
-  },
-);
+  // Update availableSeats khi bookedSeats thay đổi
+  if (this.isModified('bookedSeats') && this.totalSeats) {
+    this.availableSeats = this.totalSeats - this.bookedSeats.length;
+  }
+});

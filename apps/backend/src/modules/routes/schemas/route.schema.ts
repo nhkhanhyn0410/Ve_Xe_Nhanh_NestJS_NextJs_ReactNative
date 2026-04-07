@@ -1,53 +1,42 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { ICoordinates } from '@ve_xe_nhanh_ts/shared-types';
+import { RouteStopRole } from '@ve_xe_nhanh_ts/shared-types';
 
 export type RouteDocument = Route & Document;
 
 @Schema({ _id: true })
-export class RoutePoint {
-  @Prop({ required: true, trim: true })
-  name: string;
-
-  @Prop({ trim: true })
-  address: string;
-
-  @Prop({
-    type: {
-      lat: { type: Number, required: true },
-      lng: { type: Number, required: true },
-    },
-    required: true,
-  })
-  coordinates: ICoordinates;
-}
-export const RoutePointSchema = SchemaFactory.createForClass(RoutePoint);
-
-@Schema({ _id: true })
 export class RouteStop {
-  @Prop({ required: true, trim: true })
-  name: string;
+  /** Tham chiếu đến StopPoint — BẮT BUỘC */
+  @Prop({ type: Types.ObjectId, ref: 'StopPoint', required: true, index: true })
+  stopPointId: Types.ObjectId;
 
-  @Prop({ trim: true })
-  address: string;
-
+  /** Vai trò: origin | stop | destination */
   @Prop({
-    type: {
-      lat: { type: Number, required: true },
-      lng: { type: Number, required: true },
-    },
+    type: String,
+    enum: Object.values(RouteStopRole),
     required: true,
+    default: RouteStopRole.STOP,
   })
-  coordinates: ICoordinates;
+  role: RouteStopRole;
 
-  @Prop({ required: true, min: 1 })
+  /** Thứ tự trên tuyến: 0 = origin, N = destination */
+  @Prop({ required: true, min: 0 })
   order: number;
 
+  /** Số phút tính từ lúc khởi hành đến khi xe tới stop này */
   @Prop({ required: true, min: 0 })
   estimatedArrivalMinutes: number;
 
-  @Prop({ required: true, min: 5, max: 120, default: 15 })
+  @Prop({ required: true, min: 0, max: 120, default: 15 })
   stopDuration: number;
+
+  /** Điểm đón trung chuyển phục vụ stop này → ref StopPoint[] */
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'StopPoint' }], default: [] })
+  transitPickupIds: Types.ObjectId[];
+
+  /** Điểm trả trung chuyển phục vụ stop này → ref StopPoint[] */
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'StopPoint' }], default: [] })
+  transitDropoffIds: Types.ObjectId[];
 }
 export const RouteStopSchema = SchemaFactory.createForClass(RouteStop);
 
@@ -55,7 +44,7 @@ export const RouteStopSchema = SchemaFactory.createForClass(RouteStop);
 export class Route {
   @Prop({
     type: Types.ObjectId,
-    ref: 'BusOperator',
+    ref: 'Operator',
     required: true,
     index: true,
   })
@@ -67,19 +56,8 @@ export class Route {
   @Prop({ required: true, unique: true, uppercase: true, trim: true })
   routeCode: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'StopPoint', required: true, index: true })
-  originId: Types.ObjectId;
-
-  @Prop({ type: Types.ObjectId, ref: 'StopPoint', required: true, index: true })
-  destinationId: Types.ObjectId;
-
-  @Prop({ type: [RoutePointSchema], default: [] })
-  pickupPoints: RoutePoint[];
-
-  @Prop({ type: [RoutePointSchema], default: [] })
-  dropoffPoints: RoutePoint[];
-
-  @Prop({ type: [RouteStopSchema], default: [] })
+  /** Tất cả điểm trên tuyến: origin (order=0) + stops + destination (order=N) */
+  @Prop({ type: [RouteStopSchema], required: true })
   stops: RouteStop[];
 
   @Prop({ required: true, min: 0, max: 5000 })
@@ -93,5 +71,7 @@ export class Route {
 }
 
 export const RouteSchema = SchemaFactory.createForClass(Route);
-// Composite index for exact searches
-RouteSchema.index({ originId: 1, destinationId: 1 });
+// Index cho tìm kiếm theo role + stopPointId
+RouteSchema.index({ 'stops.role': 1, 'stops.stopPointId': 1 });
+// Index cho sub-route matching
+RouteSchema.index({ 'stops.stopPointId': 1 });
