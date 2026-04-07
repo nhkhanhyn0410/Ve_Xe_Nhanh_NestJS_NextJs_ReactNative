@@ -9,6 +9,7 @@ import {
   ValidateNested,
   IsBoolean,
   IsArray,
+  IsMongoId,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
@@ -102,10 +103,13 @@ export class CreateTripDto {
   @IsNotEmpty()
   routeId: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  busId: string;
+  @ApiProperty({
+    required: false,
+    description: 'Bus ID — nếu không truyền, chuyến sẽ ở trạng thái DRAFT',
+  })
+  @IsMongoId()
+  @IsOptional()
+  busId?: string;
 
   @ApiProperty()
   @IsDateString()
@@ -140,13 +144,13 @@ export class CreateTripDto {
   @IsOptional()
   notes?: string;
 
-  @ApiProperty({ required: false })
-  @IsString()
+  @ApiProperty({
+    type: [String],
+    required: false,
+    description: 'Employee IDs — phi hành đoàn (tài xế, quản lý chuyến)',
+  })
+  @IsArray()
+  @IsMongoId({ each: true })
   @IsOptional()
-  driverId?: string;
-
-  @ApiProperty({ required: false })
-  @IsString()
-  @IsOptional()
-  tripManagerId?: string;
+  crew?: string[];
 }

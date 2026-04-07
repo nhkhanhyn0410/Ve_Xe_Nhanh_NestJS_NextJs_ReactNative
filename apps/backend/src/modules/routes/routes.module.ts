@@ -3,10 +3,17 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { RoutesService } from './routes.service';
 import { RoutesController } from './routes.controller';
 import { Route, RouteSchema } from './schemas/route.schema';
+import {
+  StopPoint,
+  StopPointSchema,
+} from '../stop-points/schemas/stop-point.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Route.name, schema: RouteSchema }]),
+    MongooseModule.forFeature([
+      { name: Route.name, schema: RouteSchema },
+      { name: StopPoint.name, schema: StopPointSchema },
+    ]),
   ],
   controllers: [RoutesController],
   providers: [RoutesService],

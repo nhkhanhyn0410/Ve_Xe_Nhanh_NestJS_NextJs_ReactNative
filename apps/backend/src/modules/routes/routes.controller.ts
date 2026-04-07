@@ -34,8 +34,18 @@ export class RoutesController {
   // ===== PUBLIC ENDPOINTS =====
   @Get()
   @ApiOperation({ summary: 'Tìm kiếm tất cả tuyến đường' })
-  @ApiQuery({ name: 'originId', required: false, type: String })
-  @ApiQuery({ name: 'destinationId', required: false, type: String })
+  @ApiQuery({
+    name: 'originStopPointId',
+    required: false,
+    type: String,
+    description: 'StopPoint ID bến đi',
+  })
+  @ApiQuery({
+    name: 'destinationStopPointId',
+    required: false,
+    type: String,
+    description: 'StopPoint ID bến đến',
+  })
   @ApiQuery({ name: 'operatorId', required: false, type: String })
   @ApiQuery({ name: 'isActive', required: false, type: Boolean })
   async findAll(@Query() query: RouteQuery) {
@@ -58,9 +68,9 @@ export class RoutesController {
   @ApiOperation({ summary: '[Nhà Xe] Tạo tuyến đường mới' })
   async create(
     @Body() createDto: CreateRouteDto,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() operator: JwtPayload,
   ) {
-    const operatorId = user.sub;
+    const operatorId = operator.sub;
     const data = await this.routesService.create(operatorId, createDto);
     return { success: true, data };
   }

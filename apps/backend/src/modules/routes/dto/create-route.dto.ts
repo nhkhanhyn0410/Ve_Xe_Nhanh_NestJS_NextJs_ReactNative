@@ -10,43 +10,61 @@ import {
   Matches,
   IsArray,
   IsMongoId,
+  IsEnum,
+  ArrayMinSize,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { CoordinatesDto } from '../../stop-points/dto/create-stop-point.dto';
+import { RouteStopRole } from '@ve_xe_nhanh_ts/shared-types';
 
-export class RoutePointDto {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  name: string;
+export class RouteStopDto {
+  @ApiProperty({ description: 'StopPoint ID (bắt buộc)' })
+  @IsMongoId()
+  stopPointId: string;
 
-  @ApiProperty()
-  @IsString()
-  address: string;
+  @ApiProperty({
+    enum: RouteStopRole,
+    description: 'Vai trò: origin | stop | destination',
+  })
+  @IsEnum(RouteStopRole)
+  role: RouteStopRole;
 
-  @ApiProperty()
-  @ValidateNested()
-  @Type(() => CoordinatesDto)
-  coordinates: CoordinatesDto;
-}
-
-export class RouteStopDto extends RoutePointDto {
-  @ApiProperty()
+  @ApiProperty({ description: 'Thứ tự: 0 = origin, N = destination' })
   @IsNumber()
-  @Min(1)
+  @Min(0)
   order: number;
 
-  @ApiProperty()
+  @ApiProperty({ description: 'Phút từ lúc khởi hành đến stop này' })
   @IsNumber()
   @Min(0)
   estimatedArrivalMinutes: number;
 
-  @ApiProperty()
+  @ApiProperty({ default: 15 })
   @IsNumber()
-  @Min(5)
+  @Min(0)
   @Max(120)
-  stopDuration: number;
+  @IsOptional()
+  stopDuration?: number;
+
+  @ApiProperty({
+    type: [String],
+    required: false,
+    description: 'StopPoint IDs — điểm đón trung chuyển',
+  })
+  @IsArray()
+  @IsMongoId({ each: true })
+  @IsOptional()
+  transitPickupIds?: string[];
+
+  @ApiProperty({
+    type: [String],
+    required: false,
+    description: 'StopPoint IDs — điểm trả trung chuyển',
+  })
+  @IsArray()
+  @IsMongoId({ each: true })
+  @IsOptional()
+  transitDropoffIds?: string[];
 }
 
 export class CreateRouteDto {
@@ -63,34 +81,17 @@ export class CreateRouteDto {
   })
   routeCode: string;
 
-  @ApiProperty()
-  @IsMongoId()
-  originId: string;
-
-  @ApiProperty()
-  @IsMongoId()
-  destinationId: string;
-
-  @ApiProperty({ type: [RoutePointDto], required: false })
+  @ApiProperty({
+    type: [RouteStopDto],
+    description: 'Tất cả điểm trên tuyến (origin + stops + destination)',
+  })
   @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => RoutePointDto)
-  @IsOptional()
-  pickupPoints?: RoutePointDto[];
-
-  @ApiProperty({ type: [RoutePointDto], required: false })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => RoutePointDto)
-  @IsOptional()
-  dropoffPoints?: RoutePointDto[];
-
-  @ApiProperty({ type: [RouteStopDto], required: false })
-  @IsArray()
+  @ArrayMinSize(2, {
+    message: 'Tuyến phải có ít nhất 2 điểm (origin + destination)',
+  })
   @ValidateNested({ each: true })
   @Type(() => RouteStopDto)
-  @IsOptional()
-  stops?: RouteStopDto[];
+  stops: RouteStopDto[];
 
   @ApiProperty()
   @IsNumber()
