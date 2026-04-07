@@ -28,8 +28,6 @@ export class TripMapper {
   static toList(doc: TripDocument): TripListResponse {
     const routeDoc = doc.routeId as unknown as Record<string, unknown>;
     const operatorDoc = doc.operatorId as unknown as Record<string, unknown>;
-    const busDoc = doc.busId as unknown as Record<string, unknown>;
-
     return {
       id: String(doc._id),
       route: this.mapRoute(routeDoc),
@@ -37,11 +35,7 @@ export class TripMapper {
         id: resolveId(doc.operatorId),
         name: resolveField<string>(operatorDoc, 'companyName') ?? 'N/A',
       },
-      bus: {
-        id: resolveId(doc.busId),
-        type: resolveField<string>(busDoc, 'busType') ?? 'N/A',
-        number: resolveField<string>(busDoc, 'busNumber') ?? 'N/A',
-      },
+      bus: this.mapBus(doc),
       crew: (doc.crew ?? []).map(String),
       departureTime: doc.departureTime,
       arrivalTime: doc.arrivalTime,
@@ -50,21 +44,22 @@ export class TripMapper {
         discount: doc.discount,
         finalPrice: doc.finalPrice,
       },
-      capacity: {
-        totalSeats: doc.totalSeats,
-        availableSeats: doc.availableSeats,
-      },
+      capacity:
+        doc.totalSeats != null
+          ? { totalSeats: doc.totalSeats, availableSeats: doc.availableSeats ?? 0 }
+          : null,
       status: doc.status,
       notes: doc.notes,
     };
   }
 
   static toDetail(doc: TripDocument): TripDetailResponse {
-    const busDoc = doc.busId as unknown as Record<string, unknown>;
-    const seatLayout = resolveField<Record<string, unknown>>(
-      busDoc,
-      'seatLayout',
-    );
+    const busDoc = doc.busId
+      ? (doc.busId as unknown as Record<string, unknown>)
+      : null;
+    const seatLayout = busDoc
+      ? resolveField<Record<string, unknown>>(busDoc, 'seatLayout')
+      : undefined;
 
     return {
       ...this.toList(doc),
@@ -81,6 +76,16 @@ export class TripMapper {
             totalSeats: seatLayout.totalSeats as number,
           }
         : undefined,
+    };
+  }
+
+  private static mapBus(doc: TripDocument) {
+    if (!doc.busId) return null;
+    const busDoc = doc.busId as unknown as Record<string, unknown>;
+    return {
+      id: resolveId(doc.busId),
+      type: resolveField<string>(busDoc, 'busType') ?? 'N/A',
+      number: resolveField<string>(busDoc, 'busNumber') ?? 'N/A',
     };
   }
 

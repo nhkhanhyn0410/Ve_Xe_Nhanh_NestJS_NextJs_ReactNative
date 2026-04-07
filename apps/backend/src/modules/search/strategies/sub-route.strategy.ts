@@ -300,10 +300,11 @@ export class SubRouteStrategy {
       })
       .exec();
 
+    if (!trip.totalSeats) return 0;
     if (bookings.length === 0) return trip.totalSeats;
 
     const route = await this.routeModel.findById(trip.routeId).exec();
-    if (!route) return trip.availableSeats;
+    if (!route) return trip.availableSeats ?? 0;
 
     const occupiedSeats = new Set<string>();
 

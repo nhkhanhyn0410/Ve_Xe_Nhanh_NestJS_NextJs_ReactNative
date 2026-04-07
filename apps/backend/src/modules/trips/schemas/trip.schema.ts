@@ -117,8 +117,8 @@ export class Trip {
   @Prop({ type: Types.ObjectId, ref: 'Route', required: true, index: true })
   routeId: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'Bus', required: true, index: true })
-  busId: Types.ObjectId;
+  @Prop({ type: Types.ObjectId, ref: 'Bus', index: true })
+  busId?: Types.ObjectId;
 
   @Prop({
     type: Types.ObjectId,
@@ -150,11 +150,13 @@ export class Trip {
   @Prop({ type: DynamicPricingSchema })
   dynamicPricing?: DynamicPricing;
 
-  @Prop({ required: true, min: 1 })
-  totalSeats: number;
+  /** Set khi gắn bus — null khi DRAFT */
+  @Prop({ min: 1 })
+  totalSeats?: number;
 
-  @Prop({ required: true, min: 0 })
-  availableSeats: number;
+  /** Set khi gắn bus — null khi DRAFT */
+  @Prop({ min: 0 })
+  availableSeats?: number;
 
   @Prop({ type: [BookedSeatSchema], default: [] })
   bookedSeats: BookedSeat[];
@@ -162,7 +164,7 @@ export class Trip {
   @Prop({
     type: String,
     enum: TripStatus,
-    default: TripStatus.SCHEDULED,
+    default: TripStatus.DRAFT,
     index: true,
   })
   status: TripStatus;
@@ -206,8 +208,8 @@ TripSchema.pre('validate', async function (this: TripDocument) {
     this.finalPrice = this.basePrice * (1 - discount / 100);
   }
 
-  // Init totalSeats + availableSeats từ Bus.seatLayout
-  if (this.isNew && !this.totalSeats) {
+  // Init totalSeats + availableSeats từ Bus.seatLayout (chỉ khi có busId)
+  if (this.busId && !this.totalSeats) {
     const BusModel = this.model('Bus');
     const bus = (await BusModel.findById(this.busId)) as BusDocument;
     if (bus && bus.seatLayout && bus.seatLayout.totalSeats) {
@@ -217,15 +219,12 @@ TripSchema.pre('validate', async function (this: TripDocument) {
     }
   }
 
-  if (
-    this.isNew &&
-    (this.availableSeats === undefined || this.availableSeats === null)
-  ) {
+  if (this.busId && this.totalSeats && this.availableSeats == null) {
     this.availableSeats = this.totalSeats;
   }
 
   // Update availableSeats khi bookedSeats thay đổi
-  if (this.isModified('bookedSeats')) {
+  if (this.isModified('bookedSeats') && this.totalSeats) {
     this.availableSeats = this.totalSeats - this.bookedSeats.length;
   }
 });
