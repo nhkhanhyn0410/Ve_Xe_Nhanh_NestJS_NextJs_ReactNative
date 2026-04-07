@@ -13,10 +13,14 @@ export const REDIS_CLIENT = 'REDIS_CLIENT';
       useFactory: (configService: ConfigService): Redis => {
         const host = configService.get<string>('REDIS_HOST', 'localhost');
         const port = configService.get<number>('REDIS_PORT', 6379);
+        const username = configService.get<string>('REDIS_USERNAME', '');
+        const password = configService.get<string>('REDIS_PASSWORD', '');
 
         const client = new Redis({
           host,
           port,
+          ...(username && { username }),
+          ...(password && { password }),
           maxRetriesPerRequest: 3,
           retryStrategy: (times: number): number | null => {
             if (times > 5) return null; // Ngừng thử sau 5 lần
