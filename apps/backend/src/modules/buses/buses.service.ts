@@ -69,9 +69,14 @@ export class BusesService {
       .exec();
   }
 
-  async findOne(id: string): Promise<Bus> {
+  async findOne(id: string, operatorId?: string): Promise<Bus> {
+    const filter: Record<string, unknown> = { _id: id };
+    if (operatorId) {
+      filter.operatorId = new Types.ObjectId(operatorId);
+    }
+
     const bus = await this.busModel
-      .findById(id)
+      .findOne(filter)
       .populate('operatorId', 'companyName phone')
       .exec();
     if (!bus) {
