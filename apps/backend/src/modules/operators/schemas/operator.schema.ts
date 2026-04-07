@@ -11,6 +11,9 @@ export class Operator {
   @Prop({ required: true, trim: true })
   companyName: string;
 
+  @Prop({ trim: true, uppercase: true, maxlength: 5 })
+  employeeCodePrefix?: string;
+
   @Prop({
     required: true,
     unique: true,
