@@ -28,7 +28,12 @@ export function resolveId(ref: unknown): string {
   if (typeof ref === 'object' && ref !== null && '_id' in ref) {
     return String((ref as { _id: unknown })._id);
   }
-  return String(ref);
+  // ref ở đây là ObjectId hoặc string — cả hai đều có toString() hợp lệ
+  if (typeof ref === 'string') return ref;
+  if (typeof ref === 'object' && ref !== null && 'toHexString' in ref) {
+    return (ref as { toHexString(): string }).toHexString();
+  }
+  return '';
 }
 
 /**
@@ -44,7 +49,10 @@ export function resolveName(ref: unknown): string {
 /**
  * Trích field bất kỳ từ populated document.
  */
-export function resolveField<T = string>(ref: unknown, field: string): T | undefined {
+export function resolveField<T = string>(
+  ref: unknown,
+  field: string,
+): T | undefined {
   if (typeof ref === 'object' && ref !== null && field in ref) {
     return (ref as Record<string, unknown>)[field] as T;
   }
