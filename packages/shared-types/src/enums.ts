@@ -61,6 +61,7 @@ export enum BusAmenity {
 }
 
 export enum TripStatus {
+  DRAFT = 'draft',
   SCHEDULED = 'scheduled',
   BOARDING = 'boarding',
   IN_TRANSIT = 'in_transit',

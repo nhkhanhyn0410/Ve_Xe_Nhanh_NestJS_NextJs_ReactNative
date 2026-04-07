@@ -30,7 +30,8 @@ export interface TripListResponse {
   readonly id: string;
   readonly route: TripRouteResponse;
   readonly operator: RefInfo;
-  readonly bus: BusInfo;
+  /** null khi chuyến ở trạng thái DRAFT (chưa gắn xe) */
+  readonly bus: BusInfo | null;
   readonly crew: readonly string[];
 
   readonly departureTime: Date;
@@ -42,10 +43,11 @@ export interface TripListResponse {
     readonly finalPrice: number;
   };
 
+  /** null khi chuyến ở trạng thái DRAFT (chưa gắn xe) */
   readonly capacity: {
     readonly totalSeats: number;
     readonly availableSeats: number;
-  };
+  } | null;
 
   readonly status: TripStatus;
   readonly notes?: string;

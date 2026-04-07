@@ -103,10 +103,13 @@ export class CreateTripDto {
   @IsNotEmpty()
   routeId: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  busId: string;
+  @ApiProperty({
+    required: false,
+    description: 'Bus ID — nếu không truyền, chuyến sẽ ở trạng thái DRAFT',
+  })
+  @IsMongoId()
+  @IsOptional()
+  busId?: string;
 
   @ApiProperty()
   @IsDateString()
