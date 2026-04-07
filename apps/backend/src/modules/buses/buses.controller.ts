@@ -32,20 +32,42 @@ export class BusesController {
   constructor(private readonly busesService: BusesService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Lấy danh sách xe' })
-  @ApiQuery({ name: 'operatorId', required: false, type: String })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[Nhà Xe / Admin] Lấy danh sách xe' })
+  @ApiQuery({
+    name: 'operatorId',
+    required: false,
+    type: String,
+    description: 'Admin: lọc theo nhà xe. Operator: tự động gắn từ JWT',
+  })
   @ApiQuery({ name: 'status', required: false, enum: BusStatus })
   @ApiQuery({ name: 'busType', required: false, enum: BusType })
   @ApiQuery({ name: 'busNumber', required: false, type: String })
-  async findAll(@Query() query: BusQuery) {
+  async findAll(@Query() query: BusQuery, @CurrentUser() user: JwtPayload) {
+    // OPERATOR: chỉ thấy xe của mình, bỏ qua query.operatorId
+    if (user.role === SystemRole.OPERATOR) {
+      query.operatorId = user.sub;
+    }
+    // ADMIN: dùng query.operatorId để lọc, hoặc bỏ trống để xem tất cả
+
     const data = await this.busesService.findAll(query);
     return { success: true, data };
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Xem chi tiết một con xe' })
-  async findOne(@Param('id', MongoIdPipe) id: string) {
-    const data = await this.busesService.findOne(id);
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '[Nhà Xe / Admin] Xem chi tiết một con xe' })
+  async findOne(
+    @Param('id', MongoIdPipe) id: string,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    // OPERATOR: chỉ xem xe của mình, ADMIN: xem bất kỳ
+    const operatorId = user.role === SystemRole.OPERATOR ? user.sub : undefined;
+    const data = await this.busesService.findOne(id, operatorId);
     return { success: true, data };
   }
 
