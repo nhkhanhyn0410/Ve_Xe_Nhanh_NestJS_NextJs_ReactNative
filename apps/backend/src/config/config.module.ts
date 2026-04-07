@@ -15,6 +15,8 @@ import Joi from 'joi';
         MONGODB_URI: Joi.string().required(),
         REDIS_HOST: Joi.string(),
         REDIS_PORT: Joi.number(),
+        REDIS_USERNAME: Joi.string().allow(''),
+        REDIS_PASSWORD: Joi.string().allow(''),
         JWT_SECRET: Joi.string().min(32).required(),
         JWT_ACCESS_EXPIRES: Joi.string(),
         JWT_REFRESH_EXPIRES: Joi.string(),
