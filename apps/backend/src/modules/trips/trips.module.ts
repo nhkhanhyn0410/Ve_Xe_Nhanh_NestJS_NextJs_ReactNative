@@ -4,10 +4,7 @@ import { TripsService } from './trips.service';
 import { TripsController } from './trips.controller';
 import { Trip, TripSchema } from './schemas/trip.schema';
 import { Bus, BusSchema } from '../buses/schemas/bus.schema';
-import {
-  Operator,
-  OperatorSchema,
-} from '../operators/schemas/operator.schema';
+import { Operator, OperatorSchema } from '../operators/schemas/operator.schema';
 import {
   StopPoint,
   StopPointSchema,

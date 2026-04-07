@@ -205,7 +205,12 @@ export class TripsService {
     }
 
     // Overlap check
-    await this.checkBusOverlap(dto.busId, trip.departureTime, trip.arrivalTime, id);
+    await this.checkBusOverlap(
+      dto.busId,
+      trip.departureTime,
+      trip.arrivalTime,
+      id,
+    );
 
     // Update
     const totalSeats = bus.seatLayout.totalSeats;

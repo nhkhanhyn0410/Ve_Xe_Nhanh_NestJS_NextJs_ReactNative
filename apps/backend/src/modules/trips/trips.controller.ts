@@ -45,7 +45,7 @@ export class TripsController {
   @ApiQuery({ name: 'status', required: false, enum: TripStatus })
   async findAll(@Query() query: TripQuery) {
     const docs = await this.tripsService.findAll(query);
-    return docs.map(TripMapper.toList);
+    return docs.map((doc) => TripMapper.toList(doc));
   }
 
   @Get(':id')
@@ -80,7 +80,12 @@ export class TripsController {
     @Body() updateDto: UpdateTripDto,
     @CurrentUser() user: JwtPayload,
   ) {
-    const doc = await this.tripsService.update(id, user.sub, user.role, updateDto);
+    const doc = await this.tripsService.update(
+      id,
+      user.sub,
+      user.role,
+      updateDto,
+    );
     return TripMapper.toList(doc);
   }
 
@@ -140,7 +145,12 @@ export class TripsController {
     @Body() dto: AssignCrewDto,
     @CurrentUser() user: JwtPayload,
   ) {
-    const doc = await this.tripsService.assignCrew(id, user.sub, user.role, dto);
+    const doc = await this.tripsService.assignCrew(
+      id,
+      user.sub,
+      user.role,
+      dto,
+    );
     return TripMapper.toList(doc);
   }
 }

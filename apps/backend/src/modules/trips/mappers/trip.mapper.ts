@@ -1,7 +1,4 @@
-import {
-  resolveId,
-  resolveField,
-} from '@common/interfaces/ref-info.interface';
+import { resolveId, resolveField } from '@common/interfaces/ref-info.interface';
 import { TripDocument } from '../schemas/trip.schema';
 import {
   TripListResponse,
@@ -46,7 +43,10 @@ export class TripMapper {
       },
       capacity:
         doc.totalSeats != null
-          ? { totalSeats: doc.totalSeats, availableSeats: doc.availableSeats ?? 0 }
+          ? {
+              totalSeats: doc.totalSeats,
+              availableSeats: doc.availableSeats ?? 0,
+            }
           : null,
       status: doc.status,
       notes: doc.notes,
@@ -93,7 +93,12 @@ export class TripMapper {
     routeDoc: Record<string, unknown>,
   ): TripRouteResponse {
     if (!routeDoc || !('_id' in routeDoc)) {
-      return { id: String(routeDoc), routeName: '', routeCode: '', stops: [] };
+      return {
+        id: resolveId(routeDoc),
+        routeName: '',
+        routeCode: '',
+        stops: [],
+      };
     }
 
     const stops = (routeDoc.stops as unknown[]) ?? [];
@@ -112,7 +117,7 @@ export class TripMapper {
     return {
       stopPoint: {
         id: resolveId(stop.stopPointId),
-        name: resolveField<string>(stop.stopPointId as unknown, 'name') ?? '',
+        name: resolveField<string>(stop.stopPointId, 'name') ?? '',
       },
       role: (stop.role as string) ?? '',
       order: (stop.order as number) ?? 0,
