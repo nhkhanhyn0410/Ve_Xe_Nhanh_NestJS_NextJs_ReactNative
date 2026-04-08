@@ -17,7 +17,6 @@ import { RedisModule } from './modules/redis/redis.module';
 import { OsrmModule } from './modules/osrm/osrm.module';
 import { BookingsModule } from '@modules/bookings/bookings.module';
 import { SearchModule } from './modules/search/search.module';
-import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -36,7 +35,6 @@ import { HttpModule } from '@nestjs/axios';
     EmployeesModule,
     BookingsModule,
     SearchModule,
-    HttpModule,
   ],
   controllers: [AppController],
   providers: [AppService],
