@@ -1,0 +1,23 @@
+{
+  "name": "@ve_xe_nhanh_ts/api-client",
+  "version": "1.0.0",
+  "private": true,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@ve_xe_nhanh_ts/shared-types": "*",
+    "axios": "^1.14.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  }
+}
