@@ -60,7 +60,7 @@ export class AuthController {
     try {
       const result = await this.authService.login(loginDto);
       return {
-        messeger: 'Đăng nhập thành công',
+        message: 'Đăng nhập thành công',
         ...result,
       };
     } catch (error) {
