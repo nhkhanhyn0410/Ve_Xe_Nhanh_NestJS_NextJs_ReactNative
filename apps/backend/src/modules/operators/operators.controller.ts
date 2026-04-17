@@ -43,7 +43,7 @@ export class OperatorsController {
     return {
       success: true,
       data: operator,
-      message: 'Đăng ký nhà xe thành công, vui lòng chờ admin duyệt',
+      message: 'Đăng ký nhà xe thành công, vui lòng chờ admin duyệt.',
     };
   }
 
