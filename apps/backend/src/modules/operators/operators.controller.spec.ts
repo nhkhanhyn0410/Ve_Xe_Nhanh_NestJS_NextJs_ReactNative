@@ -61,7 +61,7 @@ describe('OperatorsController', () => {
       expect(result).toEqual({
         success: true,
         data: expectedResult,
-        message: 'Dang ky thanh cong. Vui long cho admin duyet.',
+        message: 'Đăng ký nhà xe thành công, vui lòng chờ admin duyệt.',
       });
     });
   });
@@ -123,7 +123,7 @@ describe('OperatorsController', () => {
       expect(mockOperatorsService.remove).toHaveBeenCalledWith(id);
       expect(result).toEqual({
         success: true,
-        message: 'Xoa nha xe thanh cong',
+        message: 'Xóa nhà xe thành công',
       });
     });
   });
