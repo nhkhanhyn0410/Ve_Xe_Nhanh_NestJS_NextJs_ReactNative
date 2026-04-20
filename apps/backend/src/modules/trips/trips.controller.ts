@@ -42,7 +42,7 @@ export class TripsController {
   @ApiQuery({ name: 'routeId', required: false })
   @ApiQuery({ name: 'busId', required: false })
   @ApiQuery({ name: 'date', required: false, description: 'YYYY-MM-DD' })
-  @ApiQuery({ name: 'status', required: false, enum: TripStatus })
+  @ApiQuery({ name: 'status', required: false, enum: TripStatus, enumName: 'TripStatus' })
   async findAll(@Query() query: TripQuery) {
     const docs = await this.tripsService.findAll(query);
     return docs.map((doc) => TripMapper.toList(doc));

@@ -42,8 +42,8 @@ export class BusesController {
     type: String,
     description: 'Admin: lọc theo nhà xe. Operator: tự động gắn từ JWT',
   })
-  @ApiQuery({ name: 'status', required: false, enum: BusStatus })
-  @ApiQuery({ name: 'busType', required: false, enum: BusType })
+  @ApiQuery({ name: 'status', required: false, enum: BusStatus, enumName: 'BusStatus' })
+  @ApiQuery({ name: 'busType', required: false, enum: BusType, enumName: 'BusType' })
   @ApiQuery({ name: 'busNumber', required: false, type: String })
   async findAll(@Query() query: BusQuery, @CurrentUser() user: JwtPayload) {
     // OPERATOR: chỉ thấy xe của mình, bỏ qua query.operatorId

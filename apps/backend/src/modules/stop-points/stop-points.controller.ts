@@ -36,7 +36,7 @@ export class StopPointsController {
   @ApiOperation({ summary: 'Lấy danh sách điểm dừng toàn quốc' })
   @ApiQuery({ name: 'isActive', required: false, type: Boolean })
   @ApiQuery({ name: 'city', required: false, type: String })
-  @ApiQuery({ name: 'type', required: false, enum: StopPointType })
+  @ApiQuery({ name: 'type', required: false, enum: StopPointType, enumName: 'StopPointType' })
   @ApiQuery({ name: 'search', required: false, type: String })
   async findAll(@Query() query: StopPointQuery) {
     const data = await this.stopPointsService.findAll(query);

@@ -112,7 +112,7 @@ export class CreateBookingDto {
   @IsNotEmpty()
   passengerInfo: PassengerInfoDto;
 
-  @ApiProperty({ enum: JourneyType })
+  @ApiProperty({ enum: JourneyType, enumName: 'JourneyType' })
   @IsEnum(JourneyType)
   @IsNotEmpty()
   journeyType: JourneyType;
