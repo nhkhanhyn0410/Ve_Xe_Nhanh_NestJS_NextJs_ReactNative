@@ -85,7 +85,7 @@ export class CreateBusDto {
   })
   busNumber: string;
 
-  @ApiProperty({ enum: BusType })
+  @ApiProperty({ enum: BusType, enumName: 'BusType' })
   @IsEnum(BusType)
   busType: BusType;
 
@@ -94,12 +94,12 @@ export class CreateBusDto {
   @Type(() => SeatLayoutDto)
   seatLayout: SeatLayoutDto;
 
-  @ApiProperty({ enum: BusAmenity, isArray: true })
+  @ApiProperty({ enum: BusAmenity, enumName: 'BusAmenity', isArray: true })
   @IsArray()
   @IsEnum(BusAmenity, { each: true })
   amenities: BusAmenity[];
 
-  @ApiProperty({ enum: BusStatus, required: false })
+  @ApiProperty({ enum: BusStatus, enumName: 'BusStatus', required: false })
   @IsEnum(BusStatus)
   @IsOptional()
   status?: BusStatus;
