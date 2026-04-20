@@ -35,7 +35,12 @@ export class BookingsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Admin/Nhà Xe] Xem danh sách đơn đặt vé' })
   @ApiQuery({ name: 'userId', required: false })
-  @ApiQuery({ name: 'status', required: false, enum: BookingStatus })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    enum: BookingStatus,
+    enumName: 'BookingStatus',
+  })
   async findAll(@Query() query: BookingQuery) {
     const data = await this.bookingsService.findAll(query);
     return { success: true, data };

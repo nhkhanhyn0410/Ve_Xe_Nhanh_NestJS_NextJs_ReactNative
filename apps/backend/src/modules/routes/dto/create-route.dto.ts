@@ -24,6 +24,7 @@ export class RouteStopDto {
 
   @ApiProperty({
     enum: RouteStopRole,
+    enumName: 'RouteStopRole',
     description: 'Vai trò: origin | stop | destination',
   })
   @IsEnum(RouteStopRole)

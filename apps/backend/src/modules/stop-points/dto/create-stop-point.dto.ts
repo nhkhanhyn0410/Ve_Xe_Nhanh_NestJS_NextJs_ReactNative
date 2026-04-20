@@ -27,7 +27,7 @@ export class CreateStopPointDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ enum: StopPointType })
+  @ApiProperty({ enum: StopPointType, enumName: 'StopPointType' })
   @IsEnum(StopPointType)
   type: StopPointType;
 
