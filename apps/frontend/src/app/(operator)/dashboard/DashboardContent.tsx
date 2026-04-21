@@ -16,44 +16,44 @@ export default function OperatorDashboardContent() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800 m-0">Tổng quan kinh doanh</h2>
+          <h2 className="m-0 text-2xl font-bold text-gray-800">Tổng quan kinh doanh</h2>
           <p className="text-gray-500">Cập nhật theo thời gian thực</p>
         </div>
-        <select className="px-4 py-2 border border-gray-200 rounded-lg outline-none bg-white">
+        <select className="rounded-lg border border-gray-200 bg-white px-4 py-2 outline-none">
           <option value="week">Tuần này</option>
           <option value="month">Tháng này</option>
         </select>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
-          <h3 className="text-gray-500 font-medium mb-2">Tổng doanh thu</h3>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-xl border-l-4 border-blue-500 bg-white p-6 shadow-sm">
+          <h3 className="mb-2 font-medium text-gray-500">Tổng doanh thu</h3>
           <p className="text-2xl font-bold text-gray-800">
             {formatCurrency(mockStats.revenue.total)}
           </p>
-          <p className="text-sm text-green-500 mt-2 font-medium">
+          <p className="mt-2 text-sm font-medium text-green-500">
             +{mockStats.revenue.growth}% so với kỳ trước
           </p>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500">
-          <h3 className="text-gray-500 font-medium mb-2">Tổng đơn hàng</h3>
+        <div className="rounded-xl border-l-4 border-green-500 bg-white p-6 shadow-sm">
+          <h3 className="mb-2 font-medium text-gray-500">Tổng đơn hàng</h3>
           <p className="text-2xl font-bold text-gray-800">{mockStats.bookings.total}</p>
-          <p className="text-sm text-gray-500 mt-2">Thành công: {mockStats.bookings.confirmed}</p>
+          <p className="mt-2 text-sm text-gray-500">Thành công: {mockStats.bookings.confirmed}</p>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border-l-4 border-orange-500">
-          <h3 className="text-gray-500 font-medium mb-2">Chuyến xe</h3>
+        <div className="rounded-xl border-l-4 border-orange-500 bg-white p-6 shadow-sm">
+          <h3 className="mb-2 font-medium text-gray-500">Chuyến xe</h3>
           <p className="text-2xl font-bold text-gray-800">{mockStats.trips.total}</p>
-          <p className="text-sm text-gray-500 mt-2">Đang chạy: {mockStats.trips.ongoing}</p>
+          <p className="mt-2 text-sm text-gray-500">Đang chạy: {mockStats.trips.ongoing}</p>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border-l-4 border-purple-500">
-          <h3 className="text-gray-500 font-medium mb-2">Tỷ lệ lấp đầy</h3>
+        <div className="rounded-xl border-l-4 border-purple-500 bg-white p-6 shadow-sm">
+          <h3 className="mb-2 font-medium text-gray-500">Tỷ lệ lấp đầy</h3>
           <p className="text-2xl font-bold text-gray-800">{mockStats.occupancyRate}%</p>
-          <p className="text-sm text-gray-500 mt-2">Đánh giá trung bình: 4.8/5</p>
+          <p className="mt-2 text-sm text-gray-500">Đánh giá trung bình: 4.8/5</p>
         </div>
       </div>
     </div>
