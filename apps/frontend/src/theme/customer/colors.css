@@ -1,0 +1,18 @@
+:root {
+  /*
+   * TODO:
+   * Replace the placeholder values below with the final light palette
+   * for the customer-facing website.
+   */
+  --customer-color-primary: #2563eb;
+  --customer-color-primary-hover: #1d4ed8;
+  --customer-color-text-base: #0f172a;
+  --customer-color-text-muted: #475569;
+  --customer-color-bg-base: #f8fafc;
+  --customer-color-bg-surface: #ffffff;
+  --customer-color-border: #e2e8f0;
+  --customer-color-success: #16a34a;
+  --customer-color-warning: #d97706;
+  --customer-color-error: #dc2626;
+  --customer-color-info: #2563eb;
+}

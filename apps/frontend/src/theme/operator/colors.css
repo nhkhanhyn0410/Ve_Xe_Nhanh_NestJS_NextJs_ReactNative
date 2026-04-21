@@ -1,0 +1,18 @@
+:root {
+  /*
+   * TODO:
+   * Replace the placeholder values below with the final light palette
+   * for the operator dashboard.
+   */
+  --operator-color-primary: #1677ff;
+  --operator-color-primary-hover: #0958d9;
+  --operator-color-text-base: #0f172a;
+  --operator-color-text-muted: #475569;
+  --operator-color-bg-base: #f8fafc;
+  --operator-color-bg-surface: #ffffff;
+  --operator-color-border: #d9d9d9;
+  --operator-color-success: #16a34a;
+  --operator-color-warning: #d97706;
+  --operator-color-error: #dc2626;
+  --operator-color-info: #1677ff;
+}
