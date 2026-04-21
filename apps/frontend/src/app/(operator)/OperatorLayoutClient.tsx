@@ -211,10 +211,7 @@ function OperatorSidebar({
         }}
       >
         <div
-          className={clsx(
-            'flex min-h-25 items-center border-b',
-            collapsed ? 'justify-center px-4' : 'px-5 lg:px-6',
-          )}
+          className="flex min-h-25 items-center border-b px-6"
           style={{
             borderBottomColor: operatorLayoutColors.borderSubtle,
           }}
@@ -223,8 +220,8 @@ function OperatorSidebar({
             type="button"
             onClick={() => onNavigate('/operator/dashboard')}
             className={clsx(
-              'flex items-center text-left',
-              collapsed ? 'justify-center' : 'gap-3.5',
+              'mx-auto flex w-full items-center justify-center text-left',
+              collapsed ? '' : 'gap-3.5',
             )}
             style={{
               color: operatorLayoutColors.textLogo,
@@ -233,7 +230,7 @@ function OperatorSidebar({
           >
             <OperatorBrandMarkIcon size={48} />
             {collapsed ? null : (
-              <div className="max-w-45.5 text-[18px] leading-[1.05] font-medium">
+              <div className="max-w-45.5 text-center text-[18px] leading-[1.05] font-medium">
                 Trang quản lý nhà xe
               </div>
             )}
@@ -396,7 +393,9 @@ export default function OperatorDashboardLayoutClient({ children }: { children: 
               />
 
               <Input
-                prefix={<OperatorSearchIcon size={20} style={{ color: operatorLayoutColors.textField }} />}
+                prefix={
+                  <OperatorSearchIcon size={20} style={{ color: operatorLayoutColors.textField }} />
+                }
                 placeholder="Tìm kiếm"
                 variant="borderless"
                 className="w-full max-w-71.75"
