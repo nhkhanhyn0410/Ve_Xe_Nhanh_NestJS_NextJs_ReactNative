@@ -29,7 +29,7 @@ import { JwtPayload } from '../../common/interfaces/jwt-payload.interface';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('register')
+  @Post('user/register')
   @Public()
   @ApiOperation({ summary: 'Đăng ký tài khoản' })
   @ApiResponse({ status: 201, description: 'Đăng ký thành công' })
@@ -52,7 +52,7 @@ export class AuthController {
     }
   }
 
-  @Post('login')
+  @Post('user/login')
   @Public()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Đăng nhập' })
