@@ -8,11 +8,7 @@ interface ThemeScopeProps {
   className?: string;
 }
 
-export default function ThemeScope({
-  appName,
-  children,
-  className,
-}: ThemeScopeProps) {
+export default function ThemeScope({ appName, children, className }: ThemeScopeProps) {
   const rootClassName = className
     ? `min-h-screen bg-background text-foreground ${className}`
     : 'min-h-screen bg-background text-foreground';

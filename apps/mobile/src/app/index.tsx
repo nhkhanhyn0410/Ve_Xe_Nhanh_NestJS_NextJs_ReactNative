@@ -15,8 +15,8 @@ export default function HomeScreen() {
           <Text style={styles.eyebrow}>Expo Mobile Workspace</Text>
           <Text style={styles.title}>Ve Xe Nhanh Mobile</Text>
           <Text style={styles.description}>
-            Nền tảng mobile đã được dựng với Expo Router, React Query, Zustand
-            và api-client dùng chung cho web/mobile.
+            Nền tảng mobile đã được dựng với Expo Router, React Query, Zustand và api-client dùng
+            chung cho web/mobile.
           </Text>
         </View>
 

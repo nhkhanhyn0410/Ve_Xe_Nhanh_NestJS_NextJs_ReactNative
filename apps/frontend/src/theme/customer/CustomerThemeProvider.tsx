@@ -6,8 +6,6 @@ interface CustomerThemeProviderProps {
   children: ReactNode;
 }
 
-export default function CustomerThemeProvider({
-  children,
-}: CustomerThemeProviderProps) {
+export default function CustomerThemeProvider({ children }: CustomerThemeProviderProps) {
   return <ThemeScope appName="customer">{children}</ThemeScope>;
 }

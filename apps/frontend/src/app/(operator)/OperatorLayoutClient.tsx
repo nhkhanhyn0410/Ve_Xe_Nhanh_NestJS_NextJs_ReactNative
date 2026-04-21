@@ -2,16 +2,7 @@
 
 import { useState, type ComponentType, type ReactNode } from 'react';
 import { CloseOutlined, MenuOutlined } from '@ant-design/icons';
-import {
-  Avatar,
-  Button,
-  ConfigProvider,
-  Drawer,
-  Input,
-  Layout,
-  Menu,
-  type MenuProps,
-} from 'antd';
+import { Avatar, Button, ConfigProvider, Drawer, Input, Layout, Menu, type MenuProps } from 'antd';
 import { useRouter, usePathname } from 'next/navigation';
 
 import {
@@ -132,13 +123,7 @@ function createMenuItems(): MenuProps['items'] {
   });
 }
 
-function HeaderActionButton({
-  label,
-  icon,
-}: {
-  label: string;
-  icon: ReactNode;
-}) {
+function HeaderActionButton({ label, icon }: { label: string; icon: ReactNode }) {
   return (
     <Button
       type="text"
@@ -227,11 +212,7 @@ function OperatorSidebar({
   );
 }
 
-export default function OperatorDashboardLayoutClient({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function OperatorDashboardLayoutClient({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -282,11 +263,7 @@ export default function OperatorDashboardLayoutClient({
           },
         }}
       >
-        <OperatorSidebar
-          pathname={pathname}
-          onNavigate={handleNavigate}
-          onLogout={handleLogout}
-        />
+        <OperatorSidebar pathname={pathname} onNavigate={handleNavigate} onLogout={handleLogout} />
       </Drawer>
 
       <Layout className="min-w-0 !bg-[#f1f3fd]">
@@ -325,18 +302,9 @@ export default function OperatorDashboardLayoutClient({
             </div>
 
             <div className="flex items-center justify-end gap-1 sm:gap-2">
-              <HeaderActionButton
-                label="Mở nhanh"
-                icon={<OperatorLaunchIcon size={24} />}
-              />
-              <HeaderActionButton
-                label="Trợ giúp"
-                icon={<OperatorHelpIcon size={24} />}
-              />
-              <HeaderActionButton
-                label="Cài đặt"
-                icon={<OperatorSettingsIcon size={24} />}
-              />
+              <HeaderActionButton label="Mở nhanh" icon={<OperatorLaunchIcon size={24} />} />
+              <HeaderActionButton label="Trợ giúp" icon={<OperatorHelpIcon size={24} />} />
+              <HeaderActionButton label="Cài đặt" icon={<OperatorSettingsIcon size={24} />} />
 
               <div className="ml-1 flex items-center gap-3 pl-1">
                 <Avatar
@@ -361,9 +329,7 @@ export default function OperatorDashboardLayoutClient({
           </div>
         </Header>
 
-        <Content className="min-h-0 overflow-y-auto !bg-[#f1f3fd] p-4 md:p-6">
-          {children}
-        </Content>
+        <Content className="min-h-0 overflow-y-auto !bg-[#f1f3fd] p-4 md:p-6">{children}</Content>
       </Layout>
     </Layout>
   );

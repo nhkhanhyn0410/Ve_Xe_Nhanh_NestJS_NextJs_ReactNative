@@ -8,9 +8,7 @@ interface OperatorThemeProviderProps {
   children: ReactNode;
 }
 
-export default function OperatorThemeProvider({
-  children,
-}: OperatorThemeProviderProps) {
+export default function OperatorThemeProvider({ children }: OperatorThemeProviderProps) {
   return (
     <AntdLightThemeProvider appName="operator" themeConfig={operatorAntdTheme}>
       {children}

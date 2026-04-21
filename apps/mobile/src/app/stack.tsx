@@ -15,8 +15,8 @@ export default function StackScreen() {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Mobile foundation</Text>
       <Text style={styles.description}>
-        Day la bo khung de bat dau xay dung app dat ve, chua include feature
-        nghiep vu nhung da san sang de them auth, tim chuyen va dat cho.
+        Day la bo khung de bat dau xay dung app dat ve, chua include feature nghiep vu nhung da san
+        sang de them auth, tim chuyen va dat cho.
       </Text>
 
       <View style={styles.list}>

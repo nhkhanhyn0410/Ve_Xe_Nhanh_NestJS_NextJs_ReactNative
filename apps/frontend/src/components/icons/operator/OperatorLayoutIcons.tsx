@@ -15,12 +15,7 @@ export function OperatorSearchIcon(props: SvgIconProps) {
   return (
     <SvgIconBase viewBox="0 0 24 24" {...props}>
       <circle cx="11" cy="11" r="6.25" stroke="currentColor" strokeWidth="1.5" />
-      <path
-        d="M16 16L19.5 19.5"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeWidth="1.5"
-      />
+      <path d="M16 16L19.5 19.5" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />
     </SvgIconBase>
   );
 }
@@ -105,15 +100,7 @@ export function OperatorProfileIcon(props: SvgIconProps) {
 export function OperatorDashboardIcon(props: SvgIconProps) {
   return (
     <SvgIconBase viewBox="0 0 24 24" {...props}>
-      <rect
-        x="4"
-        y="4"
-        width="16"
-        height="16"
-        rx="3"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
+      <rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" strokeWidth="1.5" />
       <path d="M8 14.25V10.75" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />
       <path d="M12 14.25V8.75" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />
       <path d="M16 14.25V12.25" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />
@@ -170,15 +157,7 @@ export function OperatorBusIcon(props: SvgIconProps) {
 export function OperatorEmployeeIcon(props: SvgIconProps) {
   return (
     <SvgIconBase viewBox="0 0 24 24" {...props}>
-      <rect
-        x="4"
-        y="5"
-        width="16"
-        height="14"
-        rx="3"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
+      <rect x="4" y="5" width="16" height="14" rx="3" stroke="currentColor" strokeWidth="1.5" />
       <circle cx="9" cy="10" r="2" stroke="currentColor" strokeWidth="1.5" />
       <path
         d="M6.75 15C7.15681 13.9882 8.07446 13.25 9.15 13.25C10.2255 13.25 11.1432 13.9882 11.55 15"
@@ -218,15 +197,7 @@ export function OperatorTripIcon(props: SvgIconProps) {
 export function OperatorTransactionIcon(props: SvgIconProps) {
   return (
     <SvgIconBase viewBox="0 0 24 24" {...props}>
-      <rect
-        x="4"
-        y="6"
-        width="16"
-        height="12"
-        rx="3"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
+      <rect x="4" y="6" width="16" height="12" rx="3" stroke="currentColor" strokeWidth="1.5" />
       <path d="M4 10H20" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />
       <path d="M8 14H11.5" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />
       <path d="M15 14H16.5" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />

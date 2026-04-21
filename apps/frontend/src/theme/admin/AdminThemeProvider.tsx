@@ -8,9 +8,7 @@ interface AdminThemeProviderProps {
   children: ReactNode;
 }
 
-export default function AdminThemeProvider({
-  children,
-}: AdminThemeProviderProps) {
+export default function AdminThemeProvider({ children }: AdminThemeProviderProps) {
   return (
     <AntdLightThemeProvider appName="admin" themeConfig={adminAntdTheme}>
       {children}

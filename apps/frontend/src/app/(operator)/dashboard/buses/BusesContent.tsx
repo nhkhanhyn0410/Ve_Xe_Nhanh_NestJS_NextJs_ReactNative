@@ -14,14 +14,14 @@ const initialBuses: IBus[] = [
       rows: 6,
       columns: 3,
       layout: [],
-      totalSeats: 36
+      totalSeats: 36,
     },
     status: BusStatus.ACTIVE,
     amenities: [BusAmenity.WIFI, BusAmenity.AC, BusAmenity.CHARGING],
     description: 'Thaco Mobihome 2023',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-  }
+  },
 ];
 
 export default function BusesManagementContent() {
@@ -41,9 +41,9 @@ export default function BusesManagementContent() {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="p-4 border-b border-gray-100 flex gap-4">
-          <input 
-            type="text" 
-            placeholder="Tìm kiếm theo biển số..." 
+          <input
+            type="text"
+            placeholder="Tìm kiếm theo biển số..."
             className="flex-grow max-w-md px-4 py-2 border border-gray-200 rounded-lg outline-none focus:border-blue-500"
           />
           <select className="px-4 py-2 border border-gray-200 rounded-lg outline-none bg-white">
@@ -82,7 +82,9 @@ export default function BusesManagementContent() {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <button className="text-blue-600 hover:text-blue-800 font-medium mr-3">Sửa</button>
+                    <button className="text-blue-600 hover:text-blue-800 font-medium mr-3">
+                      Sửa
+                    </button>
                     <button className="text-red-600 hover:text-red-800 font-medium">Xóa</button>
                   </td>
                 </tr>
