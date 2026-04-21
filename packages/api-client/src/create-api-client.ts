@@ -162,7 +162,7 @@ export const createApiClient = (options: CreateApiClientOptions) => {
   const auth = {
     register: async (payload: RegisterPayload, config?: RequestConfig) => {
       const response = await http.post<RegisterResponse>(
-        '/auth/register',
+        '/auth/user/register',
         payload,
         toRequestConfig(config),
       );
@@ -177,7 +177,7 @@ export const createApiClient = (options: CreateApiClientOptions) => {
 
     login: async (payload: LoginPayload, config?: RequestConfig) => {
       const response = await http.post<UserLoginResponse>(
-        '/auth/login',
+        '/auth/user/login',
         payload,
         toRequestConfig(config),
       );
