@@ -191,6 +191,12 @@ export class AuthService {
       );
     }
 
+    if (!operator.password) {
+      throw new UnauthorizedException(
+        'Tài khoản nhà xe chưa được cấp mật khẩu. Vui lòng liên hệ quản trị viên.',
+      );
+    }
+
     const isPasswordValid = await bcrypt.compare(password, operator.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Thông tin đăng nhập không chính xác');
