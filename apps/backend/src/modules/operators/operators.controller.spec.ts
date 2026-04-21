@@ -47,7 +47,6 @@ describe('OperatorsController', () => {
         companyName: 'Test Company',
         email: 'test@example.com',
         phone: '0123456789',
-        password: 'password123',
         address: '123 Street',
         businessLicense: 'GP-123',
         taxCode: 'TAX-123',
