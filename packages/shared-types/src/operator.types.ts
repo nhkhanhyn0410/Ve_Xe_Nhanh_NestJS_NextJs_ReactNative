@@ -12,7 +12,7 @@ export interface IBusOperator {
   taxCode: string;
   address: string;
   description?: string;
-  
+
   // Trạng thái kiểm duyệt
   status: OperatorStatus;
   rejectionReason?: string;
@@ -20,7 +20,7 @@ export interface IBusOperator {
   verificationDocs?: string[];
   approvedAt?: string | Date;
   approvedBy?: string; // ID của Admin đã duyệt
-  
+
   // Thống kê denormalized
   totalRoutes: number;
   totalBuses: number;

@@ -35,7 +35,11 @@ export class CreateEmployeeDto {
   @MaxLength(100)
   password?: string;
 
-  @ApiPropertyOptional({ description: 'Giới tính', enum: Gender, enumName: 'Gender' })
+  @ApiPropertyOptional({
+    description: 'Giới tính',
+    enum: Gender,
+    enumName: 'Gender',
+  })
   @IsOptional()
   @IsEnum(Gender)
   gender?: Gender;
@@ -45,7 +49,11 @@ export class CreateEmployeeDto {
   @IsDateString()
   dateOfBirth?: Date;
 
-  @ApiProperty({ description: 'Vai trò nhân viên', enum: EmployeeRole, enumName: 'EmployeeRole' })
+  @ApiProperty({
+    description: 'Vai trò nhân viên',
+    enum: EmployeeRole,
+    enumName: 'EmployeeRole',
+  })
   @IsEnum(EmployeeRole)
   @IsNotEmpty()
   role: EmployeeRole;

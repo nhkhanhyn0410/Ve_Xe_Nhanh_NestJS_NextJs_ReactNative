@@ -6,7 +6,7 @@ const mockStats = {
   revenue: { total: 1250000000, growth: 12.5 },
   bookings: { total: 850, confirmed: 720 },
   trips: { total: 120, ongoing: 15 },
-  occupancyRate: 82
+  occupancyRate: 82,
 };
 
 export default function OperatorDashboardContent() {
@@ -30,10 +30,14 @@ export default function OperatorDashboardContent() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
           <h3 className="text-gray-500 font-medium mb-2">Tổng doanh thu</h3>
-          <p className="text-2xl font-bold text-gray-800">{formatCurrency(mockStats.revenue.total)}</p>
-          <p className="text-sm text-green-500 mt-2 font-medium">+{mockStats.revenue.growth}% so với kỳ trước</p>
+          <p className="text-2xl font-bold text-gray-800">
+            {formatCurrency(mockStats.revenue.total)}
+          </p>
+          <p className="text-sm text-green-500 mt-2 font-medium">
+            +{mockStats.revenue.growth}% so với kỳ trước
+          </p>
         </div>
-        
+
         <div className="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500">
           <h3 className="text-gray-500 font-medium mb-2">Tổng đơn hàng</h3>
           <p className="text-2xl font-bold text-gray-800">{mockStats.bookings.total}</p>

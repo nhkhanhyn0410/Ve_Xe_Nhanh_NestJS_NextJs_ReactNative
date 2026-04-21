@@ -56,11 +56,9 @@ export const createApiClient = (options: CreateApiClientOptions) => {
 
   let refreshPromise: Promise<TokenPair | null> | null = null;
 
-  const getAccessToken = async () =>
-    (await options.storage?.getAccessToken()) ?? null;
+  const getAccessToken = async () => (await options.storage?.getAccessToken()) ?? null;
 
-  const getRefreshToken = async () =>
-    (await options.storage?.getRefreshToken()) ?? null;
+  const getRefreshToken = async () => (await options.storage?.getRefreshToken()) ?? null;
 
   const setTokens = async (tokens: TokenPair) => {
     await options.storage?.setTokens(tokens);
@@ -136,10 +134,7 @@ export const createApiClient = (options: CreateApiClientOptions) => {
           return Promise.reject(error);
         }
 
-        originalRequest.headers.set(
-          'Authorization',
-          `Bearer ${tokens.accessToken}`,
-        );
+        originalRequest.headers.set('Authorization', `Bearer ${tokens.accessToken}`);
 
         return http(originalRequest);
       } catch (refreshError) {
@@ -265,28 +260,12 @@ export const createApiClient = (options: CreateApiClientOptions) => {
       const response = await http.get<ApiResult<T>>(url, toRequestConfig(config));
       return unwrap(response.data);
     },
-    post: async <TResponse, TBody = unknown>(
-      url: string,
-      body?: TBody,
-      config?: RequestConfig,
-    ) => {
-      const response = await http.post<ApiResult<TResponse>>(
-        url,
-        body,
-        toRequestConfig(config),
-      );
+    post: async <TResponse, TBody = unknown>(url: string, body?: TBody, config?: RequestConfig) => {
+      const response = await http.post<ApiResult<TResponse>>(url, body, toRequestConfig(config));
       return unwrap(response.data);
     },
-    put: async <TResponse, TBody = unknown>(
-      url: string,
-      body?: TBody,
-      config?: RequestConfig,
-    ) => {
-      const response = await http.put<ApiResult<TResponse>>(
-        url,
-        body,
-        toRequestConfig(config),
-      );
+    put: async <TResponse, TBody = unknown>(url: string, body?: TBody, config?: RequestConfig) => {
+      const response = await http.put<ApiResult<TResponse>>(url, body, toRequestConfig(config));
       return unwrap(response.data);
     },
     patch: async <TResponse, TBody = unknown>(
@@ -294,18 +273,11 @@ export const createApiClient = (options: CreateApiClientOptions) => {
       body?: TBody,
       config?: RequestConfig,
     ) => {
-      const response = await http.patch<ApiResult<TResponse>>(
-        url,
-        body,
-        toRequestConfig(config),
-      );
+      const response = await http.patch<ApiResult<TResponse>>(url, body, toRequestConfig(config));
       return unwrap(response.data);
     },
     delete: async <TResponse>(url: string, config?: RequestConfig) => {
-      const response = await http.delete<ApiResult<TResponse>>(
-        url,
-        toRequestConfig(config),
-      );
+      const response = await http.delete<ApiResult<TResponse>>(url, toRequestConfig(config));
       return unwrap(response.data);
     },
   };

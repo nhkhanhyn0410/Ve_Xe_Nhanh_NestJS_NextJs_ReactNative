@@ -13,10 +13,7 @@ export function createAntdLightTheme(appName: AntdThemeAppName): ThemeConfig {
     algorithm: antdTheme.defaultAlgorithm,
     token: {
       colorPrimary: cssVariable(`${prefix}-primary`, '#1677ff'),
-      colorInfo: cssVariable(
-        `${prefix}-info`,
-        cssVariable(`${prefix}-primary`, '#1677ff'),
-      ),
+      colorInfo: cssVariable(`${prefix}-info`, cssVariable(`${prefix}-primary`, '#1677ff')),
       colorSuccess: cssVariable(`${prefix}-success`, '#16a34a'),
       colorWarning: cssVariable(`${prefix}-warning`, '#d97706'),
       colorError: cssVariable(`${prefix}-error`, '#dc2626'),
@@ -24,10 +21,7 @@ export function createAntdLightTheme(appName: AntdThemeAppName): ThemeConfig {
       colorBgBase: cssVariable(`${prefix}-bg-base`, '#f8fafc'),
       colorBgContainer: cssVariable(`${prefix}-bg-surface`, '#ffffff'),
       colorBorder: cssVariable(`${prefix}-border`, '#d9d9d9'),
-      colorLink: cssVariable(
-        `${prefix}-link`,
-        cssVariable(`${prefix}-primary`, '#1677ff'),
-      ),
+      colorLink: cssVariable(`${prefix}-link`, cssVariable(`${prefix}-primary`, '#1677ff')),
       fontFamily: 'var(--font-geist-sans), sans-serif',
       borderRadius: 16,
     },

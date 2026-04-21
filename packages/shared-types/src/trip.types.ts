@@ -48,7 +48,7 @@ export interface ITrip {
   routeId: string;
   busId: string;
   operatorId: string;
-  
+
   crew: string[];
 
   departureTime: string;

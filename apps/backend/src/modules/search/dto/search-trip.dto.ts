@@ -128,12 +128,22 @@ export class SearchTripDto {
 
   // ─── Sort ────────────────────────────────────────────────────────
 
-  @ApiProperty({ required: false, enum: SortBy, enumName: 'SortBy', default: SortBy.TIME })
+  @ApiProperty({
+    required: false,
+    enum: SortBy,
+    enumName: 'SortBy',
+    default: SortBy.TIME,
+  })
   @IsEnum(SortBy)
   @IsOptional()
   sortBy?: SortBy;
 
-  @ApiProperty({ required: false, enum: SortOrder, enumName: 'SortOrder', default: SortOrder.ASC })
+  @ApiProperty({
+    required: false,
+    enum: SortOrder,
+    enumName: 'SortOrder',
+    default: SortOrder.ASC,
+  })
   @IsEnum(SortOrder)
   @IsOptional()
   sortOrder?: SortOrder;

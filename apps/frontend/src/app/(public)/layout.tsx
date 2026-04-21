@@ -7,11 +7,7 @@ import CustomerThemeProvider from '@/theme/customer/CustomerThemeProvider';
  * Layout cho các trang public của khách hàng
  * Bao gồm Header và Footer chung
  */
-export default function PublicLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
     <CustomerThemeProvider>
       <div className="flex min-h-screen flex-col">
@@ -30,10 +26,7 @@ export default function PublicLayout({
                   >
                     Chuyến xe
                   </Link>
-                  <Link
-                    href="/operators"
-                    className="px-3 py-2 text-sm font-medium text-brand"
-                  >
+                  <Link href="/operators" className="px-3 py-2 text-sm font-medium text-brand">
                     Nhà xe
                   </Link>
                   <Link

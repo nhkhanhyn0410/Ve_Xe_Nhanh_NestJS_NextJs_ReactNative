@@ -187,8 +187,7 @@ export default function StopPointsContent() {
         lng: Number(formState.lng),
       },
       isActive: formState.isActive,
-      createdAt:
-        stopPoints.find((item) => item.id === formState.id)?.createdAt ?? now,
+      createdAt: stopPoints.find((item) => item.id === formState.id)?.createdAt ?? now,
       updatedAt: now,
     };
 
@@ -237,9 +236,9 @@ export default function StopPointsContent() {
             </span>
             <h1 className="mt-4 text-3xl font-bold tracking-tight">Quản lý stop point</h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-blue-50/90">
-              Module này được rebuild riêng cho dự án Next.js để quản lý tập trung bến xe,
-              điểm đón/trả và trạm dừng chân. Hiện tại dữ liệu dùng mock nội bộ theo cấu
-              trúc response NestJS, nên có thể phát triển UI độc lập trước khi nối API thật.
+              Module này được rebuild riêng cho dự án Next.js để quản lý tập trung bến xe, điểm
+              đón/trả và trạm dừng chân. Hiện tại dữ liệu dùng mock nội bộ theo cấu trúc response
+              NestJS, nên có thể phát triển UI độc lập trước khi nối API thật.
             </p>
           </div>
 
@@ -380,7 +379,9 @@ export default function StopPointsContent() {
                     </td>
                     <td className="px-5 py-4 text-slate-600">
                       <p>{formatDateTime(stopPoint.updatedAt)}</p>
-                      <p className="text-xs text-slate-500">Tạo: {formatDateTime(stopPoint.createdAt)}</p>
+                      <p className="text-xs text-slate-500">
+                        Tạo: {formatDateTime(stopPoint.createdAt)}
+                      </p>
                     </td>
                     <td className="px-5 py-4">
                       <span
@@ -459,7 +460,9 @@ export default function StopPointsContent() {
             <form onSubmit={handleSubmit} className="space-y-5 px-6 py-6">
               <div className="grid gap-5 md:grid-cols-2">
                 <label className="block">
-                  <span className="mb-2 block text-sm font-semibold text-slate-700">Tên stop point</span>
+                  <span className="mb-2 block text-sm font-semibold text-slate-700">
+                    Tên stop point
+                  </span>
                   <input
                     name="name"
                     value={formState.name}
@@ -488,7 +491,9 @@ export default function StopPointsContent() {
 
               <div className="grid gap-5 md:grid-cols-2">
                 <label className="block">
-                  <span className="mb-2 block text-sm font-semibold text-slate-700">Thành phố / quận</span>
+                  <span className="mb-2 block text-sm font-semibold text-slate-700">
+                    Thành phố / quận
+                  </span>
                   <input
                     name="city"
                     value={formState.city}
@@ -499,7 +504,9 @@ export default function StopPointsContent() {
                 </label>
 
                 <label className="block">
-                  <span className="mb-2 block text-sm font-semibold text-slate-700">Tỉnh / thành</span>
+                  <span className="mb-2 block text-sm font-semibold text-slate-700">
+                    Tỉnh / thành
+                  </span>
                   <input
                     name="province"
                     value={formState.province}
@@ -511,7 +518,9 @@ export default function StopPointsContent() {
               </div>
 
               <label className="block">
-                <span className="mb-2 block text-sm font-semibold text-slate-700">Địa chỉ chi tiết</span>
+                <span className="mb-2 block text-sm font-semibold text-slate-700">
+                  Địa chỉ chi tiết
+                </span>
                 <textarea
                   name="address"
                   value={formState.address}
@@ -524,7 +533,9 @@ export default function StopPointsContent() {
 
               <div className="grid gap-5 md:grid-cols-2">
                 <label className="block">
-                  <span className="mb-2 block text-sm font-semibold text-slate-700">Vĩ độ (lat)</span>
+                  <span className="mb-2 block text-sm font-semibold text-slate-700">
+                    Vĩ độ (lat)
+                  </span>
                   <input
                     name="lat"
                     value={formState.lat}
@@ -535,7 +546,9 @@ export default function StopPointsContent() {
                 </label>
 
                 <label className="block">
-                  <span className="mb-2 block text-sm font-semibold text-slate-700">Kinh độ (lng)</span>
+                  <span className="mb-2 block text-sm font-semibold text-slate-700">
+                    Kinh độ (lng)
+                  </span>
                   <input
                     name="lng"
                     value={formState.lng}

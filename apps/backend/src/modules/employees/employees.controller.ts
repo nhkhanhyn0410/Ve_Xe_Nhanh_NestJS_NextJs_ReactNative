@@ -70,7 +70,12 @@ export class EmployeesController {
   @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
   @ApiOperation({ summary: 'Lấy danh sách nhân viên của nhà xe' })
   @ApiQuery({ name: 'isActive', required: false, type: Boolean })
-  @ApiQuery({ name: 'role', required: false, enum: EmployeeRole, enumName: 'EmployeeRole' })
+  @ApiQuery({
+    name: 'role',
+    required: false,
+    enum: EmployeeRole,
+    enumName: 'EmployeeRole',
+  })
   @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({
     name: 'operatorId',

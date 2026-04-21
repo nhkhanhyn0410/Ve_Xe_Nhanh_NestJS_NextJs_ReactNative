@@ -19,10 +19,10 @@ export interface IRegistrationInfo {
 export interface IBus {
   id: string;
   operatorId: string; // Ref to BusOperator
-  
+
   busNumber: string;
   busType: BusType;
-  
+
   seatLayout: ISeatLayout;
   amenities: BusAmenity[];
   status: BusStatus;
