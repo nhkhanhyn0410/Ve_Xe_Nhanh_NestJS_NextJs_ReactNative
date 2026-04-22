@@ -64,6 +64,46 @@ export function OperatorHelpIcon(props: SvgIconProps) {
   );
 }
 
+export function OperatorShieldCheckIcon(props: SvgIconProps) {
+  return (
+    <SvgIconBase viewBox="0 0 24 24" {...props}>
+      <path
+        d="M12 3L18 5.18182V10.7455C18 14.6455 15.44 18.2909 12 19.5C8.56 18.2909 6 14.6455 6 10.7455V5.18182L12 3Z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.5 11.5L11.2 13.2L14.8 9.6"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </SvgIconBase>
+  );
+}
+
+export function OperatorInformationBubbleIcon(props: SvgIconProps) {
+  return (
+    <SvgIconBase viewBox="0 0 24 24" {...props}>
+      <path
+        d="M6 5.5H18C19.1046 5.5 20 6.39543 20 7.5V15.5C20 16.6046 19.1046 17.5 18 17.5H11L7.5 20V17.5H6C4.89543 17.5 4 16.6046 4 15.5V7.5C4 6.39543 4.89543 5.5 6 5.5Z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 11V8.75"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+      <circle cx="12" cy="14.25" r="0.9" fill="currentColor" />
+    </SvgIconBase>
+  );
+}
+
 export function OperatorSettingsIcon(props: SvgIconProps) {
   return (
     <SvgIconBase viewBox="0 0 24 24" {...props}>
