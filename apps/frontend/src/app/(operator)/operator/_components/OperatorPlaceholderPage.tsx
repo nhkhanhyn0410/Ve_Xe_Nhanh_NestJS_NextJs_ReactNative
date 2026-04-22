@@ -10,7 +10,7 @@ export default function OperatorPlaceholderPage({
   routeHint,
 }: OperatorPlaceholderPageProps) {
   return (
-    <section className="rounded-[24px] border border-slate-200 bg-white p-8 shadow-sm">
+    <section className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
       <div className="inline-flex rounded-full bg-[#eff6ff] px-3 py-1 text-xs font-medium text-[#2b7ead]">
         Operator Module
       </div>
