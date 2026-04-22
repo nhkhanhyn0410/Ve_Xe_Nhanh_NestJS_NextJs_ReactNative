@@ -25,7 +25,7 @@ export class OperatorsService {
   /**
    * Dang ky nha xe moi
    * - Check email trung
-   * - Hash password
+   * - Chua tao username/password, admin se cap sau khi duyet
    * - Status mac dinh = PENDING (cho admin duyet)
    */
   async create(CreateOperatorDto: CreateOperatorDto): Promise<Operator> {
@@ -37,12 +37,8 @@ export class OperatorsService {
     //   throw new ConflictException('Email da duoc su dung');
     // }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(CreateOperatorDto.password, 10);
-
     return this.operatorModel.create({
       ...CreateOperatorDto,
-      password: hashedPassword,
       status: OperatorStatus.PENDING,
     });
   }

@@ -3,7 +3,6 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  MinLength,
   Matches,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
@@ -26,12 +25,6 @@ export class CreateOperatorDto {
   @Matches(/^(\+84|0)\d{9,10}$/)
   @IsOptional()
   phone: string;
-
-  @ApiProperty({ minLength: 6 })
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(6)
-  password: string;
 
   @ApiProperty({ example: 'GP-KD-0001234' })
   @IsNotEmpty()
