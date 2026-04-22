@@ -29,24 +29,24 @@ export default function BusesManagementContent() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-xl font-bold text-gray-800 m-0">Đội xe của tôi</h3>
+          <h3 className="m-0 text-xl font-bold text-gray-800">Đội xe của tôi</h3>
           <p className="text-gray-500">Quản lý và theo dõi trạng thái các xe trong hệ thống</p>
         </div>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700">
+        <button className="rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700">
           Thêm xe mới
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-4 border-b border-gray-100 flex gap-4">
+      <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
+        <div className="flex gap-4 border-b border-gray-100 p-4">
           <input
             type="text"
             placeholder="Tìm kiếm theo biển số..."
-            className="flex-grow max-w-md px-4 py-2 border border-gray-200 rounded-lg outline-none focus:border-blue-500"
+            className="max-w-md grow rounded-lg border border-gray-200 px-4 py-2 outline-none focus:border-blue-500"
           />
-          <select className="px-4 py-2 border border-gray-200 rounded-lg outline-none bg-white">
+          <select className="rounded-lg border border-gray-200 bg-white px-4 py-2 outline-none">
             <option value="all">Tất cả loại xe</option>
             <option value={BusType.SEATER}>Ghế ngồi</option>
             <option value={BusType.SLEEPER}>Giường nằm</option>
@@ -55,7 +55,7 @@ export default function BusesManagementContent() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-gray-50 text-gray-600 border-b border-gray-100">
+            <thead className="border-b border-gray-100 bg-gray-50 text-gray-600">
               <tr>
                 <th className="px-6 py-4 font-medium">Biển số xe</th>
                 <th className="px-6 py-4 font-medium">Loại xe</th>
@@ -67,25 +67,25 @@ export default function BusesManagementContent() {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {buses.map((bus) => (
-                <tr key={bus.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={bus.id} className="transition-colors hover:bg-gray-50">
                   <td className="px-6 py-4 font-semibold text-gray-800">{bus.busNumber}</td>
                   <td className="px-6 py-4">
-                    <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-bold">
+                    <span className="rounded bg-blue-100 px-2 py-1 text-xs font-bold text-blue-700">
                       {bus.busType}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-gray-600">{bus.description}</td>
                   <td className="px-6 py-4 font-medium">{bus.seatLayout.totalSeats}</td>
                   <td className="px-6 py-4">
-                    <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold">
+                    <span className="rounded bg-green-100 px-2 py-1 text-xs font-bold text-green-700">
                       {bus.status}
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <button className="text-blue-600 hover:text-blue-800 font-medium mr-3">
+                    <button className="mr-3 font-medium text-blue-600 hover:text-blue-800">
                       Sửa
                     </button>
-                    <button className="text-red-600 hover:text-red-800 font-medium">Xóa</button>
+                    <button className="font-medium text-red-600 hover:text-red-800">Xóa</button>
                   </td>
                 </tr>
               ))}

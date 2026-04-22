@@ -82,10 +82,10 @@ export default async function OperatorDetailPage({ params }: { params: { id: str
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Breadcrumb - Mock */}
-      <nav className="flex mb-6 text-sm text-gray-500">
-        <ol className="list-none p-0 inline-flex">
+      <nav className="mb-6 flex text-sm text-gray-500">
+        <ol className="inline-flex list-none p-0">
           <li className="flex items-center">
             <Link href="/" className="hover:text-blue-600">
               Trang chủ
@@ -98,18 +98,18 @@ export default async function OperatorDetailPage({ params }: { params: { id: str
             </Link>
             <span className="mx-2">/</span>
           </li>
-          <li className="text-gray-800 font-medium">{operator.companyName}</li>
+          <li className="font-medium text-gray-800">{operator.companyName}</li>
         </ol>
       </nav>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Left Column: Operator Info Card */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+          <div className="mb-8 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
             <div className="p-6 sm:p-8">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-8">
+              <div className="mb-8 flex flex-col items-start gap-6 sm:flex-row sm:items-center">
                 {/* Logo */}
-                <div className="relative w-24 h-24 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden border border-gray-100 flex-shrink-0">
+                <div className="relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-gray-100 bg-gray-100">
                   {operator.logo ? (
                     <Image
                       src={operator.logo}
@@ -124,21 +124,21 @@ export default async function OperatorDetailPage({ params }: { params: { id: str
                   )}
                 </div>
 
-                <div className="flex-grow">
-                  <div className="flex items-center gap-2 mb-2">
+                <div className="grow">
+                  <div className="mb-2 flex items-center gap-2">
                     <h1 className="text-3xl font-bold text-gray-900">{operator.companyName}</h1>
-                    <CheckCircleFilled className="text-blue-500 text-xl" title="Đã xác thực" />
+                    <CheckCircleFilled className="text-xl text-blue-500" title="Đã xác thực" />
                   </div>
 
                   <div className="flex flex-wrap items-center gap-4 text-sm">
-                    <div className="flex items-center text-amber-500 font-bold">
+                    <div className="flex items-center font-bold text-amber-500">
                       <StarFilled className="mr-1" />
                       <span className="text-lg">{operator.averageRating.toFixed(1)}</span>
-                      <span className="text-gray-400 font-normal ml-1">
+                      <span className="ml-1 font-normal text-gray-400">
                         ({operator.totalReviews} đánh giá)
                       </span>
                     </div>
-                    <div className="h-4 w-px bg-gray-200 hidden sm:block"></div>
+                    <div className="hidden h-4 w-px bg-gray-200 sm:block"></div>
                     <div className="text-gray-500">
                       <strong className="text-gray-700">{operator.totalTrips}</strong> Chuyến đã
                       chạy
@@ -148,42 +148,42 @@ export default async function OperatorDetailPage({ params }: { params: { id: str
               </div>
 
               <div className="border-t border-gray-100 pt-8">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Giới thiệu về nhà xe</h2>
-                <div className="prose prose-blue max-w-none text-gray-600 leading-relaxed">
+                <h2 className="mb-4 text-xl font-bold text-gray-900">Giới thiệu về nhà xe</h2>
+                <div className="prose prose-blue max-w-none leading-relaxed text-gray-600">
                   {operator.description ||
                     `Nhà xe ${operator.companyName} là đơn vị vận tải hành khách uy tín, cam kết mang lại trải nghiệm an toàn và thoải mái nhất cho khách hàng trên mọi hành trình.`}
                 </div>
               </div>
 
               {/* Stats Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8">
-                <div className="bg-blue-50 p-4 rounded-xl text-center border border-blue-100">
-                  <div className="text-blue-600 font-bold text-2xl mb-1">
+              <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+                <div className="rounded-xl border border-blue-100 bg-blue-50 p-4 text-center">
+                  <div className="mb-1 text-2xl font-bold text-blue-600">
                     {operator.totalRoutes}
                   </div>
-                  <div className="text-blue-800 text-xs font-medium uppercase tracking-wider">
+                  <div className="text-xs font-medium tracking-wider text-blue-800 uppercase">
                     Tuyến đường
                   </div>
                 </div>
-                <div className="bg-green-50 p-4 rounded-xl text-center border border-green-100">
-                  <div className="text-green-600 font-bold text-2xl mb-1">
+                <div className="rounded-xl border border-green-100 bg-green-50 p-4 text-center">
+                  <div className="mb-1 text-2xl font-bold text-green-600">
                     {operator.totalBuses}
                   </div>
-                  <div className="text-green-800 text-xs font-medium uppercase tracking-wider">
+                  <div className="text-xs font-medium tracking-wider text-green-800 uppercase">
                     Đội xe
                   </div>
                 </div>
-                <div className="bg-purple-50 p-4 rounded-xl text-center border border-purple-100">
-                  <div className="text-purple-600 font-bold text-2xl mb-1">
+                <div className="rounded-xl border border-purple-100 bg-purple-50 p-4 text-center">
+                  <div className="mb-1 text-2xl font-bold text-purple-600">
                     {operator.averageRating.toFixed(1)}
                   </div>
-                  <div className="text-purple-800 text-xs font-medium uppercase tracking-wider">
+                  <div className="text-xs font-medium tracking-wider text-purple-800 uppercase">
                     Đánh giá
                   </div>
                 </div>
-                <div className="bg-orange-50 p-4 rounded-xl text-center border border-orange-100">
-                  <div className="text-orange-600 font-bold text-2xl mb-1">98%</div>
-                  <div className="text-orange-800 text-xs font-medium uppercase tracking-wider">
+                <div className="rounded-xl border border-orange-100 bg-orange-50 p-4 text-center">
+                  <div className="mb-1 text-2xl font-bold text-orange-600">98%</div>
+                  <div className="text-xs font-medium tracking-wider text-orange-800 uppercase">
                     Đúng giờ
                   </div>
                 </div>
@@ -194,8 +194,8 @@ export default async function OperatorDetailPage({ params }: { params: { id: str
           {/* Placeholder for Routes and Reviews */}
           <div className="space-y-8">
             <section>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Các tuyến đường phổ biến</h2>
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center justify-center text-gray-400 italic">
+              <h2 className="mb-4 text-2xl font-bold text-gray-900">Các tuyến đường phổ biến</h2>
+              <div className="flex items-center justify-center rounded-xl border border-gray-100 bg-white p-6 text-gray-400 italic shadow-sm">
                 (Đang tải danh sách tuyến đường...)
               </div>
             </section>
@@ -204,59 +204,59 @@ export default async function OperatorDetailPage({ params }: { params: { id: str
 
         {/* Right Column: Contact & Quick Links */}
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Thông tin liên hệ</h3>
+          <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+            <h3 className="mb-4 text-lg font-bold text-gray-900">Thông tin liên hệ</h3>
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-                <PhoneOutlined className="text-blue-600 mt-1" />
+                <PhoneOutlined className="mt-1 text-blue-600" />
                 <div>
-                  <div className="text-xs text-gray-400 uppercase font-bold tracking-wider">
+                  <div className="text-xs font-bold tracking-wider text-gray-400 uppercase">
                     Số điện thoại
                   </div>
-                  <div className="text-gray-700 font-medium">{operator.phone}</div>
+                  <div className="font-medium text-gray-700">{operator.phone}</div>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <MailOutlined className="text-blue-600 mt-1" />
+                <MailOutlined className="mt-1 text-blue-600" />
                 <div>
-                  <div className="text-xs text-gray-400 uppercase font-bold tracking-wider">
+                  <div className="text-xs font-bold tracking-wider text-gray-400 uppercase">
                     Email liên hệ
                   </div>
-                  <div className="text-gray-700 font-medium">{operator.email}</div>
+                  <div className="font-medium text-gray-700">{operator.email}</div>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <EnvironmentOutlined className="text-blue-600 mt-1" />
+                <EnvironmentOutlined className="mt-1 text-blue-600" />
                 <div>
-                  <div className="text-xs text-gray-400 uppercase font-bold tracking-wider">
+                  <div className="text-xs font-bold tracking-wider text-gray-400 uppercase">
                     Địa chỉ văn phòng
                   </div>
-                  <div className="text-gray-700 font-medium">{operator.address}</div>
+                  <div className="font-medium text-gray-700">{operator.address}</div>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <GlobalOutlined className="text-blue-600 mt-1" />
+                <GlobalOutlined className="mt-1 text-blue-600" />
                 <div>
-                  <div className="text-xs text-gray-400 uppercase font-bold tracking-wider">
+                  <div className="text-xs font-bold tracking-wider text-gray-400 uppercase">
                     Mã số thuế
                   </div>
-                  <div className="text-gray-700 font-medium">{operator.taxCode}</div>
+                  <div className="font-medium text-gray-700">{operator.taxCode}</div>
                 </div>
               </div>
             </div>
 
-            <button className="w-full mt-6 bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-100">
+            <button className="mt-6 w-full rounded-xl bg-blue-600 py-3 font-bold text-white shadow-lg shadow-blue-100 transition-colors hover:bg-blue-700">
               Đặt vé nhà xe ngay
             </button>
           </div>
 
-          <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl shadow-lg p-6 text-white">
-            <h3 className="text-lg font-bold mb-2">Bạn có thắc mắc?</h3>
-            <p className="text-blue-100 text-sm mb-6">
+          <div className="rounded-2xl bg-linear-to-br from-blue-600 to-blue-800 p-6 text-white shadow-lg">
+            <h3 className="mb-2 text-lg font-bold">Bạn có thắc mắc?</h3>
+            <p className="mb-6 text-sm text-blue-100">
               Liên hệ với bộ phận CSKH của VeXeNhanh để được hỗ trợ tốt nhất về nhà xe{' '}
               {operator.companyName}.
             </p>
-            <button className="w-full bg-white text-blue-600 font-bold py-3 rounded-xl hover:bg-blue-50 transition-colors">
+            <button className="w-full rounded-xl bg-white py-3 font-bold text-blue-600 transition-colors hover:bg-blue-50">
               Chat hỗ trợ ngay
             </button>
           </div>

@@ -231,7 +231,7 @@ export default function StopPointsContent() {
       <section className="rounded-3xl bg-[linear-gradient(135deg,#0f172a_0%,#1d4ed8_45%,#dbeafe_100%)] px-6 py-7 text-white shadow-sm">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
-            <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-blue-50">
+            <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold tracking-[0.2em] text-blue-50 uppercase">
               Operator Module
             </span>
             <h1 className="mt-4 text-3xl font-bold tracking-tight">Quản lý stop point</h1>
@@ -242,7 +242,7 @@ export default function StopPointsContent() {
             </p>
           </div>
 
-          <div className="grid min-w-full gap-3 sm:grid-cols-2 xl:min-w-[420px]">
+          <div className="grid min-w-full gap-3 sm:grid-cols-2 xl:min-w-105">
             <div className="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
               <p className="text-sm text-blue-100">Tổng stop point</p>
               <p className="mt-2 text-3xl font-bold">{summary.total}</p>
@@ -301,12 +301,12 @@ export default function StopPointsContent() {
             value={keyword}
             onChange={(event) => setKeyword(event.target.value)}
             placeholder="Tìm theo tên, tỉnh/thành hoặc địa chỉ..."
-            className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500"
+            className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 transition outline-none focus:border-blue-500"
           />
           <select
             value={selectedType}
             onChange={(event) => setSelectedType(event.target.value as StopPointTypeFilter)}
-            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500"
+            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 transition outline-none focus:border-blue-500"
           >
             <option value="all">Tất cả loại stop point</option>
             {stopPointTypes.map((type) => (
@@ -318,7 +318,7 @@ export default function StopPointsContent() {
           <select
             value={selectedStatus}
             onChange={(event) => setSelectedStatus(event.target.value as StatusFilter)}
-            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500"
+            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 transition outline-none focus:border-blue-500"
           >
             <option value="all">Tất cả trạng thái</option>
             <option value="active">Đang hoạt động</option>
@@ -468,7 +468,7 @@ export default function StopPointsContent() {
                     value={formState.name}
                     onChange={handleFormChange}
                     placeholder="Ví dụ: Bến xe Miền Đông mới"
-                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500"
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 transition outline-none focus:border-blue-500"
                   />
                 </label>
 
@@ -478,7 +478,7 @@ export default function StopPointsContent() {
                     name="type"
                     value={formState.type}
                     onChange={handleFormChange}
-                    className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500"
+                    className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 transition outline-none focus:border-blue-500"
                   >
                     {stopPointTypes.map((type) => (
                       <option key={type} value={type}>
@@ -499,7 +499,7 @@ export default function StopPointsContent() {
                     value={formState.city}
                     onChange={handleFormChange}
                     placeholder="Ví dụ: Thủ Đức"
-                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500"
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 transition outline-none focus:border-blue-500"
                   />
                 </label>
 
@@ -512,7 +512,7 @@ export default function StopPointsContent() {
                     value={formState.province}
                     onChange={handleFormChange}
                     placeholder="Ví dụ: TP. Hồ Chí Minh"
-                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500"
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 transition outline-none focus:border-blue-500"
                   />
                 </label>
               </div>
@@ -527,7 +527,7 @@ export default function StopPointsContent() {
                   onChange={handleFormChange}
                   rows={3}
                   placeholder="Ví dụ: 501 Hoàng Hữu Nam, Long Bình, Thủ Đức"
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500"
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 transition outline-none focus:border-blue-500"
                 />
               </label>
 
@@ -541,7 +541,7 @@ export default function StopPointsContent() {
                     value={formState.lat}
                     onChange={handleFormChange}
                     placeholder="10.880611"
-                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500"
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 transition outline-none focus:border-blue-500"
                   />
                 </label>
 
@@ -554,7 +554,7 @@ export default function StopPointsContent() {
                     value={formState.lng}
                     onChange={handleFormChange}
                     placeholder="106.810361"
-                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500"
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 transition outline-none focus:border-blue-500"
                   />
                 </label>
               </div>

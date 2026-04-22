@@ -56,7 +56,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         </header>
 
         {/* Main Content */}
-        <main className="flex-grow bg-background">{children}</main>
+        <main className="grow bg-background">{children}</main>
 
         {/* Footer đơn giản */}
         <footer className="border-t border-border bg-surface py-8">
@@ -69,7 +69,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                 </p>
               </div>
               <div>
-                <h4 className="mb-4 text-md font-semibold text-foreground">Liên kết</h4>
+                <h4 className="text-md mb-4 font-semibold text-foreground">Liên kết</h4>
                 <ul className="space-y-2 text-sm text-muted">
                   <li>
                     <Link href="/about" className="hover:text-foreground">
@@ -89,7 +89,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                 </ul>
               </div>
               <div>
-                <h4 className="mb-4 text-md font-semibold text-foreground">Liên hệ</h4>
+                <h4 className="text-md mb-4 font-semibold text-foreground">Liên hệ</h4>
                 <p className="text-sm text-muted">Email: support@vexenhanh.vn</p>
                 <p className="text-sm text-muted">Hotline: 1900 xxxx</p>
               </div>

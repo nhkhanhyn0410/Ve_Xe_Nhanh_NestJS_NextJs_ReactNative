@@ -1,7 +1,13 @@
 'use client';
 
+import clsx from 'clsx';
 import { useState, type ComponentType, type ReactNode } from 'react';
-import { CloseOutlined, MenuOutlined } from '@ant-design/icons';
+import {
+  CloseOutlined,
+  MenuFoldOutlined,
+  MenuOutlined,
+  MenuUnfoldOutlined,
+} from '@ant-design/icons';
 import { Avatar, Button, ConfigProvider, Drawer, Input, Layout, Menu, type MenuProps } from 'antd';
 import { useRouter, usePathname } from 'next/navigation';
 
@@ -11,7 +17,8 @@ import {
   OperatorDashboardIcon,
   OperatorEmployeeIcon,
   OperatorHelpIcon,
-  OperatorLaunchIcon,
+  OperatorNotificationIcon,
+  // OperatorLaunchIcon,
   OperatorLogoutIcon,
   OperatorProfileIcon,
   OperatorReportIcon,
@@ -26,6 +33,28 @@ import {
 } from '@/components/icons';
 
 const { Header, Content, Sider } = Layout;
+const DESKTOP_SIDER_WIDTH = 296;
+const MOBILE_SIDER_WIDTH = 296;
+const COLLAPSED_SIDER_WIDTH = 96;
+const operatorLayoutColors = {
+  primary: 'var(--operator-color-primary)',
+  primaryHover: 'var(--operator-color-primary-hover)',
+  textBase: 'var(--operator-color-text-base)',
+  textMuted: 'var(--operator-color-text-muted)',
+  textBrand: 'var(--operator-color-text-brand)',
+  textBrandHover: 'var(--operator-color-text-brand-hover)',
+  textLogo: 'var(--operator-palette-primary-900)',
+  textField: 'var(--operator-palette-secondary-600)',
+  textSecondaryStrong: 'var(--operator-palette-secondary-700)',
+  bgPage: 'var(--operator-color-bg-panel)',
+  bgSurface: 'var(--operator-color-bg-surface)',
+  bgField: 'var(--operator-color-bg-field)',
+  bgBrandSubtle: 'var(--operator-color-bg-brand-subtle)',
+  bgGhostHover: 'var(--operator-color-interactive-ghost-hover)',
+  border: 'var(--operator-color-border)',
+  borderSubtle: 'var(--operator-color-border-subtle)',
+  onColor: 'var(--operator-color-text-on-color)',
+} as const;
 
 interface NavItem {
   href: string;
@@ -117,6 +146,7 @@ function createMenuItems(): MenuProps['items'] {
 
     return {
       key: item.href,
+      title: item.label,
       icon: <Icon size={24} className="shrink-0" />,
       label: <span className="text-[16px] font-normal">{item.label}</span>,
     };
@@ -129,7 +159,10 @@ function HeaderActionButton({ label, icon }: { label: string; icon: ReactNode })
       type="text"
       aria-label={label}
       icon={icon}
-      className="!h-10 !w-10 !rounded-xl !text-[#475569] hover:!bg-white hover:!text-[#123d5c]"
+      className="h-10! w-10! rounded-xl!"
+      style={{
+        color: operatorLayoutColors.textMuted,
+      }}
     />
   );
 }
@@ -138,28 +171,30 @@ function OperatorSidebar({
   pathname,
   onNavigate,
   onLogout,
+  collapsed,
 }: {
   pathname: string;
   onNavigate: (href: string) => void;
   onLogout: () => void;
+  collapsed: boolean;
 }) {
   return (
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: '#2b7ead',
-          colorText: '#123d5c',
-          colorBgContainer: '#f8fafc',
+          colorPrimary: operatorLayoutColors.primary,
+          colorText: operatorLayoutColors.textBase,
+          colorBgContainer: operatorLayoutColors.bgSurface,
           borderRadius: 12,
         },
         components: {
           Menu: {
-            itemBg: '#f8fafc',
-            itemColor: '#475569',
-            itemSelectedBg: '#eff6ff',
-            itemSelectedColor: '#2b7ead',
-            itemHoverBg: '#f2f6fb',
-            itemHoverColor: '#123d5c',
+            itemBg: operatorLayoutColors.bgSurface,
+            itemColor: operatorLayoutColors.textMuted,
+            itemSelectedBg: operatorLayoutColors.bgBrandSubtle,
+            itemSelectedColor: operatorLayoutColors.primary,
+            itemHoverBg: operatorLayoutColors.bgGhostHover,
+            itemHoverColor: operatorLayoutColors.textBrandHover,
             itemBorderRadius: 6,
             itemHeight: 48,
             itemMarginBlock: 4,
@@ -169,41 +204,68 @@ function OperatorSidebar({
         },
       }}
     >
-      <div className="flex h-full flex-col bg-[#f8fafc]">
-        <div className="flex h-[72px] items-center px-6 py-2">
+      <div
+        className="flex h-full flex-col"
+        style={{
+          background: operatorLayoutColors.bgSurface,
+        }}
+      >
+        <div
+          className="flex min-h-25 items-center border-b px-6"
+          style={{
+            borderBottomColor: operatorLayoutColors.borderSubtle,
+          }}
+        >
           <button
             type="button"
             onClick={() => onNavigate('/operator/dashboard')}
-            className="flex items-center gap-3 text-left text-[#0a2840]"
+            className={clsx(
+              'mx-auto flex w-full items-center justify-center text-left',
+              collapsed ? '' : 'gap-3.5',
+            )}
+            style={{
+              color: operatorLayoutColors.textLogo,
+            }}
+            aria-label="Về dashboard nhà xe"
           >
-            <OperatorBrandMarkIcon size={40} />
-            <div className="max-w-[140px] text-[18px] font-medium leading-[1.05]">
-              Trang quản lý nhà xe
-            </div>
+            <OperatorBrandMarkIcon size={48} />
+            {collapsed ? null : (
+              <div className="max-w-45.5 text-center text-[18px] leading-[1.05] font-medium">
+                Trang quản lý nhà xe
+              </div>
+            )}
           </button>
         </div>
 
-        <div className="flex min-h-0 flex-1 flex-col px-2 py-8">
+        <div className={clsx('flex min-h-0 flex-1 flex-col px-3', collapsed ? 'py-6' : 'py-7')}>
           <Menu
             mode="inline"
+            inlineCollapsed={collapsed}
             selectedKeys={getSelectedNavKey(pathname)}
             items={createMenuItems()}
             onClick={({ key }) => onNavigate(String(key))}
-            className="border-e-0 !bg-transparent"
+            className="border-e-0 bg-transparent!"
             style={{
               borderInlineEnd: 'none',
               background: 'transparent',
             }}
           />
 
-          <div className="mt-auto px-2 pt-6">
+          <div className={clsx('mt-auto px-2', collapsed ? 'pt-4' : 'pt-6')}>
             <Button
               type="text"
               icon={<OperatorLogoutIcon size={20} className="shrink-0" />}
               onClick={onLogout}
-              className="!flex !h-12 !w-full !items-center !justify-start !gap-4 !rounded-md !px-4 !text-[16px] !font-normal !text-[#475569] hover:!bg-[#f2f6fb] hover:!text-[#123d5c]"
+              className={clsx(
+                'flex! h-12! w-full! items-center! rounded-md! text-[16px]! font-normal!',
+                collapsed ? 'justify-center! px-0!' : 'justify-start! gap-4! px-4!',
+              )}
+              style={{
+                color: operatorLayoutColors.textMuted,
+              }}
+              aria-label="Đăng xuất"
             >
-              Logout
+              {collapsed ? null : 'Logout'}
             </Button>
           </div>
         </div>
@@ -216,6 +278,7 @@ export default function OperatorDashboardLayoutClient({ children }: { children: 
   const pathname = usePathname();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const handleNavigate = (href: string) => {
     setIsSidebarOpen(false);
@@ -228,24 +291,35 @@ export default function OperatorDashboardLayoutClient({ children }: { children: 
   };
 
   return (
-    <Layout className="!h-dvh !bg-[#f1f3fd]">
+    <Layout
+      className="h-dvh"
+      style={{
+        background: operatorLayoutColors.bgPage,
+      }}
+    >
       <div className="hidden h-dvh shrink-0 md:block">
         <Sider
-          width={256}
+          collapsible
+          collapsed={isSidebarCollapsed}
+          collapsedWidth={COLLAPSED_SIDER_WIDTH}
+          width={DESKTOP_SIDER_WIDTH}
+          breakpoint="xl"
+          onBreakpoint={(broken) => setIsSidebarCollapsed(broken)}
           theme="light"
           trigger={null}
-          className="!h-dvh"
+          className="h-dvh"
           style={{
             height: '100dvh',
             minHeight: '100dvh',
-            background: '#f8fafc',
-            borderRight: '1px solid #edf1f7',
+            background: operatorLayoutColors.bgSurface,
+            borderRight: `1px solid ${operatorLayoutColors.borderSubtle}`,
           }}
         >
           <OperatorSidebar
             pathname={pathname}
             onNavigate={handleNavigate}
             onLogout={handleLogout}
+            collapsed={isSidebarCollapsed}
           />
         </Sider>
       </div>
@@ -254,55 +328,90 @@ export default function OperatorDashboardLayoutClient({ children }: { children: 
         open={isSidebarOpen}
         placement="left"
         closable={false}
-        width={256}
+        size={MOBILE_SIDER_WIDTH}
         onClose={() => setIsSidebarOpen(false)}
         styles={{
           body: {
             padding: 0,
-            background: '#f8fafc',
+            background: operatorLayoutColors.bgSurface,
           },
         }}
       >
-        <OperatorSidebar pathname={pathname} onNavigate={handleNavigate} onLogout={handleLogout} />
+        <OperatorSidebar
+          pathname={pathname}
+          onNavigate={handleNavigate}
+          onLogout={handleLogout}
+          collapsed={false}
+        />
       </Drawer>
 
-      <Layout className="min-w-0 !bg-[#f1f3fd]">
+      <Layout
+        className="min-w-0"
+        style={{
+          background: operatorLayoutColors.bgPage,
+        }}
+      >
         <Header
-          className="!sticky !top-0 !z-30 !h-auto !bg-white/80 !px-4 !py-4 md:!px-6"
+          className="sticky top-0 z-30"
           style={{
+            height: 'auto',
+            padding: 0,
             lineHeight: 'normal',
-            borderBottom: '1px solid #edf1f7',
+            background: operatorLayoutColors.bgSurface,
+            borderBottom: `1px solid ${operatorLayoutColors.borderSubtle}`,
             backdropFilter: 'blur(6px)',
           }}
         >
-          <div className="flex w-full flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-            <div className="flex items-center gap-3">
+          <div className="flex min-h-25 w-full flex-col gap-4 px-5 py-4 lg:px-6 xl:flex-row xl:items-center xl:justify-between">
+            <div className="flex min-w-0 items-center gap-3">
               <Button
-                type="text"
+                type="default"
+                aria-label={isSidebarCollapsed ? 'Mở rộng sidebar' : 'Thu gọn sidebar'}
+                icon={isSidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                onClick={() => setIsSidebarCollapsed((current: boolean) => !current)}
+                className="hidden h-10! w-10! items-center! justify-center! rounded-xl! border! md:inline-flex!"
+                style={{
+                  background: operatorLayoutColors.bgSurface,
+                  borderColor: operatorLayoutColors.borderSubtle,
+                  color: operatorLayoutColors.textMuted,
+                  boxShadow: 'none',
+                }}
+              />
+
+              <Button
+                type="default"
                 aria-label={isSidebarOpen ? 'Đóng menu' : 'Mở menu'}
                 icon={isSidebarOpen ? <CloseOutlined /> : <MenuOutlined />}
                 onClick={() => setIsSidebarOpen((current: boolean) => !current)}
-                className="!inline-flex !h-10 !w-10 !items-center !justify-center !rounded-xl !border !border-[#e7ebf2] !bg-white !text-[#475569] hover:!text-[#123d5c] md:!hidden"
+                className="inline-flex! h-10! w-10! items-center! justify-center! rounded-xl! border! md:hidden!"
+                style={{
+                  background: operatorLayoutColors.bgSurface,
+                  borderColor: operatorLayoutColors.borderSubtle,
+                  color: operatorLayoutColors.textMuted,
+                  boxShadow: 'none',
+                }}
               />
 
               <Input
-                prefix={<OperatorSearchIcon size={20} className="text-[#4f6677]" />}
+                prefix={
+                  <OperatorSearchIcon size={20} style={{ color: operatorLayoutColors.textField }} />
+                }
                 placeholder="Tìm kiếm"
-                bordered={false}
-                className="w-full max-w-[287px]"
+                variant="borderless"
+                className="w-full max-w-71.75"
                 style={{
                   height: 44,
-                  background: '#ebeef7',
-                  borderRadius: 2,
+                  background: operatorLayoutColors.bgField,
+                  borderRadius: 12,
                   paddingInline: 13,
-                  color: '#4f6677',
+                  color: operatorLayoutColors.textField,
                   boxShadow: 'none',
                 }}
               />
             </div>
 
             <div className="flex items-center justify-end gap-1 sm:gap-2">
-              <HeaderActionButton label="Mở nhanh" icon={<OperatorLaunchIcon size={24} />} />
+              <HeaderActionButton label="Mở nhanh" icon={<OperatorNotificationIcon size={24} />} />
               <HeaderActionButton label="Trợ giúp" icon={<OperatorHelpIcon size={24} />} />
               <HeaderActionButton label="Cài đặt" icon={<OperatorSettingsIcon size={24} />} />
 
@@ -311,16 +420,26 @@ export default function OperatorDashboardLayoutClient({ children }: { children: 
                   size={40}
                   icon={<OperatorProfileIcon size={20} />}
                   style={{
-                    backgroundColor: '#2b7ead',
-                    border: '2px solid #f9f9ff',
-                    color: '#ffffff',
+                    backgroundColor: operatorLayoutColors.primary,
+                    border: `2px solid ${operatorLayoutColors.bgSurface}`,
+                    color: operatorLayoutColors.onColor,
                   }}
                 />
                 <div className="hidden text-left sm:block">
-                  <div className="text-[18px] font-medium leading-none text-[#123d5c]">
+                  <div
+                    className="text-[18px] leading-none font-medium"
+                    style={{
+                      color: operatorLayoutColors.textBrand,
+                    }}
+                  >
                     Nhà xe Phương Trang
                   </div>
-                  <div className="mt-1 text-[14px] leading-none text-[#3d5060]">
+                  <div
+                    className="mt-1 text-[14px] leading-none"
+                    style={{
+                      color: operatorLayoutColors.textSecondaryStrong,
+                    }}
+                  >
                     phuongtrang@mail.com
                   </div>
                 </div>
@@ -329,7 +448,14 @@ export default function OperatorDashboardLayoutClient({ children }: { children: 
           </div>
         </Header>
 
-        <Content className="min-h-0 overflow-y-auto !bg-[#f1f3fd] p-4 md:p-6">{children}</Content>
+        <Content
+          className="min-h-0 overflow-y-auto p-4 md:p-6"
+          style={{
+            background: operatorLayoutColors.bgPage,
+          }}
+        >
+          {children}
+        </Content>
       </Layout>
     </Layout>
   );
