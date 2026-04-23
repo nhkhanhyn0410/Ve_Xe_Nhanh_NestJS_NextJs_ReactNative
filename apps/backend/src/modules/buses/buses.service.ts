@@ -9,7 +9,7 @@ import { Model, Types } from 'mongoose';
 import { Bus, BusDocument } from './schemas/bus.schema';
 import { CreateBusDto } from './dto/create-bus.dto';
 import { UpdateBusDto } from './dto/update-bus.dto';
-import { BusStatus, BusType, SystemRole } from '@ve_xe_nhanh_ts/shared-types';
+import { ActorType, BusStatus, BusType } from '@ve_xe_nhanh_ts/shared-types';
 
 export interface BusQuery {
   operatorId?: string;
@@ -88,12 +88,15 @@ export class BusesService {
   async update(
     id: string,
     operatorId: string,
-    role: SystemRole,
+    actorType: ActorType,
     updateDto: UpdateBusDto,
   ): Promise<Bus> {
     const bus = await this.findOne(id);
 
-    if (role !== SystemRole.ADMIN && bus.operatorId.toString() !== operatorId) {
+    if (
+      actorType !== ActorType.ADMIN &&
+      bus.operatorId.toString() !== operatorId
+    ) {
       throw new ForbiddenException(
         'Bạn không có quyền sửa xe của nhà cung cấp khác',
       );
@@ -118,11 +121,14 @@ export class BusesService {
   async remove(
     id: string,
     operatorId: string,
-    role: SystemRole,
+    actorType: ActorType,
   ): Promise<void> {
     const bus = await this.findOne(id);
 
-    if (role !== SystemRole.ADMIN && bus.operatorId.toString() !== operatorId) {
+    if (
+      actorType !== ActorType.ADMIN &&
+      bus.operatorId.toString() !== operatorId
+    ) {
       throw new ForbiddenException(
         'Bạn không có quyền xóa xe của nhà cung cấp khác',
       );
