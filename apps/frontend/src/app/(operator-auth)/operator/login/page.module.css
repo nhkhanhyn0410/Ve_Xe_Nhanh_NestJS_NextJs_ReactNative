@@ -1,0 +1,94 @@
+.shell {
+  --login-shell-padding: clamp(16px, 1.4vw, 32px);
+  --login-frame-max-width: clamp(1280px, 88vw, 1680px);
+  --login-layout-gap: clamp(20px, 1.4vw, 32px);
+  --login-layout-padding: clamp(24px, 2vw, 40px);
+  min-height: 100vh;
+  width: 100%;
+  padding: var(--login-shell-padding);
+}
+
+.frame {
+  min-height: calc(100vh - (var(--login-shell-padding) * 2));
+  width: 100%;
+  max-width: var(--login-frame-max-width);
+  margin: 0 auto;
+  background: var(--operator-color-bg-surface);
+  overflow: hidden;
+}
+
+.layout {
+  min-height: inherit;
+}
+
+.leftPanelContent {
+  width: 100%;
+  max-width: clamp(572px, 84%, 720px);
+}
+
+.rightPanelContent {
+  width: 100%;
+  max-width: clamp(444px, 82%, 520px);
+}
+
+.authField:focus-within {
+  border-color: var(--operator-color-border-focus);
+  box-shadow: 0 0 0 3px rgba(149, 200, 232, 0.35);
+}
+
+.loginInput {
+  color: var(--operator-color-text-base);
+  -webkit-text-fill-color: var(--operator-color-text-base);
+}
+
+.loginInput::placeholder {
+  color: var(--operator-color-text-disabled);
+  -webkit-text-fill-color: var(--operator-color-text-disabled);
+  opacity: 1;
+}
+
+.loginInput:-webkit-autofill,
+.loginInput:-webkit-autofill:hover,
+.loginInput:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--operator-color-text-base);
+  box-shadow: 0 0 0 1000px var(--operator-color-bg-surface) inset;
+  caret-color: var(--operator-color-text-base);
+  transition: background-color 9999s ease-out 0s;
+}
+
+@media (min-width: 768px) {
+  .leftPanelContent {
+    max-width: clamp(572px, 86%, 760px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .frame {
+    min-height: calc(100vh - (var(--login-shell-padding) * 2));
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 58.5858fr) minmax(0, 41.4142fr);
+    column-gap: var(--login-layout-gap);
+    padding-inline: var(--login-layout-padding);
+  }
+
+  .leftPanelContent {
+    max-width: clamp(572px, 78%, 720px);
+  }
+
+  .rightPanelContent {
+    max-width: clamp(444px, 86%, 540px);
+  }
+}
+
+@media (min-width: 1536px) {
+  .leftPanelContent {
+    max-width: 720px;
+  }
+
+  .rightPanelContent {
+    max-width: 540px;
+  }
+}
