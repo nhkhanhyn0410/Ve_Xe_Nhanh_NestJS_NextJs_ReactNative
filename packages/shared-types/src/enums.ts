@@ -13,10 +13,16 @@ export enum AdminRole {
   SYSTEM_MANAGER = 'system_manager',
 }
 
-export enum SystemRole {
+export enum ActorType {
   USER = 'user',
   ADMIN = 'admin',
   OPERATOR = 'operator',
+  EMPLOYEE = 'employee',
+}
+
+export enum UserRole {
+  CUSTOMER = 'customer',
+  GUEST = 'guest',
 }
 
 export enum Permission {
