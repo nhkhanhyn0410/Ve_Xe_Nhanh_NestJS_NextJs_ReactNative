@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   UseGuards,
+  ForbiddenException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -20,16 +21,29 @@ import { CreateRouteDto } from './dto/create-route.dto';
 import { UpdateRouteDto } from './dto/update-route.dto';
 import { MongoIdPipe } from '../../common/pipes/mongo-id.pipe';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../../common/guards/roles.guard';
-import { Roles } from '../../common/decorators/roles.decorator';
-import { SystemRole } from '@ve_xe_nhanh_ts/shared-types';
+import { ActorsGuard } from '../../common/guards/actors.guard';
+import { Actors } from '../../common/decorators/actors.decorator';
+import { ActorType } from '@ve_xe_nhanh_ts/shared-types';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
-import { JwtPayload } from '../../common/interfaces/jwt-payload.interface';
+import { PrincipalContext } from '../../common/interfaces/jwt-payload.interface';
 
 @ApiTags('Routes')
 @Controller('routes')
 export class RoutesController {
   constructor(private readonly routesService: RoutesService) {}
+
+  private getOperatorId(
+    user: PrincipalContext,
+    queryOperatorId?: string,
+  ): string {
+    if (user.actorType === ActorType.OPERATOR) {
+      return user.tenantId ?? user.sub;
+    }
+    if (user.actorType === ActorType.ADMIN && queryOperatorId) {
+      return queryOperatorId;
+    }
+    throw new ForbiddenException('Vui lòng cung cấp operatorId khi là Admin');
+  }
 
   // ===== PUBLIC ENDPOINTS =====
   @Get()
@@ -62,48 +76,58 @@ export class RoutesController {
 
   // ===== SECURE ENDPOINTS (Operator / Admin) =====
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.OPERATOR, ActorType.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Nhà Xe] Tạo tuyến đường mới' })
+  @ApiQuery({
+    name: 'operatorId',
+    required: false,
+    description: 'Chỉ Admin mới cần truyền',
+  })
   async create(
     @Body() createDto: CreateRouteDto,
-    @CurrentUser() operator: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
+    @Query('operatorId') queryOperatorId?: string,
   ) {
-    const operatorId = operator.sub;
+    const operatorId = this.getOperatorId(user, queryOperatorId);
     const data = await this.routesService.create(operatorId, createDto);
     return { success: true, data };
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.OPERATOR, ActorType.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Nhà Xe] Cập nhật tuyến đường' })
   async update(
     @Param('id', MongoIdPipe) id: string,
     @Body() updateDto: UpdateRouteDto,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
   ) {
     const data = await this.routesService.update(
       id,
-      user.sub,
-      user.role,
+      user.tenantId ?? user.sub,
+      user.actorType,
       updateDto,
     );
     return { success: true, data };
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.OPERATOR, ActorType.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Nhà Xe/Admin] Xóa tuyến đường' })
   async remove(
     @Param('id', MongoIdPipe) id: string,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
   ) {
-    await this.routesService.remove(id, user.sub, user.role);
+    await this.routesService.remove(
+      id,
+      user.tenantId ?? user.sub,
+      user.actorType,
+    );
     return { success: true, message: 'Đã xóa tuyến đường' };
   }
 }
