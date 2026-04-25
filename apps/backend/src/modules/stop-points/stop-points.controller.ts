@@ -35,7 +35,8 @@ export class StopPointsController {
   @Get()
   @ApiOperation({ summary: 'Lấy danh sách điểm dừng toàn quốc' })
   @ApiQuery({ name: 'isActive', required: false, type: Boolean })
-  @ApiQuery({ name: 'city', required: false, type: String })
+  @ApiQuery({ name: 'provinceName', required: false, type: String })
+  @ApiQuery({ name: 'wardName', required: false, type: String })
   @ApiQuery({
     name: 'type',
     required: false,

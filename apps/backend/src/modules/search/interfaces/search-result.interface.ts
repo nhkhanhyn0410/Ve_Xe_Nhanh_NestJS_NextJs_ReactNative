@@ -9,7 +9,8 @@ export interface NearbyStopResult {
   readonly stopPointId: string;
   readonly name: string;
   readonly address: string;
-  readonly city: string;
+  readonly wardName: string;
+  readonly provinceName: string;
   readonly type: string;
 
   /** Khoảng cách đường chim bay (km) */

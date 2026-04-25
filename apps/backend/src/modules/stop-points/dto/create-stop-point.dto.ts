@@ -6,6 +6,7 @@ import {
   IsBoolean,
   ValidateNested,
   IsNumber,
+  IsMongoId,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { StopPointType, ICoordinates } from '@ve_xe_nhanh_ts/shared-types';
@@ -32,14 +33,12 @@ export class CreateStopPointDto {
   type: StopPointType;
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  city: string;
+  @IsMongoId()
+  provinceId: string;
 
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  province: string;
+  @IsMongoId()
+  wardId: string;
 
   @ApiProperty({ required: false })
   @IsString()

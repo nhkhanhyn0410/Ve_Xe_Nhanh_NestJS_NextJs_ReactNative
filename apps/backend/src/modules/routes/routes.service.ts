@@ -98,7 +98,7 @@ export class RoutesService {
 
     return this.routeModel
       .find(queryFilter)
-      .populate('stops.stopPointId', 'name city province coordinates')
+      .populate('stops.stopPointId', 'name wardName provinceName coordinates')
       .populate('stops.transitPickupIds', 'name address coordinates type')
       .populate('stops.transitDropoffIds', 'name address coordinates type')
       .populate('operatorId', 'companyName')
@@ -109,7 +109,7 @@ export class RoutesService {
   async findOne(id: string): Promise<Route> {
     const route = await this.routeModel
       .findById(id)
-      .populate('stops.stopPointId', 'name city province coordinates')
+      .populate('stops.stopPointId', 'name wardName provinceName coordinates')
       .populate('stops.transitPickupIds', 'name address coordinates type')
       .populate('stops.transitDropoffIds', 'name address coordinates type')
       .exec();

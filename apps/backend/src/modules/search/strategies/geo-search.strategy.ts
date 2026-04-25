@@ -52,7 +52,8 @@ export class GeoSearchStrategy {
         _id: unknown;
         name: string;
         address: string;
-        city: string;
+        wardName: string;
+        provinceName: string;
         type: string;
         coordinates: { lat: number; lng: number };
         distanceMeters: number;
@@ -71,7 +72,8 @@ export class GeoSearchStrategy {
           $project: {
             name: 1,
             address: 1,
-            city: 1,
+            wardName: 1,
+            provinceName: 1,
             type: 1,
             coordinates: 1,
             distanceMeters: 1,
@@ -111,7 +113,8 @@ export class GeoSearchStrategy {
         stopPointId: String(c._id),
         name: c.name,
         address: c.address,
-        city: c.city,
+        wardName: c.wardName,
+        provinceName: c.provinceName,
         type: c.type,
         straightLineKm,
         roadDistanceKm,

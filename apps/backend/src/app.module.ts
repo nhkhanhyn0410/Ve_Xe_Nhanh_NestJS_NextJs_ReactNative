@@ -9,6 +9,8 @@ import { AdminModule } from './modules/admin/admin.module';
 import { OperatorsModule } from './modules/operators/operators.module';
 
 import { StopPointsModule } from './modules/stop-points/stop-points.module';
+import { ProvincesModule } from './modules/provinces/provinces.module';
+import { WardsModule } from './modules/wards/wards.module';
 import { RoutesModule } from './modules/routes/routes.module';
 import { BusesModule } from './modules/buses/buses.module';
 import { TripsModule } from './modules/trips/trips.module';
@@ -28,6 +30,8 @@ import { SearchModule } from './modules/search/search.module';
     AuthModule,
     AdminModule,
     OperatorsModule,
+    ProvincesModule,
+    WardsModule,
     StopPointsModule,
     RoutesModule,
     BusesModule,
