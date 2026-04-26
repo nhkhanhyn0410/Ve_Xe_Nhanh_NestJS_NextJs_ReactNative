@@ -40,7 +40,6 @@ export class StopPointsService {
     createDto: CreateStopPointDto,
     user?: PrincipalContext,
   ): Promise<StopPoint> {
-<<<<<<< HEAD
     const { provinceId, wardId, ...restDto } = createDto;
     const adminData = await this.validateAndResolveProvinceWard(
       provinceId,
@@ -52,11 +51,6 @@ export class StopPointsService {
     };
     if (user && user.role === SystemRole.OPERATOR) {
       data.operatorId = new Types.ObjectId(user.sub);
-=======
-    const data: Partial<StopPoint> = { ...createDto };
-    if (user && user.actorType === ActorType.OPERATOR) {
-      data.operatorId = new Types.ObjectId(user.tenantId ?? user.sub);
->>>>>>> origin/hotfix/be/auth-module
     }
     return this.stopPointModel.create(data);
   }
