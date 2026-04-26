@@ -21,35 +21,35 @@ import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { MongoIdPipe } from '../../common/pipes/mongo-id.pipe';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../../common/guards/roles.guard';
-import { Roles } from '../../common/decorators/roles.decorator';
-import { EmployeeRole, SystemRole } from '@ve_xe_nhanh_ts/shared-types';
+import { ActorsGuard } from '../../common/guards/actors.guard';
+import { Actors } from '../../common/decorators/actors.decorator';
+import { ActorType, EmployeeRole } from '@ve_xe_nhanh_ts/shared-types';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
-import { JwtPayload } from '../../common/interfaces/jwt-payload.interface';
+import { PrincipalContext } from '../../common/interfaces/jwt-payload.interface';
 
 @ApiTags('Employees')
 @Controller('employees')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, ActorsGuard)
 @ApiBearerAuth()
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
   private extractOperatorId(
-    user: JwtPayload,
+    user: PrincipalContext,
     queryOperatorId?: string,
   ): string {
-    if (user.role === SystemRole.OPERATOR) {
-      return user.sub;
+    if (user.actorType === ActorType.OPERATOR) {
+      return user.tenantId ?? user.sub;
     }
     // Nếu là Admin, phải cung cấp queryOperatorId để biết đang quản lý NV cho nhà xe nào
-    if (user.role === SystemRole.ADMIN && queryOperatorId) {
+    if (user.actorType === ActorType.ADMIN && queryOperatorId) {
       return queryOperatorId;
     }
     throw new ForbiddenException('Vui lòng cung cấp operatorId (nếu là Admin)');
   }
 
   @Post()
-  @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
+  @Actors(ActorType.OPERATOR, ActorType.ADMIN)
   @ApiOperation({ summary: 'Thêm nhân viên mới' })
   @ApiQuery({
     name: 'operatorId',
@@ -58,7 +58,7 @@ export class EmployeesController {
   })
   async create(
     @Body() createDto: CreateEmployeeDto,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
     @Query('operatorId') queryOperatorId?: string,
   ) {
     const operatorId = this.extractOperatorId(user, queryOperatorId);
@@ -67,7 +67,7 @@ export class EmployeesController {
   }
 
   @Get()
-  @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
+  @Actors(ActorType.OPERATOR, ActorType.ADMIN)
   @ApiOperation({ summary: 'Lấy danh sách nhân viên của nhà xe' })
   @ApiQuery({ name: 'isActive', required: false, type: Boolean })
   @ApiQuery({
@@ -84,7 +84,7 @@ export class EmployeesController {
   })
   async findAll(
     @Query() query: EmployeeQuery,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
     @Query('operatorId') queryOperatorId?: string,
   ) {
     const operatorId = this.extractOperatorId(user, queryOperatorId);
@@ -93,7 +93,7 @@ export class EmployeesController {
   }
 
   @Get(':id')
-  @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
+  @Actors(ActorType.OPERATOR, ActorType.ADMIN)
   @ApiOperation({ summary: 'Xem chi tiết nhân viên' })
   @ApiQuery({
     name: 'operatorId',
@@ -102,7 +102,7 @@ export class EmployeesController {
   })
   async findOne(
     @Param('id', MongoIdPipe) id: string,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
     @Query('operatorId') queryOperatorId?: string,
   ) {
     const operatorId = this.extractOperatorId(user, queryOperatorId);
@@ -111,7 +111,7 @@ export class EmployeesController {
   }
 
   @Put(':id')
-  @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
+  @Actors(ActorType.OPERATOR, ActorType.ADMIN)
   @ApiOperation({ summary: 'Cập nhật thông tin nhân viên' })
   @ApiQuery({
     name: 'operatorId',
@@ -121,7 +121,7 @@ export class EmployeesController {
   async update(
     @Param('id', MongoIdPipe) id: string,
     @Body() updateDto: UpdateEmployeeDto,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
     @Query('operatorId') queryOperatorId?: string,
   ) {
     const operatorId = this.extractOperatorId(user, queryOperatorId);
@@ -130,7 +130,7 @@ export class EmployeesController {
   }
 
   @Delete(':id')
-  @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
+  @Actors(ActorType.OPERATOR, ActorType.ADMIN)
   @ApiOperation({ summary: 'Xóa nhân viên (Soft delete)' })
   @ApiQuery({
     name: 'operatorId',
@@ -139,7 +139,7 @@ export class EmployeesController {
   })
   async remove(
     @Param('id', MongoIdPipe) id: string,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
     @Query('operatorId') queryOperatorId?: string,
   ) {
     const operatorId = this.extractOperatorId(user, queryOperatorId);

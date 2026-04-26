@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   UseGuards,
+  ForbiddenException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -20,20 +21,33 @@ import { CreateBusDto } from './dto/create-bus.dto';
 import { UpdateBusDto } from './dto/update-bus.dto';
 import { MongoIdPipe } from '@common/pipes/mongo-id.pipe';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '@common/guards/roles.guard';
-import { Roles } from '@common/decorators/roles.decorator';
-import { SystemRole, BusType, BusStatus } from '@ve_xe_nhanh_ts/shared-types';
+import { ActorsGuard } from '@common/guards/actors.guard';
+import { Actors } from '@common/decorators/actors.decorator';
+import { ActorType, BusType, BusStatus } from '@ve_xe_nhanh_ts/shared-types';
 import { CurrentUser } from '@common/decorators/current-user.decorator';
-import { JwtPayload } from '@common/interfaces/jwt-payload.interface';
+import { PrincipalContext } from '@common/interfaces/jwt-payload.interface';
 
 @ApiTags('Buses')
 @Controller('buses')
 export class BusesController {
   constructor(private readonly busesService: BusesService) {}
 
+  private getOperatorId(
+    user: PrincipalContext,
+    queryOperatorId?: string,
+  ): string {
+    if (user.actorType === ActorType.OPERATOR) {
+      return user.tenantId ?? user.sub;
+    }
+    if (user.actorType === ActorType.ADMIN && queryOperatorId) {
+      return queryOperatorId;
+    }
+    throw new ForbiddenException('Vui lòng cung cấp operatorId khi là Admin');
+  }
+
   @Get()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.OPERATOR, ActorType.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Nhà Xe / Admin] Lấy danh sách xe' })
   @ApiQuery({
@@ -55,10 +69,13 @@ export class BusesController {
     enumName: 'BusType',
   })
   @ApiQuery({ name: 'busNumber', required: false, type: String })
-  async findAll(@Query() query: BusQuery, @CurrentUser() user: JwtPayload) {
+  async findAll(
+    @Query() query: BusQuery,
+    @CurrentUser() user: PrincipalContext,
+  ) {
     // OPERATOR: chỉ thấy xe của mình, bỏ qua query.operatorId
-    if (user.role === SystemRole.OPERATOR) {
-      query.operatorId = user.sub;
+    if (user.actorType === ActorType.OPERATOR) {
+      query.operatorId = user.tenantId ?? user.sub;
     }
     // ADMIN: dùng query.operatorId để lọc, hoặc bỏ trống để xem tất cả
 
@@ -67,62 +84,76 @@ export class BusesController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.OPERATOR, ActorType.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Nhà Xe / Admin] Xem chi tiết một con xe' })
   async findOne(
     @Param('id', MongoIdPipe) id: string,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
   ) {
     // OPERATOR: chỉ xem xe của mình, ADMIN: xem bất kỳ
-    const operatorId = user.role === SystemRole.OPERATOR ? user.sub : undefined;
+    const operatorId =
+      user.actorType === ActorType.OPERATOR
+        ? (user.tenantId ?? user.sub)
+        : undefined;
     const data = await this.busesService.findOne(id, operatorId);
     return { success: true, data };
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.OPERATOR, ActorType.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Nhà Xe] Thêm mới một chiếc xe' })
+  @ApiQuery({
+    name: 'operatorId',
+    required: false,
+    description: 'Chỉ Admin mới cần truyền',
+  })
   async create(
     @Body() createDto: CreateBusDto,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
+    @Query('operatorId') queryOperatorId?: string,
   ) {
-    const data = await this.busesService.create(user.sub, createDto);
+    const operatorId = this.getOperatorId(user, queryOperatorId);
+    const data = await this.busesService.create(operatorId, createDto);
     return { success: true, data };
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.OPERATOR, ActorType.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Nhà Xe] Cập nhật thông tin/sơ đồ ghế của xe' })
   async update(
     @Param('id', MongoIdPipe) id: string,
     @Body() updateDto: UpdateBusDto,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
   ) {
     const data = await this.busesService.update(
       id,
-      user.sub,
-      user.role,
+      user.tenantId ?? user.sub,
+      user.actorType,
       updateDto,
     );
     return { success: true, data };
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.OPERATOR, ActorType.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Nhà Xe] Xóa / Hủy xe' })
   async remove(
     @Param('id', MongoIdPipe) id: string,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
   ) {
-    await this.busesService.remove(id, user.sub, user.role);
+    await this.busesService.remove(
+      id,
+      user.tenantId ?? user.sub,
+      user.actorType,
+    );
     return { success: true, message: 'Đã xóa xe thành công' };
   }
 }

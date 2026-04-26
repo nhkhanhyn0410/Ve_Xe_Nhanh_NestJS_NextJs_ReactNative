@@ -33,12 +33,22 @@
     "docker:down": "docker compose -f docker/docker-compose.yml down"
   },
   "devDependencies": {
-    "@swc/cli": "^0.7.10",
+    "@swc/cli": "^0.8.1",
     "@swc/core": "^1.15.30",
     "concurrently": "^8.2.0",
     "prettier": "^3.1.0"
   },
-  "dependencies": {
-    "bcrypt": "^6.0.0"
+  "overrides": {
+    "chromium-edge-launcher": "^0.3.0",
+    "follow-redirects": "^1.16.0",
+    "@jest/reporters": {
+      "glob": "^13.0.6"
+    },
+    "jest-config": {
+      "glob": "^13.0.6"
+    },
+    "jest-runtime": {
+      "glob": "^13.0.6"
+    }
   }
 }

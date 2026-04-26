@@ -14,7 +14,7 @@ import {
 } from '../stop-points/schemas/stop-point.schema';
 import { CreateRouteDto, RouteStopDto } from './dto/create-route.dto';
 import { UpdateRouteDto } from './dto/update-route.dto';
-import { SystemRole, RouteStopRole } from '@ve_xe_nhanh_ts/shared-types';
+import { ActorType, RouteStopRole } from '@ve_xe_nhanh_ts/shared-types';
 
 export interface RouteQuery {
   originStopPointId?: string;
@@ -123,13 +123,13 @@ export class RoutesService {
   async update(
     id: string,
     operatorId: string,
-    role: SystemRole,
+    actorType: ActorType,
     updateDto: UpdateRouteDto,
   ): Promise<Route> {
     const route = await this.findOne(id);
 
     if (
-      role !== SystemRole.ADMIN &&
+      actorType !== ActorType.ADMIN &&
       route.operatorId.toString() !== operatorId
     ) {
       throw new ForbiddenException(
@@ -198,12 +198,12 @@ export class RoutesService {
   async remove(
     id: string,
     operatorId: string,
-    role: SystemRole,
+    actorType: ActorType,
   ): Promise<void> {
     const route = await this.findOne(id);
 
     if (
-      role !== SystemRole.ADMIN &&
+      actorType !== ActorType.ADMIN &&
       route.operatorId.toString() !== operatorId
     ) {
       throw new ForbiddenException(

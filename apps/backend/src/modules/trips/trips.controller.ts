@@ -9,6 +9,7 @@ import {
   Delete,
   Query,
   UseGuards,
+  ForbiddenException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -23,16 +24,29 @@ import { AssignBusDto, AssignCrewDto } from './dto/assign-resource.dto';
 import { TripMapper } from './mappers/trip.mapper';
 import { MongoIdPipe } from '@common/pipes/mongo-id.pipe';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '@common/guards/roles.guard';
-import { Roles } from '@common/decorators/roles.decorator';
-import { SystemRole, TripStatus } from '@ve_xe_nhanh_ts/shared-types';
+import { ActorsGuard } from '@common/guards/actors.guard';
+import { Actors } from '@common/decorators/actors.decorator';
+import { ActorType, TripStatus } from '@ve_xe_nhanh_ts/shared-types';
 import { CurrentUser } from '@common/decorators/current-user.decorator';
-import { JwtPayload } from '@common/interfaces/jwt-payload.interface';
+import { PrincipalContext } from '@common/interfaces/jwt-payload.interface';
 
 @ApiTags('Trips')
 @Controller('trips')
 export class TripsController {
   constructor(private readonly tripsService: TripsService) {}
+
+  private getOperatorId(
+    user: PrincipalContext,
+    queryOperatorId?: string,
+  ): string {
+    if (user.actorType === ActorType.OPERATOR) {
+      return user.tenantId ?? user.sub;
+    }
+    if (user.actorType === ActorType.ADMIN && queryOperatorId) {
+      return queryOperatorId;
+    }
+    throw new ForbiddenException('Vui lòng cung cấp operatorId khi là Admin');
+  }
 
   // ─── CRUD ─────────────────────────────────────────────────────────
 
@@ -61,57 +75,68 @@ export class TripsController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.OPERATOR, ActorType.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({
     summary: '[Nhà Xe] Tạo chuyến xe (DRAFT nếu chưa gắn xe)',
   })
+  @ApiQuery({
+    name: 'operatorId',
+    required: false,
+    description: 'Chỉ Admin mới cần truyền',
+  })
   async create(
     @Body() createDto: CreateTripDto,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
+    @Query('operatorId') queryOperatorId?: string,
   ) {
-    const doc = await this.tripsService.create(user.sub, createDto);
+    const operatorId = this.getOperatorId(user, queryOperatorId);
+    const doc = await this.tripsService.create(operatorId, createDto);
     return TripMapper.toList(doc);
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.OPERATOR, ActorType.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Nhà Xe] Cập nhật thông tin chuyến xe' })
   async update(
     @Param('id', MongoIdPipe) id: string,
     @Body() updateDto: UpdateTripDto,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
   ) {
     const doc = await this.tripsService.update(
       id,
-      user.sub,
-      user.role,
+      user.tenantId ?? user.sub,
+      user.actorType,
       updateDto,
     );
     return TripMapper.toList(doc);
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.OPERATOR, ActorType.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Nhà Xe] Xóa chuyến xe' })
   async remove(
     @Param('id', MongoIdPipe) id: string,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
   ) {
-    await this.tripsService.remove(id, user.sub, user.role);
+    await this.tripsService.remove(
+      id,
+      user.tenantId ?? user.sub,
+      user.actorType,
+    );
     return { message: 'Đã xóa chuyến xe thành công' };
   }
 
   // ─── Phân công ────────────────────────────────────────────────────
 
   @Patch(':id/assign-bus')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.OPERATOR, ActorType.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({
     summary: '[Nhà Xe] Gắn xe vào chuyến (DRAFT → SCHEDULED)',
@@ -119,41 +144,50 @@ export class TripsController {
   async assignBus(
     @Param('id', MongoIdPipe) id: string,
     @Body() dto: AssignBusDto,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
   ) {
-    const doc = await this.tripsService.assignBus(id, user.sub, user.role, dto);
+    const doc = await this.tripsService.assignBus(
+      id,
+      user.tenantId ?? user.sub,
+      user.actorType,
+      dto,
+    );
     return TripMapper.toDetail(doc);
   }
 
   @Patch(':id/unassign-bus')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.OPERATOR, ActorType.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({
     summary: '[Nhà Xe] Bỏ gắn xe (SCHEDULED → DRAFT)',
   })
   async unassignBus(
     @Param('id', MongoIdPipe) id: string,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
   ) {
-    const doc = await this.tripsService.unassignBus(id, user.sub, user.role);
+    const doc = await this.tripsService.unassignBus(
+      id,
+      user.tenantId ?? user.sub,
+      user.actorType,
+    );
     return TripMapper.toList(doc);
   }
 
   @Patch(':id/assign-crew')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.OPERATOR, SystemRole.ADMIN)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.OPERATOR, ActorType.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Nhà Xe] Phân công nhân viên cho chuyến' })
   async assignCrew(
     @Param('id', MongoIdPipe) id: string,
     @Body() dto: AssignCrewDto,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
   ) {
     const doc = await this.tripsService.assignCrew(
       id,
-      user.sub,
-      user.role,
+      user.tenantId ?? user.sub,
+      user.actorType,
       dto,
     );
     return TripMapper.toList(doc);

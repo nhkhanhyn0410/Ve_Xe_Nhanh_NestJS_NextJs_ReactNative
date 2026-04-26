@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OperatorStatus, SystemRole } from '@ve_xe_nhanh_ts/shared-types';
+import { ActorType, OperatorStatus } from '@ve_xe_nhanh_ts/shared-types';
 import { OperatorsController } from './operators.controller';
 import { OperatorsService } from './operators.service';
 import { CreateOperatorDto } from './dto/create-operator.dto';
 import { UpdateOperatorDto } from './dto/update-operator.dto';
 import { UpdateBankInfoDto } from './dto/update-bank-info.dto';
-import { JwtPayload } from '../../common/interfaces/jwt-payload.interface';
+import { PrincipalContext } from '../../common/interfaces/jwt-payload.interface';
 
 describe('OperatorsController', () => {
   let controller: OperatorsController;
@@ -104,9 +104,15 @@ describe('OperatorsController', () => {
       const id = 'mock-id';
       const dto: UpdateOperatorDto = { companyName: 'Updated Name' };
       const expectedResult = { _id: id, ...dto };
+      const admin: PrincipalContext = {
+        sub: 'admin-id',
+        actorId: 'admin-id',
+        email: 'admin@test.com',
+        actorType: ActorType.ADMIN,
+      };
       mockOperatorsService.update.mockResolvedValue(expectedResult);
 
-      const result = await controller.update(id, dto);
+      const result = await controller.update(id, dto, admin);
 
       expect(mockOperatorsService.update).toHaveBeenCalledWith(id, dto);
       expect(result).toEqual({ success: true, data: expectedResult });
@@ -130,10 +136,11 @@ describe('OperatorsController', () => {
 
   describe('admin operations', () => {
     const id = 'mock-id';
-    const admin: JwtPayload = {
+    const admin: PrincipalContext = {
       sub: 'admin-id',
+      actorId: 'admin-id',
       email: 'admin@test.com',
-      role: SystemRole.ADMIN,
+      actorType: ActorType.ADMIN,
     };
 
     it('should approve an operator', async () => {
@@ -168,9 +175,15 @@ describe('OperatorsController', () => {
         branch: 'Test Branch',
       };
       const expectedResult = { _id: id, bankInfo: dto };
+      const admin: PrincipalContext = {
+        sub: 'admin-id',
+        actorId: 'admin-id',
+        email: 'admin@test.com',
+        actorType: ActorType.ADMIN,
+      };
       mockOperatorsService.updateBankInfo.mockResolvedValue(expectedResult);
 
-      const result = await controller.updateBankInfo(id, dto);
+      const result = await controller.updateBankInfo(id, dto, admin);
 
       expect(mockOperatorsService.updateBankInfo).toHaveBeenCalledWith(id, dto);
       expect(result).toEqual({ success: true, data: expectedResult });

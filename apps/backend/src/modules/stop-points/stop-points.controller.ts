@@ -20,11 +20,11 @@ import { CreateStopPointDto } from './dto/create-stop-point.dto';
 import { UpdateStopPointDto } from './dto/update-stop-point.dto';
 import { MongoIdPipe } from '../../common/pipes/mongo-id.pipe';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../../common/guards/roles.guard';
-import { Roles } from '../../common/decorators/roles.decorator';
-import { StopPointType, SystemRole } from '@ve_xe_nhanh_ts/shared-types';
+import { ActorsGuard } from '../../common/guards/actors.guard';
+import { Actors } from '../../common/decorators/actors.decorator';
+import { ActorType, StopPointType } from '@ve_xe_nhanh_ts/shared-types';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
-import { JwtPayload } from '../../common/interfaces/jwt-payload.interface';
+import { PrincipalContext } from '../../common/interfaces/jwt-payload.interface';
 
 @ApiTags('Stop Points')
 @Controller('stop-points')
@@ -58,40 +58,40 @@ export class StopPointsController {
 
   // ===== ADMIN ENDPOINTS =====
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.ADMIN, SystemRole.OPERATOR)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.ADMIN, ActorType.OPERATOR)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Admin/Operator] Thêm điểm dừng mới' })
   async create(
     @Body() createDto: CreateStopPointDto,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
   ) {
     const data = await this.stopPointsService.create(createDto, user);
     return { success: true, data };
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.ADMIN, SystemRole.OPERATOR)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.ADMIN, ActorType.OPERATOR)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Admin/Operator] Cập nhật điểm dừng' })
   async update(
     @Param('id', MongoIdPipe) id: string,
     @Body() updateDto: UpdateStopPointDto,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
   ) {
     const data = await this.stopPointsService.update(id, updateDto, user);
     return { success: true, data };
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.ADMIN, SystemRole.OPERATOR)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.ADMIN, ActorType.OPERATOR)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Admin/Operator] Xóa điểm dừng' })
   async remove(
     @Param('id', MongoIdPipe) id: string,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
   ) {
     await this.stopPointsService.remove(id, user);
     return { success: true, message: 'Đã xóa điểm dừng' };

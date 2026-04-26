@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { LoyaltyTier, Gender } from '@ve_xe_nhanh_ts/shared-types';
+import { LoyaltyTier, Gender, UserRole } from '@ve_xe_nhanh_ts/shared-types';
 
 export type UserDocument = User & Document;
 
@@ -45,6 +45,9 @@ export class User {
 
   @Prop({ default: false })
   isPhoneVerified?: boolean;
+
+  @Prop({ type: String, enum: UserRole, default: UserRole.CUSTOMER })
+  role: UserRole;
 
   @Prop({ default: false })
   isBlocked: boolean;

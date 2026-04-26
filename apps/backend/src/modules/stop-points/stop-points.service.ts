@@ -14,8 +14,8 @@ import {
 import { Ward, WardDocument } from '../wards/schemas/ward.schema';
 import { CreateStopPointDto } from './dto/create-stop-point.dto';
 import { UpdateStopPointDto } from './dto/update-stop-point.dto';
-import { StopPointType, SystemRole } from '@ve_xe_nhanh_ts/shared-types';
-import { JwtPayload } from '../../common/interfaces/jwt-payload.interface';
+import { ActorType, StopPointType } from '@ve_xe_nhanh_ts/shared-types';
+import { PrincipalContext } from '../../common/interfaces/jwt-payload.interface';
 
 export interface StopPointQuery {
   isActive?: string | boolean;
@@ -38,8 +38,9 @@ export class StopPointsService {
 
   async create(
     createDto: CreateStopPointDto,
-    user?: JwtPayload,
+    user?: PrincipalContext,
   ): Promise<StopPoint> {
+<<<<<<< HEAD
     const { provinceId, wardId, ...restDto } = createDto;
     const adminData = await this.validateAndResolveProvinceWard(
       provinceId,
@@ -51,13 +52,18 @@ export class StopPointsService {
     };
     if (user && user.role === SystemRole.OPERATOR) {
       data.operatorId = new Types.ObjectId(user.sub);
+=======
+    const data: Partial<StopPoint> = { ...createDto };
+    if (user && user.actorType === ActorType.OPERATOR) {
+      data.operatorId = new Types.ObjectId(user.tenantId ?? user.sub);
+>>>>>>> origin/hotfix/be/auth-module
     }
     return this.stopPointModel.create(data);
   }
 
   async findAll(
     query: StopPointQuery = {},
-    user?: JwtPayload,
+    user?: PrincipalContext,
   ): Promise<StopPointDocument[]> {
     const { isActive, wardName, provinceName, type, search } = query;
     // Khởi tạo filter với kiểu tường minh để tránh lỗi linter không resolve được FilterQuery
@@ -90,11 +96,11 @@ export class StopPointsService {
       filter.$text = { $search: search };
     }
 
-    if (user && user.role === SystemRole.OPERATOR) {
+    if (user && user.actorType === ActorType.OPERATOR) {
       filter.$or = [
         { operatorId: { $exists: false } },
         { operatorId: null },
-        { operatorId: new Types.ObjectId(user.sub) },
+        { operatorId: new Types.ObjectId(user.tenantId ?? user.sub) },
       ];
     }
 
@@ -119,15 +125,15 @@ export class StopPointsService {
   async update(
     id: string,
     updateDto: UpdateStopPointDto,
-    user?: JwtPayload,
+    user?: PrincipalContext,
   ): Promise<StopPoint> {
     const stopPoint = await this.stopPointModel.findById(id).exec();
     if (!stopPoint) {
       throw new NotFoundException('Không tìm thấy điểm dừng');
     }
 
-    if (user && user.role === SystemRole.OPERATOR) {
-      if (String(stopPoint.operatorId) !== user.sub) {
+    if (user && user.actorType === ActorType.OPERATOR) {
+      if (String(stopPoint.operatorId) !== (user.tenantId ?? user.sub)) {
         throw new ForbiddenException('Bạn không có quyền sửa điểm dừng này');
       }
     }
@@ -169,6 +175,7 @@ export class StopPointsService {
       throw new NotFoundException('Không tìm thấy tỉnh/thành phố');
     }
 
+<<<<<<< HEAD
     const ward = await this.wardModel.findById(wardId).exec();
     if (!ward) {
       throw new NotFoundException('Không tìm thấy phường/xã');
@@ -188,13 +195,16 @@ export class StopPointsService {
     };
   }
   async remove(id: string, user?: JwtPayload): Promise<void> {
+=======
+  async remove(id: string, user?: PrincipalContext): Promise<void> {
+>>>>>>> origin/hotfix/be/auth-module
     const stopPoint = await this.stopPointModel.findById(id).exec();
     if (!stopPoint) {
       throw new NotFoundException('Không tìm thấy điểm dừng');
     }
 
-    if (user && user.role === SystemRole.OPERATOR) {
-      if (String(stopPoint.operatorId) !== user.sub) {
+    if (user && user.actorType === ActorType.OPERATOR) {
+      if (String(stopPoint.operatorId) !== (user.tenantId ?? user.sub)) {
         throw new ForbiddenException('Bạn không có quyền xóa điểm dừng này');
       }
     }

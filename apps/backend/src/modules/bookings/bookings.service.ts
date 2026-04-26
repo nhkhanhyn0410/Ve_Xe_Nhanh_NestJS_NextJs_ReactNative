@@ -8,10 +8,11 @@ import { Model, Types } from 'mongoose';
 import { Booking, BookingDocument } from './schemas/booking.schema';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { SeatLockService, SeatLockRequest } from './seat-lock.service';
-import { SystemRole, BookingStatus } from '@ve_xe_nhanh_ts/shared-types';
+import { ActorType, BookingStatus } from '@ve_xe_nhanh_ts/shared-types';
 
 export interface BookingQuery {
   userId?: string;
+  operatorId?: string;
   bookingCode?: string;
   status?: BookingStatus;
 }
@@ -108,14 +109,17 @@ export class BookingsService {
   }
 
   async findAll(query: BookingQuery = {}): Promise<BookingDocument[]> {
-    const { userId, bookingCode, status } = query;
+    const { userId, operatorId, bookingCode, status } = query;
 
     const filter: {
       userId?: Types.ObjectId;
+      'tickets.operatorId'?: Types.ObjectId;
       bookingCode?: string;
       status?: BookingStatus;
     } = {};
     if (userId) filter.userId = new Types.ObjectId(userId);
+    if (operatorId)
+      filter['tickets.operatorId'] = new Types.ObjectId(operatorId);
     if (bookingCode) filter.bookingCode = bookingCode;
     if (status) filter.status = status;
 
@@ -144,13 +148,25 @@ export class BookingsService {
     id: string,
     status: BookingStatus,
     userId: string,
-    role: SystemRole,
+    actorType: ActorType,
+    operatorId?: string,
   ): Promise<BookingDocument> {
     const booking = await this.findOne(id);
 
-    if (role === SystemRole.USER && booking.userId?.toString() !== userId) {
+    if (actorType === ActorType.USER && booking.userId?.toString() !== userId) {
       throw new ForbiddenException(
         'Bạn không có quyền cập nhật đơn đặt vé này',
+      );
+    }
+
+    if (
+      actorType === ActorType.OPERATOR &&
+      !booking.tickets.some(
+        (ticket) => ticket.operatorId.toString() === operatorId,
+      )
+    ) {
+      throw new ForbiddenException(
+        'Bạn không có quyền cập nhật đơn đặt vé của nhà xe khác',
       );
     }
 
