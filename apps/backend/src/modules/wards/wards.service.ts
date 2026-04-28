@@ -61,7 +61,7 @@ export class WardsService {
       .exec();
 
     if (!ward) {
-      throw new NotFoundException('Khong tim thay phuong/xa');
+      throw new NotFoundException('Không tìm thấy phường/xã');
     }
     return ward;
   }
@@ -69,13 +69,14 @@ export class WardsService {
   async update(id: string, updateDto: UpdateWardDto): Promise<WardDocument> {
     const ward = await this.wardModel.findById(id).exec();
     if (!ward) {
-      throw new NotFoundException('Khong tim thay phuong/xa');
+      throw new NotFoundException('Không tìm thấy phường/xã');
     }
 
     if (updateDto.code && updateDto.code !== ward.code) {
       await this.ensureCodeAvailable(updateDto.code, id);
     }
 
+    // provinceId xử lý riêng vì cần ép kiểu ObjectId và validate bản ghi cha.
     if (updateDto.provinceId) {
       ward.provinceId = this.toObjectId(updateDto.provinceId, 'provinceId');
       await this.ensureProvinceExists(ward.provinceId);
@@ -104,7 +105,7 @@ export class WardsService {
   async remove(id: string): Promise<void> {
     const deleted = await this.wardModel.findByIdAndDelete(id).exec();
     if (!deleted) {
-      throw new NotFoundException('Khong tim thay phuong/xa');
+      throw new NotFoundException('Không tìm thấy phường/xã');
     }
   }
 
@@ -124,7 +125,7 @@ export class WardsService {
     const province = await this.provinceModel.exists({ _id: provinceId });
 
     if (!province) {
-      throw new NotFoundException('Khong tim thay tinh/thanh pho');
+      throw new NotFoundException('Không tìm thấy tỉnh/thành phố');
     }
   }
 
@@ -141,13 +142,13 @@ export class WardsService {
     const existingWard = await this.wardModel.exists(filter);
 
     if (existingWard) {
-      throw new ConflictException('Ma phuong/xa da ton tai');
+      throw new ConflictException('Mã phường/xã đã tồn tại');
     }
   }
 
   private rethrowDuplicateCodeError(error: unknown): never {
     if (this.isDuplicateKeyError(error)) {
-      throw new ConflictException('Ma phuong/xa da ton tai');
+      throw new ConflictException('Mã phường/xã đã tồn tại');
     }
 
     throw error;

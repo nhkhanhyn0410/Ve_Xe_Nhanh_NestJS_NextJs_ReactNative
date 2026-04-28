@@ -147,3 +147,14 @@ export enum RouteStopRole {
   STOP = 'stop', // Điểm dừng trung gian
   DESTINATION = 'destination', // Bến đến (order cuối)
 }
+
+// Enum địa giới hành chính dùng chung giữa backend, frontend và Swagger.
+export enum ProvinceType {
+  PROVINCE = 'province',
+  MUNICIPALITY = 'municipality',
+}
+
+export enum WardType {
+  WARD = 'ward',
+  COMMUNE = 'commune',
+}

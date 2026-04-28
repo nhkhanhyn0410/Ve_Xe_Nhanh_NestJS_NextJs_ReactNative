@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { WardType } from '@ve_xe_nhanh_ts/shared-types';
 import { IsEnum, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
-import { WardType } from '../schemas/ward.schema';
 
 export class CreateWardDto {
   @ApiProperty()
@@ -17,6 +17,7 @@ export class CreateWardDto {
   @IsEnum(WardType)
   type: WardType;
 
+  // API nhận string; service sẽ đổi sang ObjectId và kiểm tra tỉnh cha có tồn tại.
   @ApiProperty()
   @IsMongoId()
   provinceId: string;

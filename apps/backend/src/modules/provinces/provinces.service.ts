@@ -34,7 +34,7 @@ export class ProvincesService {
   async findOne(id: string): Promise<ProvinceDocument> {
     const province = await this.provinceModel.findById(id).exec();
     if (!province) {
-      throw new NotFoundException('Khong tim thay tinh/thanh pho');
+      throw new NotFoundException('Không tìm thấy tỉnh/thành phố');
     }
     return province;
   }
@@ -45,7 +45,7 @@ export class ProvincesService {
   ): Promise<ProvinceDocument> {
     const province = await this.provinceModel.findById(id).exec();
     if (!province) {
-      throw new NotFoundException('Khong tim thay tinh/thanh pho');
+      throw new NotFoundException('Không tìm thấy tỉnh/thành phố');
     }
 
     if (updateDto.code && updateDto.code !== province.code) {
@@ -64,7 +64,7 @@ export class ProvincesService {
   async remove(id: string): Promise<void> {
     const deleted = await this.provinceModel.findByIdAndDelete(id).exec();
     if (!deleted) {
-      throw new NotFoundException('Khong tim thay tinh/thanh pho');
+      throw new NotFoundException('Không tìm thấy tỉnh/thành phố');
     }
   }
 
@@ -81,13 +81,13 @@ export class ProvincesService {
     const existingProvince = await this.provinceModel.exists(filter);
 
     if (existingProvince) {
-      throw new ConflictException('Ma tinh/thanh pho da ton tai');
+      throw new ConflictException('Mã tỉnh/thành phố đã tồn tại');
     }
   }
 
   private rethrowDuplicateCodeError(error: unknown): never {
     if (this.isDuplicateKeyError(error)) {
-      throw new ConflictException('Ma tinh/thanh pho da ton tai');
+      throw new ConflictException('Mã tỉnh/thành phố đã tồn tại');
     }
 
     throw error;

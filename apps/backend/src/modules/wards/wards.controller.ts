@@ -15,14 +15,14 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
+import { ActorType } from '@ve_xe_nhanh_ts/shared-types';
+import { Actors } from '@common/decorators/actors.decorator';
+import { ActorsGuard } from '@common/guards/actors.guard';
+import { MongoIdPipe } from '@common/pipes/mongo-id.pipe';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateWardDto } from './dto/create-ward.dto';
 import { UpdateWardDto } from './dto/update-ward.dto';
 import { WardsService } from './wards.service';
-import { MongoIdPipe } from '@common/pipes/mongo-id.pipe';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '@common/guards/roles.guard';
-import { Roles } from '@common/decorators/roles.decorator';
-import { SystemRole } from '@ve_xe_nhanh_ts/shared-types';
 
 @ApiTags('Wards')
 @Controller('wards')
@@ -45,8 +45,8 @@ export class WardsController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.ADMIN)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Admin] Thêm phường/xã mới' })
   async create(@Body() createDto: CreateWardDto) {
@@ -55,8 +55,8 @@ export class WardsController {
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.ADMIN)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Admin] Cập nhật phường/xã' })
   async update(
@@ -68,8 +68,8 @@ export class WardsController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.ADMIN)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Admin] Xóa phường/xã' })
   async remove(@Param('id', MongoIdPipe) id: string) {

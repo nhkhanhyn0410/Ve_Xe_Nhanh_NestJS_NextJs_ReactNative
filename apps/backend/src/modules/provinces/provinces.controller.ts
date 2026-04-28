@@ -9,14 +9,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ActorType } from '@ve_xe_nhanh_ts/shared-types';
+import { Actors } from '@common/decorators/actors.decorator';
+import { ActorsGuard } from '@common/guards/actors.guard';
+import { MongoIdPipe } from '@common/pipes/mongo-id.pipe';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateProvinceDto } from './dto/create-province.dto';
 import { UpdateProvinceDto } from './dto/update-province.dto';
 import { ProvincesService } from './provinces.service';
-import { MongoIdPipe } from '@common/pipes/mongo-id.pipe';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '@common/guards/roles.guard';
-import { Roles } from '@common/decorators/roles.decorator';
-import { SystemRole } from '@ve_xe_nhanh_ts/shared-types';
 
 @ApiTags('Provinces')
 @Controller('provinces')
@@ -38,8 +38,8 @@ export class ProvincesController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.ADMIN)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Admin] Thêm tỉnh/thành phố mới' })
   async create(@Body() createDto: CreateProvinceDto) {
@@ -48,8 +48,8 @@ export class ProvincesController {
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.ADMIN)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Admin] Cập nhật tỉnh/thành phố' })
   async update(
@@ -61,8 +61,8 @@ export class ProvincesController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.ADMIN)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Admin] Xóa tỉnh/thành phố' })
   async remove(@Param('id', MongoIdPipe) id: string) {
