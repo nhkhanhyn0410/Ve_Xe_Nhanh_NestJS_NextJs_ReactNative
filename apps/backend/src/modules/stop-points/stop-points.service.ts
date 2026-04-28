@@ -49,7 +49,7 @@ export class StopPointsService {
       ...restDto,
       ...adminData,
     };
-    if (user && user.role === SystemRole.OPERATOR) {
+    if (user && user.actorType === ActorType.OPERATOR) {
       data.operatorId = new Types.ObjectId(user.sub);
     }
     return this.stopPointModel.create(data);
@@ -169,7 +169,6 @@ export class StopPointsService {
       throw new NotFoundException('Không tìm thấy tỉnh/thành phố');
     }
 
-<<<<<<< HEAD
     const ward = await this.wardModel.findById(wardId).exec();
     if (!ward) {
       throw new NotFoundException('Không tìm thấy phường/xã');
@@ -188,10 +187,7 @@ export class StopPointsService {
       wardName: ward.name,
     };
   }
-  async remove(id: string, user?: JwtPayload): Promise<void> {
-=======
   async remove(id: string, user?: PrincipalContext): Promise<void> {
->>>>>>> origin/hotfix/be/auth-module
     const stopPoint = await this.stopPointModel.findById(id).exec();
     if (!stopPoint) {
       throw new NotFoundException('Không tìm thấy điểm dừng');
