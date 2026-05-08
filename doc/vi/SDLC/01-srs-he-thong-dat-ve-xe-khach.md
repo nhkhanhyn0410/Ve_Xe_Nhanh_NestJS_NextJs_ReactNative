@@ -20,6 +20,7 @@
 | Phiên bản | Ngày       | Người cập nhật              | Nội dung thay đổi                                                                                   |
 | --------- | ---------- | --------------------------- | --------------------------------------------------------------------------------------------------- |
 | v1.0      | 05/05/2026 | AI Agent, Nguyễn Hồng Khanh | Tạo bản đầu từ tài liệu ý tưởng `he-thong-dat-ve-xe-khach.md` và đối chiếu với code backend hiện có |
+| v1.1      | 08/05/2026 | Nguyễn Hồng Khanh           | Hiệu chỉnh 7.4 bỏ Tài xế (Drive) thay bằng Nhân viên nhà xe (Employee) và hiệu chỉnh một số điểm.   |
 
 ---
 
@@ -169,17 +170,19 @@ Nhà xe là đơn vị vận hành dịch vụ xe khách trên hệ thống. Nh�
 
 Quyền chính: quản lý thông tin nhà xe, tạo và quản lý tuyến/chuyến xe, quản lý xe-sơ đồ ghế-tiện ích, quản lý tài xế thuộc nhà xe, phân công tài xế cho chuyến, theo dõi danh sách hành khách và doanh thu, xử lý yêu cầu đổi/hủy vé trong phạm vi chính sách.
 
-### 7.3. Admin toàn hệ thống
+### 7.3. Admin toàn hệ thống (Admin)
 
 Admin toàn hệ thống là vai trò quản trị nền tảng. Admin có quyền cao nhất để quản lý toàn bộ dữ liệu, phê duyệt nhà xe, cấu hình chính sách, xử lý tranh chấp, giám sát doanh thu và vận hành hệ thống.
 
 Quyền chính: quản lý tài khoản người dùng-nhà xe-tài xế, phê duyệt hoặc khóa nhà xe, cấu hình danh mục hệ thống và chính sách phí/hoàn tiền, giám sát giao dịch và doanh thu/hoàn tiền, quản lý khiếu nại và báo cáo vi phạm, xem nhật ký hệ thống và audit log.
 
-### 7.4. Tài xế (Driver)
+### 7.4. Nhân viên nhà xe (Employee)
 
-Tài xế là người trực tiếp vận hành chuyến xe. Tài xế xem lịch chạy, danh sách hành khách, điểm đón/trả, xác nhận check-in và cập nhật trạng thái chuyến đi.
+Nhân viên nhà xe là tài khoản nhân sự thuộc phạm vi quản lý của một nhà xe cụ thể. Nhân viên có thể đảm nhiệm các vai trò vận hành như tài xế, phụ xe, điều phối viên hoặc nhân viên hỗ trợ, tùy theo quyền được nhà xe cấp trong hệ thống.
 
-Quyền chính: xem các chuyến được phân công, xem thông tin xe-tuyến-điểm đón/trả, xem danh sách hành khách, quét QR/mã vé để xác nhận hành khách lên xe, cập nhật trạng thái chuyến (chuẩn bị, đang đón khách, đang chạy, hoàn thành, gặp sự cố), báo cáo sự cố chuyến đi.
+Mỗi nhân viên phải gắn với một nhà xe. Nhà xe có quyền tạo, cập nhật, khóa/mở khóa và phân quyền cho nhân viên thuộc phạm vi của mình. Admin toàn hệ thống có thể xem, giám sát và kiểm tra thông tin nhân viên của các nhà xe để phục vụ quản trị, kiểm duyệt, xử lý vi phạm, khiếu nại và audit log.
+
+Quyền chính: đăng nhập vào hệ thống theo quyền được cấp, xem thông tin cá nhân và trạng thái tài khoản, xem các chuyến hoặc công việc được phân công, xem thông tin xe-tuyến-điểm đón/trả liên quan, xem danh sách hành khách trong phạm vi được phân quyền, quét QR/mã vé để xác nhận hành khách lên xe nếu có vai trò tài xế, cập nhật trạng thái chuyến hoặc báo cáo sự cố nếu được phân công, ghi chép nhật trình xe trong quá trình vận hành, báo cáo đầy đủ các thông tin liên quan đến chuyến đi như lộ trình thực tế, thời gian di chuyển, điểm dừng, chi phí phát sinh, tình trạng xe, tình trạng hành khách và các vấn đề vận hành khác; xử lý ban đầu và báo cáo kịp thời các tình huống phát sinh như tai nạn, hư hỏng xe, chậm chuyến, thay đổi lộ trình, sự cố kỹ thuật hoặc sự cố trong quá trình di chuyển; gửi thông tin vận hành về nhà xe. Admin có quyền xem và giám sát dữ liệu nhân viên trên toàn hệ thống nhưng các thao tác quản lý trực tiếp cần tuân theo phân quyền được cấu hình.
 
 ---
 
@@ -188,9 +191,9 @@ Quyền chính: xem các chuyến được phân công, xem thông tin xe-tuyế
 ### 8.1. Giả định
 
 - Người dùng có thể truy cập hệ thống qua website hoặc mobile app.
-- Nhà xe và tài xế cần được admin hoặc nhà xe có thẩm quyền tạo/phê duyệt trước khi hoạt động chính thức.
+- Nhà xe cần được admin hoặc nhà xe có thẩm quyền tạo/phê duyệt trước khi hoạt động chính thức.
 - Một chuyến xe thuộc về một nhà xe cụ thể.
-- Một chuyến xe có thể có nhiều điểm đón và nhiều điểm trả.
+- Một chuyến xe có thể có nhiều điểm đón và nhiều điểm trả (Điểm dừng).
 - Một vé có thể đại diện cho một hoặc nhiều hành khách, tùy thiết kế booking.
 - Ghế được giữ tạm thời trong một khoảng thời gian trước khi thanh toán thành công.
 - Hệ thống có tích hợp ít nhất một cổng thanh toán.
@@ -201,10 +204,10 @@ Quyền chính: xem các chuyến được phân công, xem thông tin xe-tuyế
 - Các thao tác tài chính phải có log và mã giao dịch.
 - Dữ liệu cá nhân của người dùng phải được bảo vệ.
 - Nhà xe chỉ được xem và quản lý dữ liệu thuộc nhà xe của mình.
-- Tài xế chỉ được xem các chuyến được phân công.
+- Nhân viên chỉ được xem các chuyến được phân công.
 - Admin có quyền truy cập toàn hệ thống nhưng mọi thao tác nhạy cảm phải được ghi audit log.
 
-### 8.3. Phụ thuộc
+### 8.3. Phụ thuộc (Không hoàn toàn)
 
 - Backend NestJS 11 + MongoDB (mongoose) + Redis (ioredis) + Bull queue + Socket.IO + JWT + Helmet.
 - Frontend Next.js 16 + React 19 + Ant Design 6 + Tailwind 4 + React Query + Zustand.
@@ -216,7 +219,7 @@ Quyền chính: xem các chuyến được phân công, xem thông tin xe-tuyế
 
 ## 9. Mô hình dữ liệu mức cao
 
-### 9.1. Thực thể chính
+### 9.1. Thực thể chính (Chưa chính thức)
 
 | Thực thể     | Mô tả                                                       |
 | ------------ | ----------------------------------------------------------- |
@@ -242,8 +245,6 @@ Quyền chính: xem các chuyến được phân công, xem thông tin xe-tuyế
 | Complaint    | Khiếu nại / yêu cầu hỗ trợ                                  |
 | Notification | Thông báo gửi tới actor                                     |
 | AuditLog     | Nhật ký thao tác hệ thống                                   |
-
-Lưu ý: thực thể `Driver` trong tài liệu ý tưởng được hiện thực hóa thành `Employee` với role `DRIVER` trong code (nhằm tổng quát hóa các vai trò nhân viên thuộc nhà xe). Xem mục 24 Open Questions.
 
 ### 9.2. Quan hệ dữ liệu chính
 
