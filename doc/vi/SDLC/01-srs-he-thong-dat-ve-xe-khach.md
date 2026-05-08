@@ -17,10 +17,11 @@
 
 ### 1.2. Lịch sử thay đổi
 
-| Phiên bản | Ngày       | Người cập nhật              | Nội dung thay đổi                                                                                   |
-| --------- | ---------- | --------------------------- | --------------------------------------------------------------------------------------------------- |
-| v1.0      | 05/05/2026 | AI Agent, Nguyễn Hồng Khanh | Tạo bản đầu từ tài liệu ý tưởng `he-thong-dat-ve-xe-khach.md` và đối chiếu với code backend hiện có |
-| v1.1      | 08/05/2026 | Nguyễn Hồng Khanh           | Hiệu chỉnh 7.4 bỏ Tài xế (Drive) thay bằng Nhân viên nhà xe (Employee) và hiệu chỉnh một số điểm.   |
+| Phiên bản | Ngày       | Người cập nhật              | Nội dung thay đổi                                                                                                                                                                                                                                                                  |
+| --------- | ---------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| v1.0      | 05/05/2026 | AI Agent, Nguyễn Hồng Khanh | Tạo bản đầu từ tài liệu ý tưởng `he-thong-dat-ve-xe-khach.md` và đối chiếu với code backend hiện có                                                                                                                                                                                |
+| v1.1      | 08/05/2026 | Nguyễn Hồng Khanh           | Hiệu chỉnh 7.4 bỏ Tài xế (Drive) thay bằng Nhân viên nhà xe (Employee) và hiệu chỉnh một số điểm.                                                                                                                                                                                  |
+| v1.2      | 08/05/2026 | AI Agent, Nguyễn Hồng Khanh | Chốt OQ-01..04: 10.1 cập nhật `FR-AUTH-04`, 10.3 cập nhật `FR-OP-13..15` và thêm `FR-OP-21..23`, 10.4 đổi tên thành "Nhân viên nhà xe (Employee)" và đổi prefix `FR-DRIVER-*` → `FR-EMP-*` (18 FR có cột Role áp dụng), 10.5 thêm `FR-ADMIN-21..22`, 24 đánh dấu OQ-01..04 đã chốt |
 
 ---
 
@@ -264,16 +265,16 @@ Quyền chính: đăng nhập vào hệ thống theo quyền được cấp, xem
 
 ### 10.1. Authentication & Account
 
-| ID         | Yêu cầu chức năng                                                                                               | Actor         |
-| ---------- | --------------------------------------------------------------------------------------------------------------- | ------------- |
-| FR-AUTH-01 | Hệ thống cho phép người dùng đăng ký tài khoản bằng số điện thoại / email.                                      | Người dùng    |
-| FR-AUTH-02 | Hệ thống cho phép đăng nhập bằng số điện thoại / email và mật khẩu hoặc OTP.                                    | Tất cả actor  |
-| FR-AUTH-03 | Hệ thống hỗ trợ quên mật khẩu và đặt lại mật khẩu.                                                              | Tất cả actor  |
-| FR-AUTH-04 | Hệ thống phân quyền theo vai trò: người dùng, nhà xe, admin, tài xế.                                            | Admin         |
-| FR-AUTH-05 | Hệ thống cho phép cập nhật thông tin cá nhân, số điện thoại, email.                                             | Tất cả actor  |
-| FR-AUTH-06 | Hệ thống cho phép khóa, mở khóa, vô hiệu hóa tài khoản theo quyền hạn.                                          | Admin, Nhà xe |
-| FR-AUTH-07 | Hệ thống ghi nhận lịch sử đăng nhập và thiết bị đăng nhập.                                                      | Tất cả actor  |
-| FR-AUTH-08 | Hệ thống yêu cầu xác thực bổ sung cho thao tác nhạy cảm: hoàn tiền, đổi mật khẩu, thay đổi tài khoản nhận tiền. | Admin, Nhà xe |
+| ID         | Yêu cầu chức năng                                                                                                                                                                                                | Actor         |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
+| FR-AUTH-01 | Hệ thống cho phép người dùng đăng ký tài khoản bằng số điện thoại / email.                                                                                                                                       | Người dùng    |
+| FR-AUTH-02 | Hệ thống cho phép đăng nhập bằng số điện thoại / email và mật khẩu hoặc OTP.                                                                                                                                     | Tất cả actor  |
+| FR-AUTH-03 | Hệ thống hỗ trợ quên mật khẩu và đặt lại mật khẩu.                                                                                                                                                               | Tất cả actor  |
+| FR-AUTH-04 | Hệ thống phân quyền theo vai trò chính: người dùng, nhà xe, admin, nhân viên nhà xe (Employee). Vai trò Employee có thể được nhà xe phân thành nhiều role con: DRIVER, phụ xe, điều phối viên, nhân viên hỗ trợ. | Admin, Nhà xe |
+| FR-AUTH-05 | Hệ thống cho phép cập nhật thông tin cá nhân, số điện thoại, email.                                                                                                                                              | Tất cả actor  |
+| FR-AUTH-06 | Hệ thống cho phép khóa, mở khóa, vô hiệu hóa tài khoản theo quyền hạn.                                                                                                                                           | Admin, Nhà xe |
+| FR-AUTH-07 | Hệ thống ghi nhận lịch sử đăng nhập và thiết bị đăng nhập.                                                                                                                                                       | Tất cả actor  |
+| FR-AUTH-08 | Hệ thống yêu cầu xác thực bổ sung cho thao tác nhạy cảm: hoàn tiền, đổi mật khẩu, thay đổi tài khoản nhận tiền.                                                                                                  | Admin, Nhà xe |
 
 ### 10.2. Người dùng
 
@@ -302,70 +303,83 @@ Quyền chính: đăng nhập vào hệ thống theo quyền được cấp, xem
 
 ### 10.3. Nhà xe
 
-| ID       | Yêu cầu chức năng                                                                                         | Actor              |
-| -------- | --------------------------------------------------------------------------------------------------------- | ------------------ |
-| FR-OP-01 | Nhà xe có thể tạo và cập nhật hồ sơ nhà xe: tên, logo, giấy phép, thông tin liên hệ, tài khoản nhận tiền. | Nhà xe             |
-| FR-OP-02 | Nhà xe có thể quản lý danh sách xe.                                                                       | Nhà xe             |
-| FR-OP-03 | Nhà xe có thể tạo loại xe và sơ đồ ghế.                                                                   | Nhà xe             |
-| FR-OP-04 | Nhà xe có thể quản lý tiện ích xe: wifi, nước uống, điều hòa, rèm, sạc, chăn, cabin riêng.                | Nhà xe             |
-| FR-OP-05 | Nhà xe có thể tạo và cập nhật tuyến đường.                                                                | Nhà xe             |
-| FR-OP-06 | Nhà xe có thể cấu hình điểm đón/trả cho từng tuyến.                                                       | Nhà xe             |
-| FR-OP-07 | Nhà xe có thể tạo chuyến xe theo ngày giờ cụ thể.                                                         | Nhà xe             |
-| FR-OP-08 | Nhà xe có thể tạo lịch chuyến lặp lại theo ngày / tuần / tháng.                                           | Nhà xe             |
-| FR-OP-09 | Nhà xe có thể cấu hình giá vé theo chuyến, loại ghế, thời điểm hoặc chặng.                                | Nhà xe             |
-| FR-OP-10 | Nhà xe có thể khóa / mở bán ghế hoặc chuyến.                                                              | Nhà xe             |
-| FR-OP-11 | Nhà xe có thể xem danh sách đơn đặt vé theo chuyến.                                                       | Nhà xe             |
-| FR-OP-12 | Nhà xe có thể xác nhận, từ chối hoặc cập nhật trạng thái đơn nếu dùng phương thức thanh toán sau.         | Nhà xe             |
-| FR-OP-13 | Nhà xe có thể phân công tài xế cho chuyến.                                                                | Nhà xe             |
-| FR-OP-14 | Nhà xe có thể quản lý tài khoản tài xế thuộc nhà xe.                                                      | Nhà xe             |
-| FR-OP-15 | Nhà xe có thể cập nhật thay đổi chuyến: giờ khởi hành, xe, tài xế, điểm đón/trả, trạng thái chuyến.       | Nhà xe             |
-| FR-OP-16 | Hệ thống gửi thông báo tới hành khách khi nhà xe thay đổi thông tin quan trọng của chuyến.                | Nhà xe, Người dùng |
-| FR-OP-17 | Nhà xe có thể xử lý yêu cầu hủy / đổi vé trong phạm vi quyền được cấu hình.                               | Nhà xe             |
-| FR-OP-18 | Nhà xe có thể xem báo cáo doanh thu, số vé bán, tỷ lệ lấp đầy ghế.                                        | Nhà xe             |
-| FR-OP-19 | Nhà xe có thể tạo chương trình khuyến mãi riêng nếu được admin cho phép.                                  | Nhà xe             |
-| FR-OP-20 | Nhà xe có thể phản hồi đánh giá / khiếu nại của người dùng.                                               | Nhà xe             |
+| ID       | Yêu cầu chức năng                                                                                                                                                                | Actor              |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| FR-OP-01 | Nhà xe có thể tạo và cập nhật hồ sơ nhà xe: tên, logo, giấy phép, thông tin liên hệ, tài khoản nhận tiền.                                                                        | Nhà xe             |
+| FR-OP-02 | Nhà xe có thể quản lý danh sách xe.                                                                                                                                              | Nhà xe             |
+| FR-OP-03 | Nhà xe có thể tạo loại xe và sơ đồ ghế.                                                                                                                                          | Nhà xe             |
+| FR-OP-04 | Nhà xe có thể quản lý tiện ích xe: wifi, nước uống, điều hòa, rèm, sạc, chăn, cabin riêng.                                                                                       | Nhà xe             |
+| FR-OP-05 | Nhà xe có thể tạo và cập nhật tuyến đường.                                                                                                                                       | Nhà xe             |
+| FR-OP-06 | Nhà xe có thể cấu hình điểm đón/trả cho từng tuyến.                                                                                                                              | Nhà xe             |
+| FR-OP-07 | Nhà xe có thể tạo chuyến xe theo ngày giờ cụ thể.                                                                                                                                | Nhà xe             |
+| FR-OP-08 | Nhà xe có thể tạo lịch chuyến lặp lại theo ngày / tuần / tháng.                                                                                                                  | Nhà xe             |
+| FR-OP-09 | Nhà xe có thể cấu hình giá vé theo chuyến, loại ghế, thời điểm hoặc chặng.                                                                                                       | Nhà xe             |
+| FR-OP-10 | Nhà xe có thể khóa / mở bán ghế hoặc chuyến.                                                                                                                                     | Nhà xe             |
+| FR-OP-11 | Nhà xe có thể xem danh sách đơn đặt vé theo chuyến.                                                                                                                              | Nhà xe             |
+| FR-OP-12 | Nhà xe có thể xác nhận, từ chối hoặc cập nhật trạng thái đơn nếu dùng phương thức thanh toán sau.                                                                                | Nhà xe             |
+| FR-OP-13 | Nhà xe có thể phân công Employee có role DRIVER (tài xế chính / phụ) cho chuyến.                                                                                                 | Nhà xe             |
+| FR-OP-14 | Nhà xe có thể quản lý tài khoản nhân viên (Employee) thuộc nhà xe, bao gồm tài xế và các vai trò khác.                                                                           | Nhà xe             |
+| FR-OP-15 | Nhà xe có thể cập nhật thay đổi chuyến: giờ khởi hành, xe, tài xế / nhân viên phụ trách, điểm đón/trả, trạng thái chuyến.                                                        | Nhà xe             |
+| FR-OP-16 | Hệ thống gửi thông báo tới hành khách khi nhà xe thay đổi thông tin quan trọng của chuyến.                                                                                       | Nhà xe, Người dùng |
+| FR-OP-17 | Nhà xe có thể xử lý yêu cầu hủy / đổi vé trong phạm vi quyền được cấu hình.                                                                                                      | Nhà xe             |
+| FR-OP-18 | Nhà xe có thể xem báo cáo doanh thu, số vé bán, tỷ lệ lấp đầy ghế.                                                                                                               | Nhà xe             |
+| FR-OP-19 | Nhà xe có thể tạo chương trình khuyến mãi riêng nếu được admin cho phép.                                                                                                         | Nhà xe             |
+| FR-OP-20 | Nhà xe có thể phản hồi đánh giá / khiếu nại của người dùng.                                                                                                                      | Nhà xe             |
+| FR-OP-21 | Nhà xe có thể tạo, cập nhật, khóa / mở khóa tài khoản Employee và gán role cụ thể (DRIVER, phụ xe, điều phối viên, nhân viên hỗ trợ ...) trong phạm vi nhà xe.                   | Nhà xe             |
+| FR-OP-22 | Nhà xe có thể phân quyền chi tiết cho từng Employee theo role và phạm vi công việc (chuyến được phân công, dữ liệu hành khách được xem ...).                                     | Nhà xe             |
+| FR-OP-23 | Nhà xe có thể xem nhật trình xe và báo cáo vận hành mà Employee gửi về (lộ trình thực tế, thời gian di chuyển, điểm dừng, sự cố, chi phí phát sinh, tình trạng xe / hành khách). | Nhà xe             |
 
-### 10.4. Tài xế
+### 10.4. Nhân viên nhà xe (Employee)
 
-| ID           | Yêu cầu chức năng                                                                                               | Actor                 |
-| ------------ | --------------------------------------------------------------------------------------------------------------- | --------------------- |
-| FR-DRIVER-01 | Tài xế có thể đăng nhập vào ứng dụng / cổng tài xế.                                                             | Tài xế                |
-| FR-DRIVER-02 | Tài xế có thể xem lịch chuyến được phân công.                                                                   | Tài xế                |
-| FR-DRIVER-03 | Tài xế có thể xem chi tiết chuyến: xe, biển số, tuyến, giờ đi, điểm đón/trả.                                    | Tài xế                |
-| FR-DRIVER-04 | Tài xế có thể xem danh sách hành khách của chuyến.                                                              | Tài xế                |
-| FR-DRIVER-05 | Tài xế có thể tìm hành khách theo tên, số điện thoại, mã vé.                                                    | Tài xế                |
-| FR-DRIVER-06 | Tài xế có thể quét QR code hoặc nhập mã vé để xác nhận hành khách lên xe.                                       | Tài xế                |
-| FR-DRIVER-07 | Tài xế có thể cập nhật trạng thái hành khách: chưa lên, đã lên, vắng mặt, hủy.                                  | Tài xế                |
-| FR-DRIVER-08 | Tài xế có thể cập nhật trạng thái chuyến: chuẩn bị, đang đón khách, đang chạy, tạm dừng, hoàn thành, gặp sự cố. | Tài xế                |
-| FR-DRIVER-09 | Tài xế có thể gửi báo cáo sự cố: kẹt xe, tai nạn, hỏng xe, trễ giờ, khách không hợp tác.                        | Tài xế                |
-| FR-DRIVER-10 | Tài xế có thể gọi nhanh cho hành khách hoặc điều phối nhà xe nếu được cấp quyền.                                | Tài xế                |
-| FR-DRIVER-11 | Tài xế có thể xem ghi chú đặc biệt của hành khách nếu có.                                                       | Tài xế                |
-| FR-DRIVER-12 | Hệ thống đồng bộ dữ liệu check-in của tài xế về nhà xe và admin.                                                | Tài xế, Nhà xe, Admin |
+Phần này áp dụng cho actor **Employee (nhân viên nhà xe)**. Một số yêu cầu áp dụng cho mọi Employee, một số chỉ áp dụng cho Employee có role cụ thể (ví dụ DRIVER). Cột `Role áp dụng` ghi rõ phạm vi.
+
+| ID        | Yêu cầu chức năng                                                                                                                                                       | Role áp dụng                               | Actor                   |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | ----------------------- |
+| FR-EMP-01 | Employee có thể đăng nhập vào cổng / ứng dụng dành cho nhân viên nhà xe theo quyền được nhà xe cấp.                                                                     | Mọi role                                   | Employee                |
+| FR-EMP-02 | Employee có thể xem thông tin cá nhân và trạng thái tài khoản của mình.                                                                                                 | Mọi role                                   | Employee                |
+| FR-EMP-03 | Employee có thể xem các chuyến hoặc công việc được phân công.                                                                                                           | Mọi role                                   | Employee                |
+| FR-EMP-04 | Employee có thể xem chi tiết chuyến được phân công: xe, biển số, tuyến, giờ đi, điểm đón / trả, ghi chú vận hành.                                                       | Mọi role                                   | Employee                |
+| FR-EMP-05 | Employee có thể xem danh sách hành khách trong phạm vi được phân quyền (số điện thoại có thể được mask theo chính sách).                                                | DRIVER, phụ xe, điều phối viên             | Employee                |
+| FR-EMP-06 | Employee có thể tìm hành khách theo tên, số điện thoại, mã vé.                                                                                                          | DRIVER, phụ xe                             | Employee                |
+| FR-EMP-07 | Employee có thể quét QR code hoặc nhập mã vé để xác nhận hành khách lên xe.                                                                                             | DRIVER (bắt buộc), phụ xe (tùy phân quyền) | Employee                |
+| FR-EMP-08 | Employee có thể cập nhật trạng thái hành khách: chưa lên, đã lên, vắng mặt, hủy.                                                                                        | DRIVER, phụ xe                             | Employee                |
+| FR-EMP-09 | Employee có thể cập nhật trạng thái chuyến: chuẩn bị, đang đón khách, đang chạy, tạm dừng, hoàn thành, gặp sự cố.                                                       | DRIVER (chuyến được phân công)             | Employee                |
+| FR-EMP-10 | Employee có thể xem ghi chú đặc biệt của hành khách nếu có.                                                                                                             | DRIVER, phụ xe                             | Employee                |
+| FR-EMP-11 | Employee có thể gọi nhanh cho hành khách hoặc điều phối nhà xe nếu được cấp quyền.                                                                                      | DRIVER, phụ xe, điều phối viên             | Employee                |
+| FR-EMP-12 | Employee có thể ghi chép nhật trình xe trong quá trình vận hành: thời điểm khởi hành thực tế, thời điểm đến từng điểm dừng, số km, tình trạng xe.                       | DRIVER                                     | Employee                |
+| FR-EMP-13 | Employee có thể báo cáo đầy đủ thông tin vận hành chuyến đi: lộ trình thực tế, thời gian di chuyển, điểm dừng, chi phí phát sinh, tình trạng xe, tình trạng hành khách. | DRIVER                                     | Employee                |
+| FR-EMP-14 | Employee có thể xử lý ban đầu và báo cáo kịp thời các tình huống phát sinh: tai nạn, hư hỏng xe, chậm chuyến, thay đổi lộ trình, sự cố kỹ thuật, sự cố trong di chuyển. | DRIVER, phụ xe                             | Employee                |
+| FR-EMP-15 | Employee có thể gửi báo cáo sự cố cụ thể với mức độ ưu tiên: kẹt xe, tai nạn, hỏng xe, trễ giờ, khách không hợp tác.                                                    | DRIVER, phụ xe                             | Employee                |
+| FR-EMP-16 | Employee có thể gửi thông tin vận hành (nhật trình, báo cáo, sự cố) về nhà xe theo thời gian thực hoặc đồng bộ khi có mạng.                                             | DRIVER, phụ xe                             | Employee                |
+| FR-EMP-17 | Hệ thống đồng bộ dữ liệu check-in, nhật trình và báo cáo của Employee về nhà xe và admin theo thời gian thực.                                                           | DRIVER (nguồn)                             | Employee, Nhà xe, Admin |
+| FR-EMP-18 | Employee chỉ được xem dữ liệu thuộc phạm vi nhà xe của mình và phạm vi công việc được phân công.                                                                        | Mọi role                                   | Employee                |
 
 ### 10.5. Admin toàn hệ thống
 
-| ID          | Yêu cầu chức năng                                                                         | Actor |
-| ----------- | ----------------------------------------------------------------------------------------- | ----- |
-| FR-ADMIN-01 | Admin có thể xem dashboard tổng quan toàn hệ thống.                                       | Admin |
-| FR-ADMIN-02 | Admin có thể quản lý tài khoản người dùng.                                                | Admin |
-| FR-ADMIN-03 | Admin có thể phê duyệt, từ chối, khóa hoặc mở khóa nhà xe.                                | Admin |
-| FR-ADMIN-04 | Admin có thể kiểm duyệt hồ sơ pháp lý của nhà xe.                                         | Admin |
-| FR-ADMIN-05 | Admin có thể quản lý tài khoản admin nội bộ theo vai trò.                                 | Admin |
-| FR-ADMIN-06 | Admin có thể cấu hình danh mục tỉnh/thành, bến xe, điểm đón/trả, loại xe, tiện ích.       | Admin |
-| FR-ADMIN-07 | Admin có thể cấu hình phí nền tảng, phí hủy vé, chính sách hoàn tiền.                     | Admin |
-| FR-ADMIN-08 | Admin có thể giám sát giao dịch thanh toán.                                               | Admin |
-| FR-ADMIN-09 | Admin có thể xử lý hoàn tiền thủ công khi cần.                                            | Admin |
-| FR-ADMIN-10 | Admin có thể xem, phân loại, xử lý khiếu nại của người dùng.                              | Admin |
-| FR-ADMIN-11 | Admin có thể kiểm duyệt đánh giá và nội dung vi phạm.                                     | Admin |
-| FR-ADMIN-12 | Admin có thể cấu hình banner, thông báo, nội dung tĩnh, câu hỏi thường gặp.               | Admin |
-| FR-ADMIN-13 | Admin có thể xem báo cáo doanh thu theo thời gian, nhà xe, tuyến, phương thức thanh toán. | Admin |
-| FR-ADMIN-14 | Admin có thể xuất dữ liệu báo cáo ra Excel / CSV / PDF nếu được phân quyền.               | Admin |
-| FR-ADMIN-15 | Admin có thể truy vết audit log đối với thao tác nhạy cảm.                                | Admin |
-| FR-ADMIN-16 | Admin có thể cấu hình trạng thái bảo trì hệ thống.                                        | Admin |
-| FR-ADMIN-17 | Admin có thể quản lý chương trình khuyến mãi toàn hệ thống.                               | Admin |
-| FR-ADMIN-18 | Admin có thể cấu hình hạn mức, thời gian giữ ghế, thời gian cho phép hủy vé.              | Admin |
-| FR-ADMIN-19 | Admin có thể xem trạng thái tích hợp cổng thanh toán, SMS, email, push notification.      | Admin |
-| FR-ADMIN-20 | Admin có thể khóa chuyến / nhà xe khi phát hiện vi phạm nghiêm trọng.                     | Admin |
+| ID          | Yêu cầu chức năng                                                                                                                         | Actor |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ----- |
+| FR-ADMIN-01 | Admin có thể xem dashboard tổng quan toàn hệ thống.                                                                                       | Admin |
+| FR-ADMIN-02 | Admin có thể quản lý tài khoản người dùng.                                                                                                | Admin |
+| FR-ADMIN-03 | Admin có thể phê duyệt, từ chối, khóa hoặc mở khóa nhà xe.                                                                                | Admin |
+| FR-ADMIN-04 | Admin có thể kiểm duyệt hồ sơ pháp lý của nhà xe.                                                                                         | Admin |
+| FR-ADMIN-05 | Admin có thể quản lý tài khoản admin nội bộ theo vai trò.                                                                                 | Admin |
+| FR-ADMIN-06 | Admin có thể cấu hình danh mục tỉnh/thành, bến xe, điểm đón/trả, loại xe, tiện ích.                                                       | Admin |
+| FR-ADMIN-07 | Admin có thể cấu hình phí nền tảng, phí hủy vé, chính sách hoàn tiền.                                                                     | Admin |
+| FR-ADMIN-08 | Admin có thể giám sát giao dịch thanh toán.                                                                                               | Admin |
+| FR-ADMIN-09 | Admin có thể xử lý hoàn tiền thủ công khi cần.                                                                                            | Admin |
+| FR-ADMIN-10 | Admin có thể xem, phân loại, xử lý khiếu nại của người dùng.                                                                              | Admin |
+| FR-ADMIN-11 | Admin có thể kiểm duyệt đánh giá và nội dung vi phạm.                                                                                     | Admin |
+| FR-ADMIN-12 | Admin có thể cấu hình banner, thông báo, nội dung tĩnh, câu hỏi thường gặp.                                                               | Admin |
+| FR-ADMIN-13 | Admin có thể xem báo cáo doanh thu theo thời gian, nhà xe, tuyến, phương thức thanh toán.                                                 | Admin |
+| FR-ADMIN-14 | Admin có thể xuất dữ liệu báo cáo ra Excel / CSV / PDF nếu được phân quyền.                                                               | Admin |
+| FR-ADMIN-15 | Admin có thể truy vết audit log đối với thao tác nhạy cảm.                                                                                | Admin |
+| FR-ADMIN-16 | Admin có thể cấu hình trạng thái bảo trì hệ thống.                                                                                        | Admin |
+| FR-ADMIN-17 | Admin có thể quản lý chương trình khuyến mãi toàn hệ thống.                                                                               | Admin |
+| FR-ADMIN-18 | Admin có thể cấu hình hạn mức, thời gian giữ ghế, thời gian cho phép hủy vé.                                                              | Admin |
+| FR-ADMIN-19 | Admin có thể xem trạng thái tích hợp cổng thanh toán, SMS, email, push notification.                                                      | Admin |
+| FR-ADMIN-20 | Admin có thể khóa chuyến / nhà xe khi phát hiện vi phạm nghiêm trọng.                                                                     | Admin |
+| FR-ADMIN-21 | Admin có thể xem và giám sát dữ liệu Employee của tất cả nhà xe trên toàn hệ thống phục vụ kiểm duyệt, xử lý vi phạm, khiếu nại và audit. | Admin |
+| FR-ADMIN-22 | Các thao tác quản lý trực tiếp Employee (khóa, đổi role, xóa) của admin phải tuân theo phân quyền được cấu hình và phải ghi audit log.    | Admin |
 
 ### 10.6. Đặt vé và thanh toán
 
@@ -1605,23 +1619,23 @@ Các module sau **có thư mục nhưng chưa có Mongoose schema** (chỉ có T
 
 ## 24. Open Questions / TBD
 
-| ID    | Câu hỏi                                                                                                                           | Tác động                                                                        |
-| ----- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| OQ-01 | Trip status: dùng tập 10 trạng thái của SRS (DRAFT / OPEN_FOR_SALE / ...) hay rút về tập 5 của code (SCHEDULED / BOARDING / ...)? | Ảnh hưởng `trips` schema, Booking flow, UI hiển thị                             |
-| OQ-02 | Booking status: thêm `PAID`, `PARTIALLY_CANCELLED`, `REFUND_FAILED` vào code hay rút SRS xuống tập 7 của code?                    | Ảnh hưởng state machine của Booking + Refund                                    |
-| OQ-03 | Payment status: chuẩn hóa tên `SUCCESS` (SRS) hay `COMPLETED` (code)?                                                             | Cần thống nhất một tên duy nhất                                                 |
-| OQ-04 | `Driver` trong SRS có nên là entity riêng hay là `Employee` với role `DRIVER`?                                                    | Code đang dùng `Employee` + `EmployeeRole`. SRS gọi là `Driver`. Cần thống nhất |
-| OQ-05 | Cổng thanh toán cụ thể nào sẽ tích hợp đầu tiên (VNPay, MoMo, ZaloPay, Stripe...)?                                                | Ảnh hưởng `05-API Specification`, schema Payment, callback flow                 |
-| OQ-06 | Thời gian giữ ghế chính thức là bao nhiêu phút? Có cấu hình per nhà xe hay toàn hệ thống?                                         | Ảnh hưởng `Booking` flow, test case chống bán trùng ghế                         |
-| OQ-07 | Có hỗ trợ thanh toán sau (`PENDING_CONFIRMATION` flow) trong phiên bản đầu không?                                                 | Ảnh hưởng phạm vi `06-UI/UX Flow` và FR-OP-12                                   |
-| OQ-08 | Mô hình `Fare`: gắn vào `Route`, `Trip`, hay riêng (lookup table)? Hỗ trợ giá theo chặng (segment-based) ở phiên bản đầu không?   | Ảnh hưởng `04-Database Design`                                                  |
-| OQ-09 | OTP cho đăng ký / đăng nhập: dùng SMS provider nào? Email OTP hay chỉ SMS?                                                        | Ảnh hưởng FR-AUTH-01, FR-AUTH-02 và Notification Service                        |
-| OQ-10 | Mobile app dành cho User và Driver dùng chung 1 codebase Expo hay tách 2 app riêng?                                               | Hiện tại có 1 thư mục `apps/mobile/` — cần xác nhận                             |
-| OQ-11 | Dữ liệu mask số điện thoại hành khách hiển thị cho tài xế: rule mask cụ thể (mấy số đầu / cuối)?                                  | BR-19, NFR-PRIV-04                                                              |
-| OQ-12 | Hệ thống có hỗ trợ multi-currency / multi-language ở phiên bản đầu không?                                                         | Ảnh hưởng schema Payment, Fare, UI                                              |
-| OQ-13 | Chính sách hủy vé / hoàn tiền: cấu hình per nhà xe hay áp chung toàn nền tảng?                                                    | BR-07, FR-ADMIN-07, FR-ADMIN-18                                                 |
-| OQ-14 | Audit log lưu ở MongoDB cùng cluster hay tách ra storage riêng?                                                                   | NFR-AUDIT-01–04                                                                 |
-| OQ-15 | Reporting dùng aggregation trực tiếp trên MongoDB hay tách read model / data warehouse?                                           | NFR-PERF-05, NFR-SCALE-04                                                       |
+| ID        | Câu hỏi                                                                                                                                                                                                                                                                                                                                                                                   | Tác động                                                        |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| ~~OQ-01~~ | **CHỐT (05/05/2026):** dùng tập 10 trạng thái Trip của SRS. Code phải mở rộng từ 5 → 10 trạng thái theo §17.1.                                                                                                                                                                                                                                                                            | (đã chốt) — code phải align về SRS                              |
+| ~~OQ-02~~ | **CHỐT (05/05/2026):** dùng tập 10 trạng thái Booking của SRS. Code phải bổ sung `PAID`, `PARTIALLY_CANCELLED`, `REFUND_FAILED`, `PENDING_PAYMENT`, `PENDING_CONFIRMATION` theo §17.3.                                                                                                                                                                                                    | (đã chốt) — code phải align về SRS                              |
+| ~~OQ-03~~ | **CHỐT (05/05/2026):** Payment status chuẩn hóa tên `SUCCESS`. Code phải đổi `COMPLETED` → `SUCCESS` và bổ sung `INITIATED`, `EXPIRED`, `CANCELLED`, `RECONCILING` theo §17.5.                                                                                                                                                                                                            | (đã chốt) — code phải align về SRS                              |
+| ~~OQ-04~~ | **CHỐT (05/05/2026):** dùng `Employee` với hệ role (DRIVER, phụ xe, điều phối viên, nhân viên hỗ trợ). SRS đã được cập nhật: §7.4 actor mới, §10.4 đổi prefix `FR-DRIVER-*` → `FR-EMP-*` và bổ sung FR vận hành (nhật trình, báo cáo lộ trình, sự cố), §10.3 thêm `FR-OP-21..23` cho việc nhà xe quản lý / phân quyền Employee, §10.5 thêm `FR-ADMIN-21..22` cho admin giám sát Employee. | (đã chốt)                                                       |
+| OQ-05     | Cổng thanh toán cụ thể nào sẽ tích hợp đầu tiên (VNPay, MoMo, ZaloPay, Stripe...)?                                                                                                                                                                                                                                                                                                        | Ảnh hưởng `05-API Specification`, schema Payment, callback flow |
+| OQ-06     | Thời gian giữ ghế chính thức là bao nhiêu phút? Có cấu hình per nhà xe hay toàn hệ thống?                                                                                                                                                                                                                                                                                                 | Ảnh hưởng `Booking` flow, test case chống bán trùng ghế         |
+| OQ-07     | Có hỗ trợ thanh toán sau (`PENDING_CONFIRMATION` flow) trong phiên bản đầu không?                                                                                                                                                                                                                                                                                                         | Ảnh hưởng phạm vi `06-UI/UX Flow` và FR-OP-12                   |
+| OQ-08     | Mô hình `Fare`: gắn vào `Route`, `Trip`, hay riêng (lookup table)? Hỗ trợ giá theo chặng (segment-based) ở phiên bản đầu không?                                                                                                                                                                                                                                                           | Ảnh hưởng `04-Database Design`                                  |
+| OQ-09     | OTP cho đăng ký / đăng nhập: dùng SMS provider nào? Email OTP hay chỉ SMS?                                                                                                                                                                                                                                                                                                                | Ảnh hưởng FR-AUTH-01, FR-AUTH-02 và Notification Service        |
+| OQ-10     | Mobile app dành cho User và Driver dùng chung 1 codebase Expo hay tách 2 app riêng?                                                                                                                                                                                                                                                                                                       | Hiện tại có 1 thư mục `apps/mobile/` — cần xác nhận             |
+| OQ-11     | Dữ liệu mask số điện thoại hành khách hiển thị cho tài xế: rule mask cụ thể (mấy số đầu / cuối)?                                                                                                                                                                                                                                                                                          | BR-19, NFR-PRIV-04                                              |
+| OQ-12     | Hệ thống có hỗ trợ multi-currency / multi-language ở phiên bản đầu không?                                                                                                                                                                                                                                                                                                                 | Ảnh hưởng schema Payment, Fare, UI                              |
+| OQ-13     | Chính sách hủy vé / hoàn tiền: cấu hình per nhà xe hay áp chung toàn nền tảng?                                                                                                                                                                                                                                                                                                            | BR-07, FR-ADMIN-07, FR-ADMIN-18                                 |
+| OQ-14     | Audit log lưu ở MongoDB cùng cluster hay tách ra storage riêng?                                                                                                                                                                                                                                                                                                                           | NFR-AUDIT-01–04                                                 |
+| OQ-15     | Reporting dùng aggregation trực tiếp trên MongoDB hay tách read model / data warehouse?                                                                                                                                                                                                                                                                                                   | NFR-PERF-05, NFR-SCALE-04                                       |
 
 ---
 
