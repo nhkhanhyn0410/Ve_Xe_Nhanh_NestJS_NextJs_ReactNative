@@ -11,15 +11,15 @@
 | Dự án        | Hệ thống đặt vé xe khách                                       |
 | Phiên bản    | v1.0                                                           |
 | Trạng thái   | Draft                                                          |
-| Người viết   | AI Agent                                                       |
+| Người viết   | Nguyễn Hồng Khanh                                              |
 | Người duyệt  | Nguyễn Hồng Khanh                                              |
 | Ngày tạo     | 05/05/2026                                                     |
 
 ### 1.2. Lịch sử thay đổi
 
-| Phiên bản | Ngày       | Người cập nhật | Nội dung thay đổi                                                                                   |
-| --------- | ---------- | -------------- | --------------------------------------------------------------------------------------------------- |
-| v1.0      | 05/05/2026 | AI Agent       | Tạo bản đầu từ tài liệu ý tưởng `he-thong-dat-ve-xe-khach.md` và đối chiếu với code backend hiện có |
+| Phiên bản | Ngày       | Người cập nhật              | Nội dung thay đổi                                                                                   |
+| --------- | ---------- | --------------------------- | --------------------------------------------------------------------------------------------------- |
+| v1.0      | 05/05/2026 | AI Agent, Nguyễn Hồng Khanh | Tạo bản đầu từ tài liệu ý tưởng `he-thong-dat-ve-xe-khach.md` và đối chiếu với code backend hiện có |
 
 ---
 
@@ -1337,97 +1337,97 @@ Lưu ý: các state enum dưới đây là **target** theo SRS. Code hiện tạ
 
 ### 17.1. Trạng thái chuyến xe (Trip)
 
-| Trạng thái      | Mô tả                              |
-| --------------- | ---------------------------------- |
-| DRAFT           | Chuyến mới tạo, chưa mở bán        |
-| OPEN_FOR_SALE   | Chuyến đang mở bán                 |
-| SOLD_OUT        | Chuyến đã hết ghế                  |
-| LOCKED          | Chuyến bị khóa bán tạm thời        |
-| BOARDING        | Đang đón khách                     |
-| DEPARTED        | Đã khởi hành                       |
-| IN_PROGRESS     | Đang chạy                          |
-| COMPLETED       | Đã hoàn thành                      |
-| CANCELLED       | Đã hủy                             |
-| INCIDENT        | Có sự cố                           |
+| Trạng thái    | Mô tả                       |
+| ------------- | --------------------------- |
+| DRAFT         | Chuyến mới tạo, chưa mở bán |
+| OPEN_FOR_SALE | Chuyến đang mở bán          |
+| SOLD_OUT      | Chuyến đã hết ghế           |
+| LOCKED        | Chuyến bị khóa bán tạm thời |
+| BOARDING      | Đang đón khách              |
+| DEPARTED      | Đã khởi hành                |
+| IN_PROGRESS   | Đang chạy                   |
+| COMPLETED     | Đã hoàn thành               |
+| CANCELLED     | Đã hủy                      |
+| INCIDENT      | Có sự cố                    |
 
 ### 17.2. Trạng thái ghế trên chuyến (Seat)
 
-| Trạng thái  | Mô tả                              |
-| ----------- | ---------------------------------- |
-| AVAILABLE   | Còn trống                          |
-| HOLDING     | Đang được giữ tạm thời             |
-| BOOKED      | Đã đặt thành công                  |
-| CHECKED_IN  | Hành khách đã lên xe               |
-| BLOCKED     | Bị khóa bởi nhà xe / admin         |
+| Trạng thái | Mô tả                      |
+| ---------- | -------------------------- |
+| AVAILABLE  | Còn trống                  |
+| HOLDING    | Đang được giữ tạm thời     |
+| BOOKED     | Đã đặt thành công          |
+| CHECKED_IN | Hành khách đã lên xe       |
+| BLOCKED    | Bị khóa bởi nhà xe / admin |
 
 ### 17.3. Trạng thái booking
 
-| Trạng thái            | Mô tả                                  |
-| --------------------- | -------------------------------------- |
-| PENDING_PAYMENT       | Chờ thanh toán                         |
-| PENDING_CONFIRMATION  | Chờ nhà xe xác nhận                    |
-| PAID                  | Đã thanh toán                          |
-| CONFIRMED             | Đã xác nhận                            |
-| PARTIALLY_CANCELLED   | Hủy một phần                           |
-| CANCELLED             | Đã hủy toàn bộ                         |
-| EXPIRED               | Hết hạn thanh toán / giữ ghế           |
-| REFUND_PENDING        | Chờ hoàn tiền                          |
-| REFUNDED              | Đã hoàn tiền                           |
-| REFUND_FAILED         | Hoàn tiền thất bại                     |
+| Trạng thái           | Mô tả                        |
+| -------------------- | ---------------------------- |
+| PENDING_PAYMENT      | Chờ thanh toán               |
+| PENDING_CONFIRMATION | Chờ nhà xe xác nhận          |
+| PAID                 | Đã thanh toán                |
+| CONFIRMED            | Đã xác nhận                  |
+| PARTIALLY_CANCELLED  | Hủy một phần                 |
+| CANCELLED            | Đã hủy toàn bộ               |
+| EXPIRED              | Hết hạn thanh toán / giữ ghế |
+| REFUND_PENDING       | Chờ hoàn tiền                |
+| REFUNDED             | Đã hoàn tiền                 |
+| REFUND_FAILED        | Hoàn tiền thất bại           |
 
 ### 17.4. Trạng thái ticket
 
-| Trạng thái  | Mô tả                                  |
-| ----------- | -------------------------------------- |
-| VALID       | Vé hợp lệ                              |
-| CANCELLED   | Vé đã hủy                              |
-| CHECKED_IN  | Vé đã check-in                         |
-| NO_SHOW     | Hành khách không lên xe                |
-| USED        | Vé đã sử dụng / xong chuyến            |
-| REFUNDED    | Vé đã hoàn tiền                        |
+| Trạng thái | Mô tả                       |
+| ---------- | --------------------------- |
+| VALID      | Vé hợp lệ                   |
+| CANCELLED  | Vé đã hủy                   |
+| CHECKED_IN | Vé đã check-in              |
+| NO_SHOW    | Hành khách không lên xe     |
+| USED       | Vé đã sử dụng / xong chuyến |
+| REFUNDED   | Vé đã hoàn tiền             |
 
 ### 17.5. Trạng thái payment
 
-| Trạng thái  | Mô tả                              |
-| ----------- | ---------------------------------- |
-| INITIATED   | Đã tạo giao dịch                   |
-| PROCESSING  | Đang xử lý                         |
-| SUCCESS     | Thành công                         |
-| FAILED      | Thất bại                           |
-| EXPIRED     | Hết hạn                            |
-| CANCELLED   | Đã hủy                             |
-| RECONCILING | Đang đối soát                      |
+| Trạng thái  | Mô tả            |
+| ----------- | ---------------- |
+| INITIATED   | Đã tạo giao dịch |
+| PROCESSING  | Đang xử lý       |
+| SUCCESS     | Thành công       |
+| FAILED      | Thất bại         |
+| EXPIRED     | Hết hạn          |
+| CANCELLED   | Đã hủy           |
+| RECONCILING | Đang đối soát    |
 
 ### 17.6. Trạng thái refund
 
-| Trạng thái  | Mô tả                              |
-| ----------- | ---------------------------------- |
-| REQUESTED   | Đã yêu cầu hoàn tiền               |
-| APPROVED    | Đã duyệt                           |
-| PROCESSING  | Đang hoàn tiền                     |
-| SUCCESS     | Hoàn tiền thành công               |
-| FAILED      | Hoàn tiền thất bại                 |
-| REJECTED    | Bị từ chối                         |
+| Trạng thái | Mô tả                |
+| ---------- | -------------------- |
+| REQUESTED  | Đã yêu cầu hoàn tiền |
+| APPROVED   | Đã duyệt             |
+| PROCESSING | Đang hoàn tiền       |
+| SUCCESS    | Hoàn tiền thành công |
+| FAILED     | Hoàn tiền thất bại   |
+| REJECTED   | Bị từ chối           |
 
 ---
 
 ## 18. Thông báo hệ thống
 
-| Sự kiện                    | Người nhận            | Kênh gợi ý           | Nội dung chính                                  |
-| -------------------------- | --------------------- | -------------------- | ----------------------------------------------- |
-| Đăng ký thành công         | Người dùng            | Email / SMS / In-app | Xác nhận tài khoản đã tạo                       |
-| Đặt vé chờ thanh toán      | Người dùng            | In-app / Email       | Mã đơn, thời hạn thanh toán                     |
-| Thanh toán thành công      | Người dùng            | Email / SMS / In-app | Vé điện tử, QR code, thông tin chuyến           |
-| Thanh toán thất bại        | Người dùng            | In-app               | Lý do thất bại, hướng dẫn thử lại               |
-| Nhắc giờ khởi hành         | Người dùng            | Push / SMS           | Giờ đi, điểm đón, biển số nếu có                |
-| Chuyến thay đổi giờ        | Người dùng, Tài xế    | SMS / Push / In-app  | Giờ mới, hướng dẫn xác nhận                     |
-| Chuyến bị hủy              | Người dùng, Tài xế    | SMS / Push / Email   | Lý do, phương án hoàn tiền / đổi chuyến         |
-| Có đơn vé mới              | Nhà xe                | In-app / Email       | Thông tin chuyến, số vé, doanh thu              |
-| Tài xế được phân công      | Tài xế                | Push / In-app        | Chuyến, giờ đi, xe                              |
-| Hủy vé thành công          | Người dùng, Nhà xe    | In-app / Email       | Vé đã hủy, số tiền hoàn dự kiến                 |
-| Hoàn tiền thành công       | Người dùng            | Email / SMS / In-app | Số tiền, mã giao dịch hoàn                      |
-| Có khiếu nại mới           | Nhà xe / Admin        | In-app / Email       | Loại khiếu nại, booking liên quan               |
-| Nhà xe được phê duyệt      | Nhà xe                | Email / In-app       | Trạng thái hoạt động mới                        |
+| Sự kiện               | Người nhận         | Kênh gợi ý           | Nội dung chính                          |
+| --------------------- | ------------------ | -------------------- | --------------------------------------- |
+| Đăng ký thành công    | Người dùng         | Email / SMS / In-app | Xác nhận tài khoản đã tạo               |
+| Đặt vé chờ thanh toán | Người dùng         | In-app / Email       | Mã đơn, thời hạn thanh toán             |
+| Thanh toán thành công | Người dùng         | Email / SMS / In-app | Vé điện tử, QR code, thông tin chuyến   |
+| Thanh toán thất bại   | Người dùng         | In-app               | Lý do thất bại, hướng dẫn thử lại       |
+| Nhắc giờ khởi hành    | Người dùng         | Push / SMS           | Giờ đi, điểm đón, biển số nếu có        |
+| Chuyến thay đổi giờ   | Người dùng, Tài xế | SMS / Push / In-app  | Giờ mới, hướng dẫn xác nhận             |
+| Chuyến bị hủy         | Người dùng, Tài xế | SMS / Push / Email   | Lý do, phương án hoàn tiền / đổi chuyến |
+| Có đơn vé mới         | Nhà xe             | In-app / Email       | Thông tin chuyến, số vé, doanh thu      |
+| Tài xế được phân công | Tài xế             | Push / In-app        | Chuyến, giờ đi, xe                      |
+| Hủy vé thành công     | Người dùng, Nhà xe | In-app / Email       | Vé đã hủy, số tiền hoàn dự kiến         |
+| Hoàn tiền thành công  | Người dùng         | Email / SMS / In-app | Số tiền, mã giao dịch hoàn              |
+| Có khiếu nại mới      | Nhà xe / Admin     | In-app / Email       | Loại khiếu nại, booking liên quan       |
+| Nhà xe được phê duyệt | Nhà xe             | Email / In-app       | Trạng thái hoạt động mới                |
 
 ---
 
@@ -1501,36 +1501,36 @@ Lưu ý: các state enum dưới đây là **target** theo SRS. Code hiện tạ
 
 ## 21. Module triển khai
 
-| Module                        | Mô tả                                                                       |
-| ----------------------------- | --------------------------------------------------------------------------- |
-| Identity & Access Management  | Đăng nhập, đăng ký, phân quyền, OTP, token, RBAC                            |
-| User Portal                   | Tìm kiếm chuyến, đặt vé, thanh toán, quản lý vé                             |
-| Operator Portal               | Quản lý nhà xe, xe, tuyến, chuyến, giá, đơn vé                              |
-| Driver App / Portal           | Lịch chuyến, danh sách khách, check-in, trạng thái chuyến                   |
-| Admin Portal                  | Quản trị toàn hệ thống, cấu hình, báo cáo, khiếu nại                        |
-| Booking Service               | Giữ ghế, tạo booking, trạng thái vé                                         |
-| Payment Service               | Tích hợp cổng thanh toán, callback, đối soát, hoàn tiền                     |
-| Notification Service          | Email, SMS, push, in-app notification                                       |
-| Reporting Service             | Dashboard, báo cáo, xuất dữ liệu                                            |
-| Audit Service                 | Nhật ký thao tác, truy vết thay đổi                                         |
-| Support Service               | Ticket hỗ trợ, khiếu nại, phản hồi                                          |
-| Search Service                | Index và truy vấn chuyến / tuyến / điểm đón                                 |
-| Routing Service (OSRM)        | Tính khoảng cách, thời gian giữa các điểm dừng                              |
+| Module                       | Mô tả                                                     |
+| ---------------------------- | --------------------------------------------------------- |
+| Identity & Access Management | Đăng nhập, đăng ký, phân quyền, OTP, token, RBAC          |
+| User Portal                  | Tìm kiếm chuyến, đặt vé, thanh toán, quản lý vé           |
+| Operator Portal              | Quản lý nhà xe, xe, tuyến, chuyến, giá, đơn vé            |
+| Driver App / Portal          | Lịch chuyến, danh sách khách, check-in, trạng thái chuyến |
+| Admin Portal                 | Quản trị toàn hệ thống, cấu hình, báo cáo, khiếu nại      |
+| Booking Service              | Giữ ghế, tạo booking, trạng thái vé                       |
+| Payment Service              | Tích hợp cổng thanh toán, callback, đối soát, hoàn tiền   |
+| Notification Service         | Email, SMS, push, in-app notification                     |
+| Reporting Service            | Dashboard, báo cáo, xuất dữ liệu                          |
+| Audit Service                | Nhật ký thao tác, truy vết thay đổi                       |
+| Support Service              | Ticket hỗ trợ, khiếu nại, phản hồi                        |
+| Search Service               | Index và truy vấn chuyến / tuyến / điểm đón               |
+| Routing Service (OSRM)       | Tính khoảng cách, thời gian giữa các điểm dừng            |
 
 ---
 
 ## 22. Rủi ro và biện pháp giảm thiểu
 
-| Rủi ro                                       | Tác động     | Biện pháp giảm thiểu                                                                  |
-| -------------------------------------------- | ------------ | ------------------------------------------------------------------------------------- |
-| Bán trùng ghế khi nhiều người đặt cùng lúc   | Rất cao      | Dùng transaction / lock / idempotency, kiểm tra trạng thái ghế thời gian thực         |
-| Callback thanh toán bị trễ hoặc mất          | Cao          | Cơ chế đối soát, retry qua Bull queue, truy vấn lại cổng thanh toán                   |
-| Nhà xe nhập sai thông tin chuyến             | Cao          | Quy trình xác nhận, cảnh báo khi thay đổi chuyến đã bán vé, audit log                 |
-| Tài xế không có mạng khi check-in            | Trung bình   | Hỗ trợ cache / offline có kiểm soát, đồng bộ sau khi có mạng                          |
-| Lộ dữ liệu cá nhân hành khách                | Rất cao      | RBAC, mask dữ liệu, mã hóa, audit log, giới hạn quyền truy cập                        |
-| Khiếu nại hoàn tiền phức tạp                 | Trung bình   | Chính sách rõ ràng, lưu lịch sử giao dịch, ticket support đầy đủ                      |
-| Hệ thống quá tải dịp lễ                      | Cao          | Cache tìm kiếm bằng Redis, queue Bull, autoscaling, throttler, tối ưu MongoDB index   |
-| Dữ liệu báo cáo chậm                         | Trung bình   | Tách reporting, xử lý bất đồng bộ, dùng read model nếu cần                            |
+| Rủi ro                                     | Tác động   | Biện pháp giảm thiểu                                                                |
+| ------------------------------------------ | ---------- | ----------------------------------------------------------------------------------- |
+| Bán trùng ghế khi nhiều người đặt cùng lúc | Rất cao    | Dùng transaction / lock / idempotency, kiểm tra trạng thái ghế thời gian thực       |
+| Callback thanh toán bị trễ hoặc mất        | Cao        | Cơ chế đối soát, retry qua Bull queue, truy vấn lại cổng thanh toán                 |
+| Nhà xe nhập sai thông tin chuyến           | Cao        | Quy trình xác nhận, cảnh báo khi thay đổi chuyến đã bán vé, audit log               |
+| Tài xế không có mạng khi check-in          | Trung bình | Hỗ trợ cache / offline có kiểm soát, đồng bộ sau khi có mạng                        |
+| Lộ dữ liệu cá nhân hành khách              | Rất cao    | RBAC, mask dữ liệu, mã hóa, audit log, giới hạn quyền truy cập                      |
+| Khiếu nại hoàn tiền phức tạp               | Trung bình | Chính sách rõ ràng, lưu lịch sử giao dịch, ticket support đầy đủ                    |
+| Hệ thống quá tải dịp lễ                    | Cao        | Cache tìm kiếm bằng Redis, queue Bull, autoscaling, throttler, tối ưu MongoDB index |
+| Dữ liệu báo cáo chậm                       | Trung bình | Tách reporting, xử lý bất đồng bộ, dùng read model nếu cần                          |
 
 ---
 
@@ -1540,87 +1540,87 @@ Phần này ghi nhận **gap giữa SRS (target) và code hiện tại** sau khi
 
 ### 23.1. Module backend đã tồn tại
 
-| Module backend  | Trạng thái                                                                                                                                  |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `auth`          | **Đã có**. Routes: `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`. JWT + refresh token + JwtAuthGuard. |
-| `users`         | **Đã có schema đầy đủ**. Routes: `GET /users/me`, `PUT /users/me`. Có loyalty point, login attempt tracking, lock cơ chế.                   |
+| Module backend | Trạng thái                                                                                                                                   |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `auth`         | **Đã có**. Routes: `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`. JWT + refresh token + JwtAuthGuard. |
+| `users`        | **Đã có schema đầy đủ**. Routes: `GET /users/me`, `PUT /users/me`. Có loyalty point, login attempt tracking, lock cơ chế.                    |
 
 ### 23.2. Module backend còn thiếu schema / chưa code
 
 Các module sau **có thư mục nhưng chưa có Mongoose schema** (chỉ có TypeScript interface trong `packages/shared-types/`):
 
-| Module folder | Thực thể liên quan trong SRS         | Trạng thái                                                          |
-| ------------- | ------------------------------------ | ------------------------------------------------------------------- |
-| `bookings`    | Booking, Ticket                      | Chỉ có interface `IBooking`, `ITicket` — chưa có schema Mongoose    |
-| `trips`       | Trip, TripStop                       | Chỉ có interface `ITrip` — chưa có schema                           |
-| `buses`       | Bus, BusType, SeatMap, Seat          | Có enum `BusType` (SEATER, SLEEPER, LIMOUSINE) — chưa có schema     |
-| `routes`      | Route                                | Chưa có schema                                                      |
-| `stop-points` | StopPoint                            | Chưa có schema                                                      |
-| `operators`   | Operator                             | Chưa có schema                                                      |
-| `employees`   | Employee (Driver)                    | Có enum `EmployeeRole` — chưa có schema                             |
-| `admin`       | Admin                                | Chưa có schema                                                      |
-| `search`      | (search service)                     | Chưa code logic search                                              |
-| `osrm`        | (routing service)                    | Chưa code wrapper OSRM                                              |
-| `redis`       | (cache + lock)                       | Module wiring — cần dùng cho seat-lock, search cache                |
+| Module folder | Thực thể liên quan trong SRS | Trạng thái                                                       |
+| ------------- | ---------------------------- | ---------------------------------------------------------------- |
+| `bookings`    | Booking, Ticket              | Chỉ có interface `IBooking`, `ITicket` — chưa có schema Mongoose |
+| `trips`       | Trip, TripStop               | Chỉ có interface `ITrip` — chưa có schema                        |
+| `buses`       | Bus, BusType, SeatMap, Seat  | Có enum `BusType` (SEATER, SLEEPER, LIMOUSINE) — chưa có schema  |
+| `routes`      | Route                        | Chưa có schema                                                   |
+| `stop-points` | StopPoint                    | Chưa có schema                                                   |
+| `operators`   | Operator                     | Chưa có schema                                                   |
+| `employees`   | Employee (Driver)            | Có enum `EmployeeRole` — chưa có schema                          |
+| `admin`       | Admin                        | Chưa có schema                                                   |
+| `search`      | (search service)             | Chưa code logic search                                           |
+| `osrm`        | (routing service)            | Chưa code wrapper OSRM                                           |
+| `redis`       | (cache + lock)               | Module wiring — cần dùng cho seat-lock, search cache             |
 
 ### 23.3. Module / thực thể trong SRS chưa có ở code
 
-| Thực thể          | Vai trò trong SRS                                  |
-| ----------------- | -------------------------------------------------- |
-| Fare              | Bảng giá theo tuyến / chuyến / loại ghế            |
-| Payment           | Có `IPayment` interface, chưa có schema + service  |
-| Refund            | Chưa có interface, chưa có schema                  |
-| Promotion         | Chưa có                                            |
-| Review            | Chưa có                                            |
-| Complaint         | Chưa có (Support Service chưa tồn tại)             |
-| Notification      | Chưa có (Notification Service chưa tồn tại)        |
-| AuditLog          | Chưa có (Audit Service chưa tồn tại)               |
+| Thực thể     | Vai trò trong SRS                                 |
+| ------------ | ------------------------------------------------- |
+| Fare         | Bảng giá theo tuyến / chuyến / loại ghế           |
+| Payment      | Có `IPayment` interface, chưa có schema + service |
+| Refund       | Chưa có interface, chưa có schema                 |
+| Promotion    | Chưa có                                           |
+| Review       | Chưa có                                           |
+| Complaint    | Chưa có (Support Service chưa tồn tại)            |
+| Notification | Chưa có (Notification Service chưa tồn tại)       |
+| AuditLog     | Chưa có (Audit Service chưa tồn tại)              |
 
 ### 23.4. State enum: code vs SRS
 
-| Enum                | SRS đề xuất                                                                                          | Code hiện tại                                              | Khớp? |
-| ------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ----- |
-| Trip status         | DRAFT, OPEN_FOR_SALE, SOLD_OUT, LOCKED, BOARDING, DEPARTED, IN_PROGRESS, COMPLETED, CANCELLED, INCIDENT | SCHEDULED, BOARDING, IN_TRANSIT, COMPLETED, CANCELLED      | Khác  |
-| Seat status         | AVAILABLE, HOLDING, BOOKED, CHECKED_IN, BLOCKED                                                       | (chưa có)                                                  | Thiếu |
-| Booking status      | PENDING_PAYMENT, PENDING_CONFIRMATION, PAID, CONFIRMED, PARTIALLY_CANCELLED, CANCELLED, EXPIRED, REFUND_PENDING, REFUNDED, REFUND_FAILED | PENDING, CONFIRMED, CANCELLED, COMPLETED, EXPIRED, REFUND_PENDING, REFUNDED | Khác một phần |
-| Ticket status       | VALID, CANCELLED, CHECKED_IN, NO_SHOW, USED, REFUNDED                                                 | VALID, USED, CANCELLED, EXPIRED                            | Khác một phần |
-| Payment status      | INITIATED, PROCESSING, SUCCESS, FAILED, EXPIRED, CANCELLED, RECONCILING                              | CREATED, PROCESSING, COMPLETED, FAILED, REFUNDED           | Khác  |
-| Refund status       | REQUESTED, APPROVED, PROCESSING, SUCCESS, FAILED, REJECTED                                            | (chưa có)                                                  | Thiếu |
+| Enum           | SRS đề xuất                                                                                                                              | Code hiện tại                                                               | Khớp?         |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------- |
+| Trip status    | DRAFT, OPEN_FOR_SALE, SOLD_OUT, LOCKED, BOARDING, DEPARTED, IN_PROGRESS, COMPLETED, CANCELLED, INCIDENT                                  | SCHEDULED, BOARDING, IN_TRANSIT, COMPLETED, CANCELLED                       | Khác          |
+| Seat status    | AVAILABLE, HOLDING, BOOKED, CHECKED_IN, BLOCKED                                                                                          | (chưa có)                                                                   | Thiếu         |
+| Booking status | PENDING_PAYMENT, PENDING_CONFIRMATION, PAID, CONFIRMED, PARTIALLY_CANCELLED, CANCELLED, EXPIRED, REFUND_PENDING, REFUNDED, REFUND_FAILED | PENDING, CONFIRMED, CANCELLED, COMPLETED, EXPIRED, REFUND_PENDING, REFUNDED | Khác một phần |
+| Ticket status  | VALID, CANCELLED, CHECKED_IN, NO_SHOW, USED, REFUNDED                                                                                    | VALID, USED, CANCELLED, EXPIRED                                             | Khác một phần |
+| Payment status | INITIATED, PROCESSING, SUCCESS, FAILED, EXPIRED, CANCELLED, RECONCILING                                                                  | CREATED, PROCESSING, COMPLETED, FAILED, REFUNDED                            | Khác          |
+| Refund status  | REQUESTED, APPROVED, PROCESSING, SUCCESS, FAILED, REJECTED                                                                               | (chưa có)                                                                   | Thiếu         |
 
 ### 23.5. Tóm tắt mức độ hoàn thành
 
-| Phạm vi                           | % hoàn thành ước lượng |
-| --------------------------------- | ---------------------- |
-| Identity & Access (Auth + User)   | ~70% (chưa có RBAC role + admin / operator / driver account flow) |
-| Booking core                      | ~5% (chỉ có interface)  |
-| Payment                           | ~5%                     |
-| Trip / Bus / Route / Seat         | ~5%                     |
-| Notification                      | 0%                      |
-| Audit                             | 0%                      |
-| Support / Review / Complaint      | 0%                      |
-| Reporting                         | 0%                      |
+| Phạm vi                         | % hoàn thành ước lượng                                            |
+| ------------------------------- | ----------------------------------------------------------------- |
+| Identity & Access (Auth + User) | ~70% (chưa có RBAC role + admin / operator / driver account flow) |
+| Booking core                    | ~5% (chỉ có interface)                                            |
+| Payment                         | ~5%                                                               |
+| Trip / Bus / Route / Seat       | ~5%                                                               |
+| Notification                    | 0%                                                                |
+| Audit                           | 0%                                                                |
+| Support / Review / Complaint    | 0%                                                                |
+| Reporting                       | 0%                                                                |
 
 ---
 
 ## 24. Open Questions / TBD
 
-| ID    | Câu hỏi                                                                                                                                  | Tác động                                                  |
-| ----- | ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| OQ-01 | Trip status: dùng tập 10 trạng thái của SRS (DRAFT / OPEN_FOR_SALE / ...) hay rút về tập 5 của code (SCHEDULED / BOARDING / ...)?         | Ảnh hưởng `trips` schema, Booking flow, UI hiển thị       |
-| OQ-02 | Booking status: thêm `PAID`, `PARTIALLY_CANCELLED`, `REFUND_FAILED` vào code hay rút SRS xuống tập 7 của code?                            | Ảnh hưởng state machine của Booking + Refund              |
-| OQ-03 | Payment status: chuẩn hóa tên `SUCCESS` (SRS) hay `COMPLETED` (code)?                                                                    | Cần thống nhất một tên duy nhất                           |
-| OQ-04 | `Driver` trong SRS có nên là entity riêng hay là `Employee` với role `DRIVER`?                                                            | Code đang dùng `Employee` + `EmployeeRole`. SRS gọi là `Driver`. Cần thống nhất |
-| OQ-05 | Cổng thanh toán cụ thể nào sẽ tích hợp đầu tiên (VNPay, MoMo, ZaloPay, Stripe...)?                                                       | Ảnh hưởng `05-API Specification`, schema Payment, callback flow |
-| OQ-06 | Thời gian giữ ghế chính thức là bao nhiêu phút? Có cấu hình per nhà xe hay toàn hệ thống?                                                | Ảnh hưởng `Booking` flow, test case chống bán trùng ghế   |
-| OQ-07 | Có hỗ trợ thanh toán sau (`PENDING_CONFIRMATION` flow) trong phiên bản đầu không?                                                         | Ảnh hưởng phạm vi `06-UI/UX Flow` và FR-OP-12             |
-| OQ-08 | Mô hình `Fare`: gắn vào `Route`, `Trip`, hay riêng (lookup table)? Hỗ trợ giá theo chặng (segment-based) ở phiên bản đầu không?          | Ảnh hưởng `04-Database Design`                            |
-| OQ-09 | OTP cho đăng ký / đăng nhập: dùng SMS provider nào? Email OTP hay chỉ SMS?                                                                | Ảnh hưởng FR-AUTH-01, FR-AUTH-02 và Notification Service  |
-| OQ-10 | Mobile app dành cho User và Driver dùng chung 1 codebase Expo hay tách 2 app riêng?                                                       | Hiện tại có 1 thư mục `apps/mobile/` — cần xác nhận       |
-| OQ-11 | Dữ liệu mask số điện thoại hành khách hiển thị cho tài xế: rule mask cụ thể (mấy số đầu / cuối)?                                          | BR-19, NFR-PRIV-04                                        |
-| OQ-12 | Hệ thống có hỗ trợ multi-currency / multi-language ở phiên bản đầu không?                                                                | Ảnh hưởng schema Payment, Fare, UI                        |
-| OQ-13 | Chính sách hủy vé / hoàn tiền: cấu hình per nhà xe hay áp chung toàn nền tảng?                                                            | BR-07, FR-ADMIN-07, FR-ADMIN-18                           |
-| OQ-14 | Audit log lưu ở MongoDB cùng cluster hay tách ra storage riêng?                                                                           | NFR-AUDIT-01–04                                           |
-| OQ-15 | Reporting dùng aggregation trực tiếp trên MongoDB hay tách read model / data warehouse?                                                   | NFR-PERF-05, NFR-SCALE-04                                 |
+| ID    | Câu hỏi                                                                                                                           | Tác động                                                                        |
+| ----- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| OQ-01 | Trip status: dùng tập 10 trạng thái của SRS (DRAFT / OPEN_FOR_SALE / ...) hay rút về tập 5 của code (SCHEDULED / BOARDING / ...)? | Ảnh hưởng `trips` schema, Booking flow, UI hiển thị                             |
+| OQ-02 | Booking status: thêm `PAID`, `PARTIALLY_CANCELLED`, `REFUND_FAILED` vào code hay rút SRS xuống tập 7 của code?                    | Ảnh hưởng state machine của Booking + Refund                                    |
+| OQ-03 | Payment status: chuẩn hóa tên `SUCCESS` (SRS) hay `COMPLETED` (code)?                                                             | Cần thống nhất một tên duy nhất                                                 |
+| OQ-04 | `Driver` trong SRS có nên là entity riêng hay là `Employee` với role `DRIVER`?                                                    | Code đang dùng `Employee` + `EmployeeRole`. SRS gọi là `Driver`. Cần thống nhất |
+| OQ-05 | Cổng thanh toán cụ thể nào sẽ tích hợp đầu tiên (VNPay, MoMo, ZaloPay, Stripe...)?                                                | Ảnh hưởng `05-API Specification`, schema Payment, callback flow                 |
+| OQ-06 | Thời gian giữ ghế chính thức là bao nhiêu phút? Có cấu hình per nhà xe hay toàn hệ thống?                                         | Ảnh hưởng `Booking` flow, test case chống bán trùng ghế                         |
+| OQ-07 | Có hỗ trợ thanh toán sau (`PENDING_CONFIRMATION` flow) trong phiên bản đầu không?                                                 | Ảnh hưởng phạm vi `06-UI/UX Flow` và FR-OP-12                                   |
+| OQ-08 | Mô hình `Fare`: gắn vào `Route`, `Trip`, hay riêng (lookup table)? Hỗ trợ giá theo chặng (segment-based) ở phiên bản đầu không?   | Ảnh hưởng `04-Database Design`                                                  |
+| OQ-09 | OTP cho đăng ký / đăng nhập: dùng SMS provider nào? Email OTP hay chỉ SMS?                                                        | Ảnh hưởng FR-AUTH-01, FR-AUTH-02 và Notification Service                        |
+| OQ-10 | Mobile app dành cho User và Driver dùng chung 1 codebase Expo hay tách 2 app riêng?                                               | Hiện tại có 1 thư mục `apps/mobile/` — cần xác nhận                             |
+| OQ-11 | Dữ liệu mask số điện thoại hành khách hiển thị cho tài xế: rule mask cụ thể (mấy số đầu / cuối)?                                  | BR-19, NFR-PRIV-04                                                              |
+| OQ-12 | Hệ thống có hỗ trợ multi-currency / multi-language ở phiên bản đầu không?                                                         | Ảnh hưởng schema Payment, Fare, UI                                              |
+| OQ-13 | Chính sách hủy vé / hoàn tiền: cấu hình per nhà xe hay áp chung toàn nền tảng?                                                    | BR-07, FR-ADMIN-07, FR-ADMIN-18                                                 |
+| OQ-14 | Audit log lưu ở MongoDB cùng cluster hay tách ra storage riêng?                                                                   | NFR-AUDIT-01–04                                                                 |
+| OQ-15 | Reporting dùng aggregation trực tiếp trên MongoDB hay tách read model / data warehouse?                                           | NFR-PERF-05, NFR-SCALE-04                                                       |
 
 ---
 
