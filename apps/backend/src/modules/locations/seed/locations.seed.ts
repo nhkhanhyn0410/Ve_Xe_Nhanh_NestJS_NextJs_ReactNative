@@ -12,12 +12,21 @@
  */
 import * as dotenv from 'dotenv';
 import ExcelJS from 'exceljs';
+import { existsSync } from 'fs';
 import mongoose, { Types } from 'mongoose';
-import { extname } from 'path';
+import { extname, join, resolve } from 'path';
 import { Province, ProvinceSchema } from '../schemas/province.schema';
 import { Ward, WardSchema } from '../schemas/ward.schema';
+import dns from 'node:dns';
 
-dotenv.config();
+// __dirname = src/modules/locations/seed → 4 levels up = apps/backend
+const backendRoot = resolve(__dirname, '..', '..', '..', '..');
+const baseEnvPath = join(backendRoot, '.env');
+dotenv.config({ path: baseEnvPath });
+
+const nodeEnv = process.env.NODE_ENV ?? 'development';
+const envEnvPath = join(backendRoot, `.env.${nodeEnv}`);
+if (existsSync(envEnvPath)) dotenv.config({ path: envEnvPath });
 
 interface ProvinceSeedRow {
   code: string;
@@ -277,6 +286,12 @@ async function seedLocations(): Promise<void> {
   const wards = parseWardRows(readRows(wardWorksheet));
 
   const uri = process.env.MONGODB_URI;
+
+  if (!uri) {
+    throw new Error('Missing required environment variable: MONGODB_URI');
+  }
+
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
   await mongoose.connect(uri);
 
   const provinceModel = mongoose.model<Province>(Province.name, ProvinceSchema);
