@@ -10,8 +10,8 @@ import { StopPoint, StopPointDocument } from './schemas/stop-point.schema';
 import {
   Province,
   ProvinceDocument,
-} from '../provinces/schemas/province.schema';
-import { Ward, WardDocument } from '../wards/schemas/ward.schema';
+} from '../locations/schemas/province.schema';
+import { Ward, WardDocument } from '../locations/schemas/ward.schema';
 import { CreateStopPointDto } from './dto/create-stop-point.dto';
 import { UpdateStopPointDto } from './dto/update-stop-point.dto';
 import { ActorType, StopPointType } from '@ve_xe_nhanh_ts/shared-types';
