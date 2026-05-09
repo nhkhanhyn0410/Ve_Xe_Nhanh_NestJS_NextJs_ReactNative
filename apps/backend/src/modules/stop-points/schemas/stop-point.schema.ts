@@ -12,11 +12,16 @@ export class StopPoint {
   @Prop({ type: String, enum: StopPointType, default: StopPointType.POINT })
   type: StopPointType;
 
+  @Prop({ type: Types.ObjectId, ref: 'Province', required: true, index: true })
+  provinceId: Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId, ref: 'Ward', required: true, index: true })
+  wardId: Types.ObjectId;
   @Prop({ required: true, trim: true })
-  city: string;
+  provinceName: string;
 
   @Prop({ required: true, trim: true })
-  province: string;
+  wardName: string;
 
   @Prop({ trim: true })
   address: string;
@@ -54,8 +59,9 @@ export class StopPoint {
 }
 
 export const StopPointSchema = SchemaFactory.createForClass(StopPoint);
-StopPointSchema.index({ city: 1, type: 1 });
-StopPointSchema.index({ name: 'text', city: 'text' });
+StopPointSchema.index({ provinceId: 1, wardId: 1, type: 1 });
+StopPointSchema.index({ provinceName: 1, wardName: 1 });
+StopPointSchema.index({ name: 'text', provinceName: 'text', wardName: 'text' });
 StopPointSchema.index({ location: '2dsphere' });
 
 // Tự động đồng bộ coordinates -> GeoJSON location

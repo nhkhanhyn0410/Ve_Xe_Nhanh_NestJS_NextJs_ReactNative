@@ -1,4 +1,4 @@
-// export const ROLES_KEY = 'roles';
+export const ACTORS_KEY = 'actors';
 export const IS_PUBLIC_KEY = 'isPublic';
 
 export const DEFAULT_PAGE = 1;

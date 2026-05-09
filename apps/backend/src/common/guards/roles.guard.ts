@@ -1,14 +1,17 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ROLES_KEY } from '../decorators/roles.decorator';
-import { SystemRole } from '@ve_xe_nhanh_ts/shared-types';
+import {
+  PrincipalContext,
+  PrincipalRole,
+} from '../interfaces/jwt-payload.interface';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.getAllAndOverride<SystemRole[]>(
+    const requiredRoles = this.reflector.getAllAndOverride<PrincipalRole[]>(
       ROLES_KEY,
       [context.getHandler(), context.getClass()],
     );
@@ -17,11 +20,10 @@ export class RolesGuard implements CanActivate {
     }
     const { user } = context
       .switchToHttp()
-      .getRequest<{ user?: { role: SystemRole } }>();
+      .getRequest<{ user?: PrincipalContext }>();
     if (!user) {
       return false;
     }
-    // user is populated by JwtAuthGuard
-    return requiredRoles.includes(user.role);
+    return !!user.role && requiredRoles.includes(user.role);
   }
 }

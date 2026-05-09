@@ -9,7 +9,11 @@ import { JwtPayload } from '../../common/interfaces/jwt-payload.interface';
 import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcryptjs';
 import { UserDocument } from '../users/schemas/user.schema';
-import { SystemRole, OperatorStatus } from '@ve_xe_nhanh_ts/shared-types';
+import {
+  ActorType,
+  OperatorStatus,
+  UserRole,
+} from '@ve_xe_nhanh_ts/shared-types';
 
 @Injectable()
 export class AuthService {
@@ -31,6 +35,7 @@ export class AuthService {
       fullName: users.fullName,
       email: users.email,
       phone: users.phone,
+      role: users.role ?? UserRole.CUSTOMER,
       isEmailVerified: users.isEmailVerified,
       isPhoneVerified: users.isPhoneVerified,
     };
@@ -43,7 +48,8 @@ export class AuthService {
     const tokens = await this.generateTokens({
       sub: userId,
       email: user.email,
-      role: SystemRole.USER,
+      actorType: ActorType.USER,
+      role: UserRole.CUSTOMER,
     });
     await Promise.all([
       this.usersService.updateRefreshToken(userId, tokens.refreshToken),
@@ -86,7 +92,8 @@ export class AuthService {
     const tokens = await this.generateTokens({
       sub: user._id.toString(),
       email: user.email,
-      role: SystemRole.USER,
+      actorType: ActorType.USER,
+      role: user.role ?? UserRole.CUSTOMER,
     });
 
     await this.usersService.updateRefreshToken(
@@ -107,29 +114,38 @@ export class AuthService {
         secret: this.configService.get<string>('JWT_SECRET'),
       });
 
-      const role = payload.role;
+      const actorType = payload.actorType;
 
-      if (role === SystemRole.USER) {
+      if (actorType === ActorType.USER) {
         const user = await this.usersService.findByIdWithRefreshToken(
           payload.sub,
         );
-        if (!user || user.refreshToken !== refreshToken) {
+        if (
+          !user?.refreshToken ||
+          !(await bcrypt.compare(refreshToken, user.refreshToken))
+        ) {
           throw new UnauthorizedException(
             'Refresh token người dùng không hợp lệ',
           );
         }
-      } else if (role === SystemRole.OPERATOR) {
+      } else if (actorType === ActorType.OPERATOR) {
         const operator = await this.operatorsService.findByIdWithRefreshToken(
           payload.sub,
         );
-        if (!operator || operator.refreshToken !== refreshToken) {
+        if (
+          !operator?.refreshToken ||
+          !(await bcrypt.compare(refreshToken, operator.refreshToken))
+        ) {
           throw new UnauthorizedException('Refresh token nhà xe không hợp lệ');
         }
-      } else if (role === SystemRole.ADMIN) {
+      } else if (actorType === ActorType.ADMIN) {
         const admin = await this.adminService.findByIdWithRefreshToken(
           payload.sub,
         );
-        if (!admin || admin.refreshToken !== refreshToken) {
+        if (
+          !admin?.refreshToken ||
+          !(await bcrypt.compare(refreshToken, admin.refreshToken))
+        ) {
           throw new UnauthorizedException('Refresh token admin không hợp lệ');
         }
       } else {
@@ -139,20 +155,22 @@ export class AuthService {
       const tokens = await this.generateTokens({
         sub: payload.sub,
         email: payload.email,
+        actorType: payload.actorType,
         role: payload.role,
+        tenantId: payload.tenantId,
       });
 
-      if (role === SystemRole.USER) {
+      if (actorType === ActorType.USER) {
         await this.usersService.updateRefreshToken(
           payload.sub,
           tokens.refreshToken,
         );
-      } else if (role === SystemRole.OPERATOR) {
+      } else if (actorType === ActorType.OPERATOR) {
         await this.operatorsService.updateRefreshToken(
           payload.sub,
           tokens.refreshToken,
         );
-      } else if (role === SystemRole.ADMIN) {
+      } else if (actorType === ActorType.ADMIN) {
         await this.adminService.updateRefreshToken(
           payload.sub,
           tokens.refreshToken,
@@ -167,10 +185,10 @@ export class AuthService {
     }
   }
 
-  async logout(userId: string, role?: SystemRole) {
-    if (role === SystemRole.OPERATOR) {
+  async logout(userId: string, actorType?: ActorType) {
+    if (actorType === ActorType.OPERATOR) {
       await this.operatorsService.updateRefreshToken(userId, null);
-    } else if (role === SystemRole.ADMIN) {
+    } else if (actorType === ActorType.ADMIN) {
       await this.adminService.updateRefreshToken(userId, null);
     } else {
       await this.usersService.updateRefreshToken(userId, null);
@@ -199,7 +217,8 @@ export class AuthService {
     const tokens = await this.generateTokens({
       sub: operator._id.toString(),
       email: operator.email,
-      role: SystemRole.OPERATOR,
+      actorType: ActorType.OPERATOR,
+      tenantId: operator._id.toString(),
     });
 
     await this.operatorsService.updateRefreshToken(
@@ -237,7 +256,8 @@ export class AuthService {
     const tokens = await this.generateTokens({
       sub: admin._id.toString(),
       email: admin.email,
-      role: SystemRole.ADMIN,
+      actorType: ActorType.ADMIN,
+      role: admin.adminRole,
     });
 
     await this.adminService.updateRefreshToken(

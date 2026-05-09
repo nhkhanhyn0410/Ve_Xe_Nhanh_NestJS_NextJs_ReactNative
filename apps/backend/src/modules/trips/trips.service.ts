@@ -12,7 +12,7 @@ import { Bus, BusDocument } from '../buses/schemas/bus.schema';
 import { CreateTripDto } from './dto/create-trip.dto';
 import { UpdateTripDto } from './dto/update-trip.dto';
 import { AssignBusDto, AssignCrewDto } from './dto/assign-resource.dto';
-import { SystemRole, TripStatus } from '@ve_xe_nhanh_ts/shared-types';
+import { ActorType, TripStatus } from '@ve_xe_nhanh_ts/shared-types';
 
 export interface TripQuery {
   operatorId?: string;
@@ -147,11 +147,11 @@ export class TripsService {
   async update(
     id: string,
     operatorId: string,
-    role: SystemRole,
+    actorType: ActorType,
     updateDto: UpdateTripDto,
   ): Promise<TripDocument> {
     const trip = await this.findOne(id);
-    this.assertOwnership(trip, operatorId, role);
+    this.assertOwnership(trip, operatorId, actorType);
 
     // Overlap check nếu thay đổi xe/thời gian VÀ có busId
     const effectiveBusId =
@@ -177,10 +177,10 @@ export class TripsService {
   async remove(
     id: string,
     operatorId: string,
-    role: SystemRole,
+    actorType: ActorType,
   ): Promise<void> {
     const trip = await this.findOne(id);
-    this.assertOwnership(trip, operatorId, role);
+    this.assertOwnership(trip, operatorId, actorType);
     await this.tripModel.findByIdAndDelete(id).exec();
   }
 
@@ -189,11 +189,11 @@ export class TripsService {
   async assignBus(
     id: string,
     operatorId: string,
-    role: SystemRole,
+    actorType: ActorType,
     dto: AssignBusDto,
   ): Promise<TripDocument> {
     const trip = await this.findOne(id);
-    this.assertOwnership(trip, operatorId, role);
+    this.assertOwnership(trip, operatorId, actorType);
 
     // Kiểm tra bus tồn tại + lấy totalSeats
     const bus = await this.busModel.findById(dto.busId).exec();
@@ -240,10 +240,10 @@ export class TripsService {
   async unassignBus(
     id: string,
     operatorId: string,
-    role: SystemRole,
+    actorType: ActorType,
   ): Promise<TripDocument> {
     const trip = await this.findOne(id);
-    this.assertOwnership(trip, operatorId, role);
+    this.assertOwnership(trip, operatorId, actorType);
 
     if (trip.bookedSeats && trip.bookedSeats.length > 0) {
       throw new ConflictException(
@@ -271,11 +271,11 @@ export class TripsService {
   async assignCrew(
     id: string,
     operatorId: string,
-    role: SystemRole,
+    actorType: ActorType,
     dto: AssignCrewDto,
   ): Promise<TripDocument> {
     const trip = await this.findOne(id);
-    this.assertOwnership(trip, operatorId, role);
+    this.assertOwnership(trip, operatorId, actorType);
 
     // TODO: Khi có Employee module → validate employee IDs tồn tại + check overlap
 
@@ -291,10 +291,10 @@ export class TripsService {
   private assertOwnership(
     trip: TripDocument,
     operatorId: string,
-    role: SystemRole,
+    actorType: ActorType,
   ): void {
     if (
-      role !== SystemRole.ADMIN &&
+      actorType !== ActorType.ADMIN &&
       trip.operatorId.toString() !== operatorId
     ) {
       throw new ForbiddenException(

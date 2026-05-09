@@ -4,7 +4,20 @@ import { OperatorStatus } from '@ve_xe_nhanh_ts/shared-types';
 
 export type OperatorDocument = Operator & Document;
 
-@Schema({ timestamps: true })
+@Schema({
+  timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (_doc, ret: Record<string, any>) => {
+      ret.id = String(ret._id);
+      delete ret._id;
+      delete ret.__v;
+      delete ret.password;
+      delete ret.refreshToken;
+      return ret;
+    },
+  },
+})
 export class Operator {
   // ===== THONG TIN CO BAN =====
 

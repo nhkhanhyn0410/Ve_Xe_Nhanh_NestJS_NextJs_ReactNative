@@ -13,10 +13,16 @@ export enum AdminRole {
   SYSTEM_MANAGER = 'system_manager',
 }
 
-export enum SystemRole {
+export enum ActorType {
   USER = 'user',
   ADMIN = 'admin',
   OPERATOR = 'operator',
+  EMPLOYEE = 'employee',
+}
+
+export enum UserRole {
+  CUSTOMER = 'customer',
+  GUEST = 'guest',
 }
 
 export enum Permission {
@@ -140,4 +146,15 @@ export enum RouteStopRole {
   ORIGIN = 'origin', // Bến đi (order = 0)
   STOP = 'stop', // Điểm dừng trung gian
   DESTINATION = 'destination', // Bến đến (order cuối)
+}
+
+// Enum địa giới hành chính dùng chung giữa backend, frontend và Swagger.
+export enum ProvinceType {
+  PROVINCE = 'province',
+  MUNICIPALITY = 'municipality',
+}
+
+export enum WardType {
+  WARD = 'ward',
+  COMMUNE = 'commune',
 }

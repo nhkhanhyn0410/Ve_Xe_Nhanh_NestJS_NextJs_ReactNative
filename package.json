@@ -36,7 +36,8 @@
     "@swc/cli": "^0.8.1",
     "@swc/core": "^1.15.30",
     "concurrently": "^8.2.0",
-    "prettier": "^3.1.0"
+    "prettier": "^3.1.0",
+    "chokidar": "^5.0.0"
   },
   "overrides": {
     "chromium-edge-launcher": "^0.3.0",

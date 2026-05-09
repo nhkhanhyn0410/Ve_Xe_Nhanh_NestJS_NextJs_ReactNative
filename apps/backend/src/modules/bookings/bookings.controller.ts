@@ -18,11 +18,11 @@ import { BookingQuery, BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { MongoIdPipe } from '@common/pipes/mongo-id.pipe';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '@common/guards/roles.guard';
-import { Roles } from '@common/decorators/roles.decorator';
-import { SystemRole, BookingStatus } from '@ve_xe_nhanh_ts/shared-types';
+import { ActorsGuard } from '@common/guards/actors.guard';
+import { Actors } from '@common/decorators/actors.decorator';
+import { ActorType, BookingStatus } from '@ve_xe_nhanh_ts/shared-types';
 import { CurrentUser } from '@common/decorators/current-user.decorator';
-import { JwtPayload } from '@common/interfaces/jwt-payload.interface';
+import { PrincipalContext } from '@common/interfaces/jwt-payload.interface';
 
 @ApiTags('Bookings')
 @Controller('bookings')
@@ -30,8 +30,8 @@ export class BookingsController {
   constructor(private readonly bookingsService: BookingsService) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(SystemRole.ADMIN, SystemRole.OPERATOR)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.ADMIN, ActorType.OPERATOR)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Admin/Nhà Xe] Xem danh sách đơn đặt vé' })
   @ApiQuery({ name: 'userId', required: false })
@@ -41,17 +41,24 @@ export class BookingsController {
     enum: BookingStatus,
     enumName: 'BookingStatus',
   })
-  async findAll(@Query() query: BookingQuery) {
+  async findAll(
+    @Query() query: BookingQuery,
+    @CurrentUser() user: PrincipalContext,
+  ) {
+    if (user.actorType === ActorType.OPERATOR) {
+      query.operatorId = user.tenantId ?? user.sub;
+    }
     const data = await this.bookingsService.findAll(query);
     return { success: true, data };
   }
 
   @Get('/my-bookings')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.USER)
   @ApiBearerAuth()
   @ApiOperation({ summary: '[Khách hàng] Lấy danh sách vé đã đặt của tôi' })
   async findMyBookings(
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
     @Query() query: BookingQuery,
   ) {
     const data = await this.bookingsService.findAll({
@@ -76,7 +83,7 @@ export class BookingsController {
   async create(
     @Body() createDto: CreateBookingDto,
     // Optional User
-    @CurrentUser() user?: JwtPayload,
+    @CurrentUser() user?: PrincipalContext,
   ) {
     const userId = user ? user.sub : undefined;
     const data = await this.bookingsService.create(userId, createDto);
@@ -84,19 +91,23 @@ export class BookingsController {
   }
 
   @Put(':id/status')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, ActorsGuard)
+  @Actors(ActorType.USER, ActorType.OPERATOR, ActorType.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Cập nhật trạng thái Booking (Thanh toán/Hủy)' })
   async updateStatus(
     @Param('id', MongoIdPipe) id: string,
     @Body('status') status: BookingStatus,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: PrincipalContext,
   ) {
     const data = await this.bookingsService.updateStatus(
       id,
       status,
       user.sub,
-      user.role,
+      user.actorType,
+      user.actorType === ActorType.OPERATOR
+        ? (user.tenantId ?? user.sub)
+        : undefined,
     );
     return { success: true, data };
   }

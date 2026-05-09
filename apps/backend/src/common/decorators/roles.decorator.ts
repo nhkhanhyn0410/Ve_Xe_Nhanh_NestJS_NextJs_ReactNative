@@ -1,5 +1,6 @@
 import { SetMetadata } from '@nestjs/common';
-import { SystemRole } from '@ve_xe_nhanh_ts/shared-types';
+import { PrincipalRole } from '../interfaces/jwt-payload.interface';
 
 export const ROLES_KEY = 'roles';
-export const Roles = (...roles: SystemRole[]) => SetMetadata(ROLES_KEY, roles);
+export const Roles = (...roles: PrincipalRole[]) =>
+  SetMetadata(ROLES_KEY, roles);

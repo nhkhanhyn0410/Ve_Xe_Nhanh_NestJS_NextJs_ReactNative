@@ -5,8 +5,15 @@ import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../../users/users.service';
 import { OperatorsService } from '../../operators/operators.service';
 import { AdminService } from '../../admin/admin.service';
-import { JwtPayload } from '../../../common/interfaces/jwt-payload.interface';
-import { SystemRole } from '@ve_xe_nhanh_ts/shared-types';
+import {
+  JwtPayload,
+  PrincipalContext,
+} from '../../../common/interfaces/jwt-payload.interface';
+import {
+  ActorType,
+  OperatorStatus,
+  UserRole,
+} from '@ve_xe_nhanh_ts/shared-types';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -23,37 +30,54 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: JwtPayload): Promise<JwtPayload> {
-    switch (payload.role) {
-      case SystemRole.USER: {
+  async validate(payload: JwtPayload): Promise<PrincipalContext> {
+    switch (payload.actorType) {
+      case ActorType.USER: {
         const user = await this.usersService.findById(payload.sub);
         if (!user || user.isBlocked) {
           throw new UnauthorizedException(
             'Người dùng không tồn tại hoặc đã bị khóa',
           );
         }
-        break;
+        return {
+          ...payload,
+          actorId: payload.sub,
+          role: user.role ?? UserRole.CUSTOMER,
+        };
       }
-      case SystemRole.OPERATOR: {
+      case ActorType.OPERATOR: {
         const operator = await this.operatorsService.findById(payload.sub);
-        if (!operator) {
-          throw new UnauthorizedException('Nhà xe không tồn tại');
+        if (!operator || operator.status !== OperatorStatus.APPROVED) {
+          throw new UnauthorizedException(
+            'Nhà xe không tồn tại hoặc không còn hoạt động',
+          );
         }
-        break;
+        return {
+          ...payload,
+          actorId: payload.sub,
+          tenantId: payload.tenantId ?? payload.sub,
+        };
       }
-      case SystemRole.ADMIN: {
+      case ActorType.ADMIN: {
         const admin = await this.adminService.findById(payload.sub);
         if (!admin || !admin.isActive) {
           throw new UnauthorizedException(
             'Admin không tồn tại hoặc đã bị khóa',
           );
         }
-        break;
+        return {
+          ...payload,
+          actorId: payload.sub,
+          role: admin.adminRole,
+        };
+      }
+      case ActorType.EMPLOYEE: {
+        throw new UnauthorizedException(
+          'Xác thực nhân viên chưa được triển khai',
+        );
       }
       default:
         throw new UnauthorizedException('Token không hợp lệ');
     }
-
-    return payload;
   }
 }
