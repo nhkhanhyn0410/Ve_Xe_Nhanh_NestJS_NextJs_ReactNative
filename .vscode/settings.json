@@ -25,6 +25,8 @@
   "eslint.validate": ["typescript", "typescriptreact", "javascript", "javascriptreact"],
   // Dung flat config (eslint.config.mjs) - format moi
   "eslint.useFlatConfig": true,
+  // Monorepo: bao ESLint extension chay trong tung app de tim dung eslint.config.mjs
+  "eslint.workingDirectories": ["./apps/frontend", "./apps/backend", "./apps/mobile"],
   // ============================================================
   // TYPESCRIPT
   // ============================================================
@@ -80,6 +82,12 @@
   "tailwindCSS.includeLanguages": {
     "typescriptreact": "html"
   },
+  // Monorepo + Tailwind v4: chi ro CSS entrypoint cho frontend de IntelliSense nhan dung project
+  "tailwindCSS.experimental.configFile": {
+    "apps/frontend/src/app/globals.css": "apps/frontend/src/**"
+  },
+  // Tat warning trung lap cua Tailwind CSS IntelliSense, de ESLint xu ly va auto-fix
+  "tailwindCSS.lint.suggestCanonicalClasses": "ignore",
   // ============================================================
   // DOCKER
   // ============================================================

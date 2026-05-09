@@ -10,19 +10,46 @@
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "npm run start:dev --workspace=apps/backend",
     "dev:frontend": "npm run dev --workspace=apps/frontend",
+    "dev:mobile": "npm run start --workspace=apps/mobile",
+    "mobile:android": "npm run android --workspace=apps/mobile",
+    "mobile:ios": "npm run ios --workspace=apps/mobile",
+    "mobile:web": "npm run web --workspace=apps/mobile",
     "build": "npm run build --workspaces",
     "build:backend": "npm run build --workspace=apps/backend",
     "build:frontend": "npm run build --workspace=apps/frontend",
+    "build:mobile": "npm run typecheck --workspace=apps/mobile",
     "build:types": "npm run build --workspace=packages/shared-types",
+    "build:api-client": "npm run build --workspace=packages/api-client",
     "test": "npm run test --workspaces --if-present",
     "test:backend": "npm run test --workspace=apps/backend",
     "lint": "npm run lint --workspaces --if-present",
+    "lint:fix": "npm run lint:fix --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "typecheck:backend": "npm run typecheck --workspace=apps/backend",
+    "typecheck:frontend": "npm run typecheck --workspace=apps/frontend",
+    "typecheck:mobile": "npm run typecheck --workspace=apps/mobile",
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
     "docker:dev": "docker compose -f docker/docker-compose.yml up -d",
     "docker:down": "docker compose -f docker/docker-compose.yml down"
   },
   "devDependencies": {
+    "@swc/cli": "^0.8.1",
+    "@swc/core": "^1.15.30",
     "concurrently": "^8.2.0",
-    "prettier": "^3.1.0"
+    "prettier": "^3.1.0",
+    "chokidar": "^5.0.0"
+  },
+  "overrides": {
+    "chromium-edge-launcher": "^0.3.0",
+    "follow-redirects": "^1.16.0",
+    "@jest/reporters": {
+      "glob": "^13.0.6"
+    },
+    "jest-config": {
+      "glob": "^13.0.6"
+    },
+    "jest-runtime": {
+      "glob": "^13.0.6"
+    }
   }
 }

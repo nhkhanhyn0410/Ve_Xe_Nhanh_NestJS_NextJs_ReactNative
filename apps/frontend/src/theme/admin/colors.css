@@ -1,0 +1,18 @@
+:root {
+  /*
+   * TODO:
+   * Replace the placeholder values below with the final light palette
+   * for the system admin dashboard.
+   */
+  --admin-color-primary: #1677ff;
+  --admin-color-primary-hover: #0958d9;
+  --admin-color-text-base: #0f172a;
+  --admin-color-text-muted: #475569;
+  --admin-color-bg-base: #f8fafc;
+  --admin-color-bg-surface: #ffffff;
+  --admin-color-border: #d9d9d9;
+  --admin-color-success: #16a34a;
+  --admin-color-warning: #d97706;
+  --admin-color-error: #dc2626;
+  --admin-color-info: #1677ff;
+}

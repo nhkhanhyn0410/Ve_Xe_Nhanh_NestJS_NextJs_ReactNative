@@ -1,32 +1,34 @@
+version: '3.8'
+
 services:
   mongodb:
     image: mongo:7.0
-    container_name: vxn-mongodb
+    container_name: vxn-build-mongodb
     ports:
       - '27017:27017'
     volumes:
-      - mongodb_data:/data/db
+      - mongodb_build_data:/data/db
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: password123
       MONGO_INITDB_DATABASE: vexenhanh
     networks:
-      - vxn-network
+      - vxn-build-network
 
   redis:
     image: redis:7-alpine
-    container_name: vxn-redis
+    container_name: vxn-build-redis
     ports:
       - '6379:6379'
     volumes:
-      - redis_data:/data
+      - redis_build_data:/data
     command: redis-server --appendonly yes
     networks:
-      - vxn-network
+      - vxn-build-network
 
   mongo-express:
     image: mongo-express
-    container_name: vxn-mongo-express
+    container_name: vxn-build-mongo-express
     ports:
       - '8081:8081'
     environment:
@@ -36,12 +38,37 @@ services:
     depends_on:
       - mongodb
     networks:
-      - vxn-network
+      - vxn-build-network
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: vxn-build-redis-commander
+    restart: unless-stopped
+    ports:
+      - '8083:8081'
+    environment:
+      REDIS_HOSTS: local:redis:6379:0:redis123
+    depends_on:
+      - redis
+    networks:
+      - vxn-build-network
+
+  osrm:
+    image: osrm/osrm-backend:latest
+    container_name: vxn-osrm-build
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./osrm/data:/data
+    command: osrm-routed --algorithm mld /data/vietnam-latest.osrm
+    restart: unless-stopped
+    networks:
+      - vxn-build-network
 
 volumes:
-  mongodb_data:
-  redis_data:
+  mongodb_build_data:
+  redis_build_data:
 
 networks:
-  vxn-network:
+  vxn-build-network:
     driver: bridge

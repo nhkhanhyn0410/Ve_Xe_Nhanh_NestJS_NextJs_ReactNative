@@ -7,7 +7,67 @@ on:
     branches: [master, develop]
 
 jobs:
-  # ========== JOB 1: Backend ==========
+  workspace-checks:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Shared Types - Build
+            build-shared-types: false
+            build-api-client: false
+            working-directory: packages/shared-types
+            command: npm run build
+          - name: API Client - Build
+            build-shared-types: true
+            build-api-client: false
+            working-directory: packages/api-client
+            command: npm run build
+          - name: Frontend - Lint
+            build-shared-types: true
+            build-api-client: true
+            working-directory: apps/frontend
+            command: npm run lint
+          - name: Frontend - Build
+            build-shared-types: true
+            build-api-client: true
+            working-directory: apps/frontend
+            command: npm run build
+          - name: Mobile - Typecheck
+            build-shared-types: true
+            build-api-client: true
+            working-directory: apps/mobile
+            command: npm run typecheck
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build shared-types
+        if: matrix.build-shared-types
+        run: npm run build
+        working-directory: packages/shared-types
+
+      - name: Build api-client
+        if: matrix.build-api-client
+        run: npm run build
+        working-directory: packages/api-client
+
+      - name: Run check
+        run: ${{ matrix.command }}
+        working-directory: ${{ matrix.working-directory }}
+
   backend:
     name: Backend - Lint & Test & Build
     runs-on: ubuntu-latest
@@ -35,10 +95,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
           cache: 'npm'
@@ -72,26 +132,3 @@ jobs:
       - name: Build
         run: npm run build
         working-directory: apps/backend
-
-  # ========== JOB 2: Shared Types ==========
-  shared-types:
-    name: Shared Types - Build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build shared-types
-        run: npm run build
-        working-directory: packages/shared-types

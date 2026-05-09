@@ -5,6 +5,33 @@ export enum Gender {
   PREFER_NOT_TO_SAY = 'prefer_not_to_say',
 }
 
+export enum AdminRole {
+  SUPER_ADMIN = 'super_admin',
+  BUS_MANAGER = 'bus_manager',
+  REPORT_MANAGER = 'report_manager',
+  USER_MANAGER = 'user_manager',
+  SYSTEM_MANAGER = 'system_manager',
+}
+
+export enum ActorType {
+  USER = 'user',
+  ADMIN = 'admin',
+  OPERATOR = 'operator',
+  EMPLOYEE = 'employee',
+}
+
+export enum UserRole {
+  CUSTOMER = 'customer',
+  GUEST = 'guest',
+}
+
+export enum Permission {
+  MANAGE_BUSES = 'manage_buses',
+  MANAGE_REPORTS = 'manage_reports',
+  MANAGE_USERS = 'manage_users',
+  MANAGE_SYSTEM = 'manage_system',
+}
+
 export enum OperatorStatus {
   PENDING = 'pending',
   APPROVED = 'approved',
@@ -16,12 +43,50 @@ export enum BusType {
   SEATER = 'seater',
   SLEEPER = 'sleeper',
   LIMOUSINE = 'limousine',
+  CABIN_SINGLE = 'cabin_single',
+  CABIN_DOUBLE = 'cabin_double',
+}
+
+export enum BusStatus {
+  ACTIVE = 'active',
+  MAINTENANCE = 'maintenance',
+  RETIRED = 'retired',
+}
+
+export enum BusAmenity {
+  WIFI = 'wifi',
+  AC = 'ac',
+  TOILET = 'toilet',
+  TV = 'tv',
+  WATER = 'water',
+  BLANKET = 'blanket',
+  PILLOW = 'pillow',
+  CHARGING = 'charging',
+  SNACK = 'snack',
+  ENTERTAINMENT = 'entertainment',
 }
 
 export enum TripStatus {
+  DRAFT = 'draft',
   SCHEDULED = 'scheduled',
   BOARDING = 'boarding',
   IN_TRANSIT = 'in_transit',
+  COMPLETED = 'completed',
+  CANCELLED = 'cancelled',
+}
+
+export enum JourneyType {
+  DIRECT = 'direct',
+  WITH_TRANSIT = 'with_transit',
+  TRANSFER = 'transfer',
+  TRANSIT_AND_TRANSFER = 'transit_and_transfer',
+}
+
+export enum JourneyStatus {
+  PREPARING = 'preparing',
+  CHECKING_TICKETS = 'checking_tickets',
+  IN_TRANSIT = 'in_transit',
+  AT_STOP = 'at_stop',
   COMPLETED = 'completed',
   CANCELLED = 'cancelled',
 }
@@ -67,4 +132,29 @@ export enum LoyaltyTier {
 export enum EmployeeRole {
   DRIVER = 'driver',
   TRIP_MANAGER = 'trip_manager',
+}
+
+export enum StopPointType {
+  STATION = 'station', // Bến xe lớn (VD: Bến Xe Miền Đông)
+  POINT = 'point', // Điểm đón trả dọc đường / văn phòng phụ
+  REST_STOP = 'rest_stop', // Trạm dừng chân
+  PICKUP = 'pickup', // Điểm đón trung chuyển (shuttle đón khách)
+  DROPOFF = 'dropoff', // Điểm trả trung chuyển (shuttle trả khách)
+}
+
+export enum RouteStopRole {
+  ORIGIN = 'origin', // Bến đi (order = 0)
+  STOP = 'stop', // Điểm dừng trung gian
+  DESTINATION = 'destination', // Bến đến (order cuối)
+}
+
+// Enum địa giới hành chính dùng chung giữa backend, frontend và Swagger.
+export enum ProvinceType {
+  PROVINCE = 'province',
+  MUNICIPALITY = 'municipality',
+}
+
+export enum WardType {
+  WARD = 'ward',
+  COMMUNE = 'commune',
 }

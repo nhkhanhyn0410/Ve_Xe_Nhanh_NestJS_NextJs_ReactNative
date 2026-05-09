@@ -1,4 +1,4 @@
-import { Gender, LoyaltyTier } from './enums.js';
+import { Gender, LoyaltyTier, UserRole } from './enums.js';
 
 export interface IUser {
   id: string;
@@ -10,6 +10,7 @@ export interface IUser {
   avatar?: string;
   isEmailVerified: boolean;
   isPhoneVerified: boolean;
+  role: UserRole;
   isBlocked: boolean;
   loyaltyPoints: number;
   loyaltyTier: LoyaltyTier;
