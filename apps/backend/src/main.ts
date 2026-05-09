@@ -1,3 +1,8 @@
+import dns from 'node:dns';
+// Fix: Node.js c-ares DNS trỏ về 127.0.0.1 → SRV lookup thất bại
+// Đặt Google + Cloudflare DNS để mongodb+srv:// hoạt động
+dns.setServers(['8.8.8.8', '1.1.1.1', '8.8.4.4']);
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, Logger } from '@nestjs/common';

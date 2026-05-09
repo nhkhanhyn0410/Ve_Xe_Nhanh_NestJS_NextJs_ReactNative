@@ -1,0 +1,26 @@
+{
+  "expo": {
+    "name": "Ve Xe Nhanh",
+    "slug": "ve-xe-nhanh",
+    "version": "1.0.0",
+    "scheme": "vexenhanh",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "plugins": ["expo-router", "expo-secure-store"],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.vexenhanh.app"
+    },
+    "android": {
+      "package": "com.vexenhanh.app",
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}

@@ -1,0 +1,63 @@
+@import "./customer/colors.css";
+@import "./operator/colors.css";
+@import "./admin/colors.css";
+
+:root {
+  color-scheme: light;
+  --app-background: var(--customer-color-bg-base, #f8fafc);
+  --app-foreground: var(--customer-color-text-base, #0f172a);
+  --app-surface: var(--customer-color-bg-surface, #ffffff);
+  --app-border: var(--customer-color-border, #e2e8f0);
+  --app-primary: var(--customer-color-primary, #2563eb);
+  --app-primary-hover: var(--customer-color-primary-hover, #1d4ed8);
+  --app-muted: var(--customer-color-text-muted, #475569);
+  --app-success: var(--customer-color-success, #16a34a);
+  --app-warning: var(--customer-color-warning, #d97706);
+  --app-error: var(--customer-color-error, #dc2626);
+  --app-info: var(--customer-color-info, #2563eb);
+}
+
+[data-app-theme='customer'] {
+  color-scheme: light;
+  --app-background: var(--customer-color-bg-base, #f8fafc);
+  --app-foreground: var(--customer-color-text-base, #0f172a);
+  --app-surface: var(--customer-color-bg-surface, #ffffff);
+  --app-border: var(--customer-color-border, #e2e8f0);
+  --app-primary: var(--customer-color-primary, #2563eb);
+  --app-primary-hover: var(--customer-color-primary-hover, #1d4ed8);
+  --app-muted: var(--customer-color-text-muted, #475569);
+  --app-success: var(--customer-color-success, #16a34a);
+  --app-warning: var(--customer-color-warning, #d97706);
+  --app-error: var(--customer-color-error, #dc2626);
+  --app-info: var(--customer-color-info, #2563eb);
+}
+
+[data-app-theme='operator'] {
+  color-scheme: light;
+  --app-background: var(--operator-color-bg-base, #f8fafc);
+  --app-foreground: var(--operator-color-text-base, #0f172a);
+  --app-surface: var(--operator-color-bg-surface, #ffffff);
+  --app-border: var(--operator-color-border, #d9d9d9);
+  --app-primary: var(--operator-color-primary, #1677ff);
+  --app-primary-hover: var(--operator-color-primary-hover, #0958d9);
+  --app-muted: var(--operator-color-text-muted, #475569);
+  --app-success: var(--operator-color-success, #16a34a);
+  --app-warning: var(--operator-color-warning, #d97706);
+  --app-error: var(--operator-color-error, #dc2626);
+  --app-info: var(--operator-color-info, #1677ff);
+}
+
+[data-app-theme='admin'] {
+  color-scheme: light;
+  --app-background: var(--admin-color-bg-base, #f8fafc);
+  --app-foreground: var(--admin-color-text-base, #0f172a);
+  --app-surface: var(--admin-color-bg-surface, #ffffff);
+  --app-border: var(--admin-color-border, #d9d9d9);
+  --app-primary: var(--admin-color-primary, #1677ff);
+  --app-primary-hover: var(--admin-color-primary-hover, #0958d9);
+  --app-muted: var(--admin-color-text-muted, #475569);
+  --app-success: var(--admin-color-success, #16a34a);
+  --app-warning: var(--admin-color-warning, #d97706);
+  --app-error: var(--admin-color-error, #dc2626);
+  --app-info: var(--admin-color-info, #1677ff);
+}
