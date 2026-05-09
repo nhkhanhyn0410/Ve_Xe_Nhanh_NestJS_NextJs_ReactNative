@@ -5,7 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, SortOrder, Types } from 'mongoose';
 import { StopPoint, StopPointDocument } from './schemas/stop-point.schema';
 import {
   Province,
@@ -23,6 +23,18 @@ export interface StopPointQuery {
   provinceName?: string;
   type?: StopPointType;
   search?: string;
+  page?: number | string;
+  limit?: number | string;
+  sortBy?: 'name' | 'provinceName' | 'wardName' | 'createdAt';
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface NearbyStopPointQuery {
+  lat: number;
+  lng: number;
+  radiusKm?: number;
+  limit?: number;
+  type?: StopPointType;
 }
 
 @Injectable()
@@ -58,8 +70,22 @@ export class StopPointsService {
   async findAll(
     query: StopPointQuery = {},
     user?: PrincipalContext,
-  ): Promise<StopPointDocument[]> {
-    const { isActive, wardName, provinceName, type, search } = query;
+  ): Promise<{
+    data: StopPointDocument[];
+    meta: { page: number; limit: number; total: number; totalPages: number };
+  }> {
+    const {
+      isActive,
+      wardName,
+      provinceName,
+      type,
+      search,
+      sortBy = 'provinceName',
+      sortOrder = 'asc',
+    } = query;
+    const page = this.toPositiveNumber(query.page, 1);
+    const limit = Math.min(this.toPositiveNumber(query.limit, 20), 100);
+    const skip = (page - 1) * limit;
     // Khởi tạo filter với kiểu tường minh để tránh lỗi linter không resolve được FilterQuery
     const filter: {
       isActive?: boolean;
@@ -70,7 +96,9 @@ export class StopPointsService {
       $or?: any[];
     } = {};
 
-    if (isActive !== undefined && isActive !== '') {
+    if (isActive === undefined || isActive === '') {
+      filter.isActive = true;
+    } else {
       filter.isActive = isActive === 'true' || isActive === true;
     }
 
@@ -101,10 +129,55 @@ export class StopPointsService {
     const queryFilter = filter as unknown as Parameters<
       Model<StopPointDocument>['find']
     >[0];
+    const sortDirection: SortOrder = sortOrder === 'desc' ? -1 : 1;
+    const sort: Record<string, SortOrder> =
+      sortBy === 'createdAt'
+        ? { createdAt: sortDirection, name: 1 }
+        : { [sortBy]: sortDirection, name: 1 };
+
+    const [data, total] = await Promise.all([
+      this.stopPointModel
+        .find(queryFilter)
+        .sort(sort)
+        .skip(skip)
+        .limit(limit)
+        .exec(),
+      this.stopPointModel.countDocuments(queryFilter).exec(),
+    ]);
+
+    return {
+      data,
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  async findNearby(query: NearbyStopPointQuery): Promise<StopPointDocument[]> {
+    const radiusKm = query.radiusKm ?? 10;
+    const limit = Math.min(query.limit ?? 10, 50);
+    const geoQuery: Record<string, unknown> = { isActive: true };
+    if (query.type) {
+      geoQuery.type = query.type;
+    }
 
     return this.stopPointModel
-      .find(queryFilter)
-      .sort({ provinceName: 1, wardName: 1, name: 1 })
+      .find({
+        ...geoQuery,
+        location: {
+          $near: {
+            $geometry: {
+              type: 'Point',
+              coordinates: [query.lng, query.lat],
+            },
+            $maxDistance: radiusKm * 1000,
+          },
+        },
+      })
+      .limit(limit)
       .exec();
   }
 
@@ -199,6 +272,18 @@ export class StopPointsService {
       }
     }
 
-    await this.stopPointModel.findByIdAndDelete(id).exec();
+    stopPoint.isActive = false;
+    await stopPoint.save();
+  }
+
+  private toPositiveNumber(
+    value: number | string | undefined,
+    fallback: number,
+  ): number {
+    const numberValue = Number(value);
+    if (!Number.isFinite(numberValue) || numberValue < 1) {
+      return fallback;
+    }
+    return Math.floor(numberValue);
   }
 }
