@@ -11,7 +11,7 @@
 | Dự án        | Hệ thống đặt vé xe khách                                       |
 | Phiên bản    | v1.0                                                           |
 | Trạng thái   | Draft                                                          |
-| Người viết   | Nguyễn Hồng Khanh                                              |
+| Người viết   | Nguyễn Hồng Khanh, Nguyễn Xuân Trường, Lê Võ Thanh Uy          |
 | Người duyệt  | Nguyễn Hồng Khanh                                              |
 | Ngày tạo     | 05/05/2026                                                     |
 
@@ -23,6 +23,8 @@
 | v1.1      | 08/05/2026 | Nguyễn Hồng Khanh           | Hiệu chỉnh 7.4 bỏ Tài xế (Drive) thay bằng Nhân viên nhà xe (Employee) và hiệu chỉnh một số điểm.                                                                                                                                                                                                                                                                                                                         |
 | v1.2      | 10/05/2026 | AI Agent, Nguyễn Hồng Khanh | Chốt OQ-01..04 (state enum + Employee) và đồng bộ FR: §10.1 cập nhật `FR-AUTH-04`, §10.3 cập nhật `FR-OP-13..15` và thêm `FR-OP-21..23`, §10.4 đổi tên thành "Nhân viên nhà xe (Employee)" và đổi prefix `FR-DRIVER-*` → `FR-EMP-*` (18 FR có cột Role áp dụng), §10.5 thêm `FR-ADMIN-21..22`, §24 đánh dấu OQ-01..04 đã chốt                                                                                             |
 | v1.3      | 10/05/2026 | AI Agent, Nguyễn Hồng Khanh | Chốt MQ-01..05 (định vị marketplace). Tái cấu trúc §4 (6 mục con: định vị, vai trò 3 bên, mô hình doanh thu, 3 lớp dịch vụ, boundary, kiến trúc triển khai), §5 (4 nhóm mục tiêu: sản phẩm, nền tảng, tin cậy / compliance, vận hành), §6 (4 nhóm phạm vi: Marketplace layer, Operator OS layer, Platform admin layer, Ngoài phạm vi). §24 ghi nhận MQ-01..05 đã chốt và bổ sung OQ-16..20 phái sinh từ marketplace model |
+| v1.4      | 10/05/2026 | Nguyễn Xuân Trường          | Hiệu chỉnh mục 7 Actor và vai trò theo cấu trúc thống nhất; làm rõ quan hệ giữa Người dùng, Nhà xe, Admin toàn hệ thống và Nhân viên nhà xe trong mô hình marketplace; cập nhật Employee gồm 3 role `TICKET_STAFF`, `DRIVER`, `SUPPORT_STAFF` và gom nhóm quyền của nhân viên nhà xe theo chức năng vận hành.                                                                                                             |
+| v1.5      | 10/05/2026 | AI Agent, Lê Võ Thanh Uy    | liệt kê các giả định, ràng buộc, phụ thuộc cần có.                                                                                                                                                                                                                                                                                                                                                                        |
 
 ---
 
@@ -1886,8 +1888,7 @@ Các module sau **có thư mục nhưng chưa có Mongoose schema** (chỉ có T
 
 ### 25.1. Tài liệu liên quan
 
-- `00a-quy-chuan-cho-lap-trinh-vien.md` — Quy chuẩn SDLC.
-- `00b-quy-chuan-cho-ai-agent.md` — Quy chuẩn cho AI agent.
+- `00-quy-chuan-cho-lap-trinh-vien.md` — Quy chuẩn SDLC.
 - `02-hld-he-thong-dat-ve-xe-khach.md` — HLD (sẽ viết).
 - `03-lld-he-thong-dat-ve-xe-khach.md` — LLD (sẽ viết).
 - `04-database-design.md` — Database Design (sẽ viết).
@@ -1895,8 +1896,6 @@ Các module sau **có thư mục nhưng chưa có Mongoose schema** (chỉ có T
 - `06-ui-ux-flow-specification.md` — UI/UX Flow (sẽ viết).
 - `07-security-permission-design.md` — Security Design (sẽ viết).
 - `08-test-plan-acceptance-criteria.md` — Test Plan (sẽ viết).
-- `context/PROJECT-STRUCTURE.md` — Cấu trúc thư mục code.
-- `context/TECH-STACK.md` — Tech stack.
 
 ### 25.2. Quy ước đặt mã
 

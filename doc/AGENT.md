@@ -41,13 +41,13 @@ doc/
 
 ## 3. WORKING SURFACE
 
-| Path        | Read | Write | Purpose                                       |
-| ----------- | ---- | ----- | --------------------------------------------- |
-| `context/`  | YES  | YES   | Codebase facts. Maintained by agent.          |
-| `en/agent/` | YES  | YES   | Primary working area. AI-tailored SDLC.       |
-| `en/SDLC/`  | YES  | YES   | Full SDLC for English-reading engineers.      |
-| `vi/agent/` | YES  | NO    | Vietnamese mirror. Read for context only.     |
-| `vi/SDLC/`  | YES  | NO    | Vietnamese full SDLC. Read for context only.  |
+| Path        | Read | Write | Purpose                                  |
+| ----------- | ---- | ----- | ---------------------------------------- |
+| `context/`  | YES  | YES   | Codebase facts. Maintained by agent.     |
+| `en/agent/` | YES  | YES   | Primary working area. AI-tailored SDLC.  |
+| `en/SDLC/`  | YES  | YES   | Full SDLC for English-reading engineers. |
+| `vi/agent/` | YES  | YES   | Vietnamese mirror.                       |
+| `vi/SDLC/`  | YES  | YES   | Vietnamese full SDLC.                    |
 
 If `en/` is empty for a file, read the `vi/` counterpart for context, then write the new content into `en/`. Never mutate `vi/`.
 
