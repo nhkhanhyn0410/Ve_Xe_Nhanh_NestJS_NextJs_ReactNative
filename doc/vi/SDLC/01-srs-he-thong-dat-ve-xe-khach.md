@@ -17,11 +17,12 @@
 
 ### 1.2. Lịch sử thay đổi
 
-| Phiên bản | Ngày       | Người cập nhật              | Nội dung thay đổi                                                                                                                                                                                                                                                                  |
-| --------- | ---------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| v1.0      | 05/05/2026 | AI Agent, Nguyễn Hồng Khanh | Tạo bản đầu từ tài liệu ý tưởng `he-thong-dat-ve-xe-khach.md` và đối chiếu với code backend hiện có                                                                                                                                                                                |
-| v1.1      | 08/05/2026 | Nguyễn Hồng Khanh           | Hiệu chỉnh 7.4 bỏ Tài xế (Drive) thay bằng Nhân viên nhà xe (Employee) và hiệu chỉnh một số điểm.                                                                                                                                                                                  |
-| v1.2      | 08/05/2026 | AI Agent, Nguyễn Hồng Khanh | Chốt OQ-01..04: 10.1 cập nhật `FR-AUTH-04`, 10.3 cập nhật `FR-OP-13..15` và thêm `FR-OP-21..23`, 10.4 đổi tên thành "Nhân viên nhà xe (Employee)" và đổi prefix `FR-DRIVER-*` → `FR-EMP-*` (18 FR có cột Role áp dụng), 10.5 thêm `FR-ADMIN-21..22`, 24 đánh dấu OQ-01..04 đã chốt |
+| Phiên bản | Ngày       | Người cập nhật              | Nội dung thay đổi                                                                                                                                                                                                                                                                                                                                                                                                         |
+| --------- | ---------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| v1.0      | 05/05/2026 | AI Agent, Nguyễn Hồng Khanh | Tạo bản đầu từ tài liệu ý tưởng `he-thong-dat-ve-xe-khach.md` và đối chiếu với code backend hiện có                                                                                                                                                                                                                                                                                                                       |
+| v1.1      | 08/05/2026 | Nguyễn Hồng Khanh           | Hiệu chỉnh 7.4 bỏ Tài xế (Drive) thay bằng Nhân viên nhà xe (Employee) và hiệu chỉnh một số điểm.                                                                                                                                                                                                                                                                                                                         |
+| v1.2      | 10/05/2026 | AI Agent, Nguyễn Hồng Khanh | Chốt OQ-01..04 (state enum + Employee) và đồng bộ FR: §10.1 cập nhật `FR-AUTH-04`, §10.3 cập nhật `FR-OP-13..15` và thêm `FR-OP-21..23`, §10.4 đổi tên thành "Nhân viên nhà xe (Employee)" và đổi prefix `FR-DRIVER-*` → `FR-EMP-*` (18 FR có cột Role áp dụng), §10.5 thêm `FR-ADMIN-21..22`, §24 đánh dấu OQ-01..04 đã chốt                                                                                             |
+| v1.3      | 10/05/2026 | AI Agent, Nguyễn Hồng Khanh | Chốt MQ-01..05 (định vị marketplace). Tái cấu trúc §4 (6 mục con: định vị, vai trò 3 bên, mô hình doanh thu, 3 lớp dịch vụ, boundary, kiến trúc triển khai), §5 (4 nhóm mục tiêu: sản phẩm, nền tảng, tin cậy / compliance, vận hành), §6 (4 nhóm phạm vi: Marketplace layer, Operator OS layer, Platform admin layer, Ngoài phạm vi). §24 ghi nhận MQ-01..05 đã chốt và bổ sung OQ-16..20 phái sinh từ marketplace model |
 
 ---
 
@@ -111,49 +112,196 @@ Tài liệu KHÔNG mô tả: chi tiết kiến trúc kỹ thuật (xem `02-hld-.
 
 ## 4. Tổng quan hệ thống
 
-Hệ thống đặt vé xe khách trực tuyến cho phép người dùng tìm kiếm chuyến xe, chọn ghế, đặt vé, thanh toán, nhận vé điện tử, hủy vé hoặc yêu cầu hoàn tiền theo chính sách. Nhà xe quản lý tuyến đường, chuyến xe, xe, sơ đồ ghế, giá vé, đơn đặt vé, tài xế và doanh thu. Tài xế xem lịch chạy, danh sách hành khách, xác nhận hành khách lên xe, cập nhật trạng thái chuyến đi. Admin toàn hệ thống quản lý toàn bộ nền tảng: phê duyệt nhà xe, kiểm duyệt dữ liệu, cấu hình chính sách, xử lý tranh chấp, quản lý thanh toán và báo cáo.
+### 4.1. Định vị nền tảng
 
-Hệ thống hỗ trợ nhiều nhà xe, nhiều tuyến, nhiều điểm đón/trả, nhiều loại xe, nhiều phương thức thanh toán và nhiều kênh thông báo.
+Hệ thống là một **managed marketplace** kết nối ba bên: **hành khách**, **nhà xe (Operator)** và **nền tảng (Platform)**. Platform không sở hữu xe, không thuê tài xế, không trực tiếp vận hành chuyến đi. Platform cung cấp công nghệ, kênh phân phối, hệ thống thanh toán và cơ chế đảm bảo tin cậy giữa hành khách và nhà xe.
 
-Kiến trúc triển khai gồm 3 ứng dụng client (web frontend cho user/operator/admin, mobile cho user/driver) và 1 backend NestJS dùng MongoDB + Redis + Bull queue + Socket.IO + OSRM cho định tuyến.
+```text
+Hành khách (User)        Nhà xe (Operator) + Nhân viên (Employee)
+        |                            |
+        |                            |
+        +--------- Platform ---------+
+                       |
+             (Admin toàn hệ thống)
+```
+
+### 4.2. Vai trò ba bên trong giao dịch
+
+| Bên            | Vai trò trong giao dịch vận tải                                                                                                                                     |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Hành khách     | Bên mua dịch vụ vận tải. Trả tiền cho Platform thông qua cổng thanh toán.                                                                                           |
+| Nhà xe         | Bên cung cấp dịch vụ vận tải. Sở hữu xe, tuyến, chuyến và chịu trách nhiệm vận hành. Hợp đồng vận tải là giữa hành khách và nhà xe.                                 |
+| Platform       | Trung gian công nghệ và thanh toán. Giữ tiền của hành khách trong tài khoản escrow đến khi chuyến hoàn thành, sau đó chuyển cho nhà xe theo chu kỳ T+N (xem MQ-01). |
+| Admin Platform | Người vận hành nền tảng. Phê duyệt nhà xe (KYC), cấu hình chính sách, là **arbiter cuối cùng** trong tranh chấp (xem MQ-03).                                        |
+
+### 4.3. Mô hình doanh thu
+
+Platform thu **commission % trên mỗi giao dịch vé bán thành công** (xem MQ-04). Tỷ lệ commission cấu hình được per-Operator hoặc theo tier. Có thể bổ sung service fee phụ thu hành khách ở các phiên bản sau. Subsidy cho promotion (Platform bù tiền) chưa hỗ trợ ở v1.
+
+### 4.4. Ba lớp dịch vụ Platform cung cấp
+
+Platform là một **managed marketplace** (xem MQ-05) gồm 3 lớp dịch vụ:
+
+| Lớp                  | Vai trò                                                                                                                                                                                                                                                                                                                        | Người dùng chính    |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------- |
+| Marketplace layer    | Tìm kiếm, đặt vé, thanh toán, vé điện tử, đánh giá, khiếu nại, dispute resolution, public catalog                                                                                                                                                                                                                              | Hành khách          |
+| Operator OS layer    | Bộ công cụ vận hành cho nhà xe: hồ sơ nhà xe, xe và sơ đồ ghế, tuyến và điểm đón/trả, chuyến, giá vé, đơn vé, tài chính (escrow balance, payout, đối soát), nhân viên và phân quyền nội bộ, app/portal cho nhân viên (lịch chuyến, danh sách hành khách, soát vé QR, nhật trình xe, báo cáo vận hành, sự cố), analytics nhà xe | Operator + Employee |
+| Platform admin layer | Quản trị nền tảng: KYC nhà xe, cấu hình commission và payout, kiểm duyệt nội dung và đánh giá, dispute resolution, audit log, báo cáo toàn hệ thống, cấu hình danh mục chuẩn (tỉnh thành, bến xe, điểm dừng, loại xe, tiện ích)                                                                                                | Admin Platform      |
+
+### 4.5. Boundary của Platform
+
+Platform **CÓ trách nhiệm**: cung cấp công nghệ, xử lý thanh toán, giữ escrow, payout cho Operator, dispute resolution, kiểm duyệt nội dung, KYC nhà xe, audit log, đảm bảo an toàn dữ liệu hành khách.
+
+Platform **KHÔNG trực tiếp** sở hữu xe, vận hành tuyến, ký hợp đồng lao động với tài xế, bảo dưỡng xe, chịu trách nhiệm chất lượng vận tải (đó là trách nhiệm của Operator).
+
+### 4.6. Kiến trúc triển khai
+
+Hệ thống gồm 3 ứng dụng client và 1 backend:
+
+| Client              | Đối tượng                                   |
+| ------------------- | ------------------------------------------- |
+| Web user portal     | Hành khách (Marketplace layer)              |
+| Web operator portal | Operator (Operator OS layer)                |
+| Web admin portal    | Admin Platform (Platform admin layer)       |
+| Mobile app (Expo)   | Hành khách + Employee (soát vé, nhật trình) |
+
+Backend: NestJS 11 + MongoDB (mongoose) + Redis (ioredis) + Bull queue + Socket.IO + JWT + Helmet + OSRM. Chi tiết tại `context/TECH-STACK.md`.
 
 ---
 
 ## 5. Mục tiêu hệ thống
 
+### 5.1. Mục tiêu sản phẩm
+
 - Số hóa quy trình đặt vé xe khách từ tìm kiếm, đặt chỗ, thanh toán đến check-in.
 - Giảm tình trạng đặt trùng ghế, sai thông tin chuyến, sai thông tin hành khách.
-- Tăng khả năng quản lý vận hành cho nhà xe.
-- Cho phép admin kiểm soát chất lượng dịch vụ trên toàn nền tảng.
-- Cung cấp trải nghiệm đặt vé nhanh, minh bạch, an toàn cho người dùng.
-- Cung cấp dữ liệu báo cáo doanh thu, tỷ lệ lấp đầy ghế, hiệu suất tuyến và chất lượng dịch vụ.
+- Cung cấp trải nghiệm đặt vé nhanh, minh bạch, an toàn cho hành khách.
+- Cung cấp bộ Operator OS đầy đủ giúp nhà xe nhỏ và vừa số hóa hoàn toàn việc vận hành mà không cần phần mềm thứ ba.
+- Cung cấp app / portal cho Employee để soát vé QR, ghi nhật trình, báo cáo lộ trình, sự cố theo thời gian thực.
+
+### 5.2. Mục tiêu nền tảng (marketplace)
+
+- Onboard nhà xe đa dạng quy mô vào nền tảng theo quy trình KYC chuẩn.
+- Tăng GMV (gross merchandise value — tổng giá trị vé bán qua nền tảng) và take rate (% commission trung bình).
+- Giữ chân Operator qua chất lượng Operator OS và minh bạch tài chính (escrow balance, lịch sử payout, đối soát).
+- Cung cấp catalog tuyến / nhà xe / chuyến chuẩn hóa để hành khách so sánh và chọn lựa.
+- Đảm bảo tin cậy giao dịch hai chiều: hành khách an tâm vì có Platform bảo đảm, nhà xe an tâm vì payout đúng hạn và data isolation chặt.
+
+### 5.3. Mục tiêu tin cậy và compliance
+
+- Mọi giao dịch tài chính có log đầy đủ, đối soát được theo mã giao dịch, truy vết từ booking - payment - escrow - payout / refund.
+- Đảm bảo data isolation giữa các Operator (Operator A không thấy data Operator B trong bất kỳ tình huống nào).
+- Audit log cho mọi thao tác nhạy cảm của Admin và Operator.
+- KYC nhà xe theo chuẩn nội bộ và quy định pháp luật áp dụng cho dịch vụ vận tải hành khách.
+- Platform có quyền kiểm tra và chặn giá vé vượt khung trần / sàn theo quy định pháp luật vào các dịp quan trọng (xem MQ-02).
+
+### 5.4. Mục tiêu vận hành
+
+- Hỗ trợ hệ thống đặt vé sẵn sàng cao trong các dịp cao điểm (lễ, Tết).
+- Báo cáo doanh thu, tỷ lệ lấp đầy ghế, hiệu suất tuyến, chất lượng dịch vụ và scorecard nhà xe đầy đủ ở 2 cấp độ: Operator và Platform.
+- Dispute resolution rõ ràng: thời gian xử lý, các mức leo thang, trách nhiệm các bên.
 
 ---
 
 ## 6. Phạm vi chức năng
 
-### 6.1. Trong phạm vi
+### 6.1. Trong phạm vi — Marketplace layer (cho hành khách)
 
-- Đăng ký, đăng nhập, xác thực và phân quyền.
+- Đăng ký, đăng nhập, xác thực, quản lý hồ sơ hành khách.
 - Tìm kiếm chuyến xe theo điểm đi, điểm đến, ngày đi, số lượng khách.
-- Xem chi tiết chuyến xe, nhà xe, loại xe, tiện ích, điểm đón/trả, chính sách hủy vé.
+- Lọc / sắp xếp theo nhà xe, giờ khởi hành, giá vé, loại xe, tiện ích, điểm đón / trả, đánh giá.
+- Xem chi tiết chuyến: nhà xe, loại xe, tiện ích, điểm đón / trả, sơ đồ ghế, giá vé, chính sách hủy.
+- Xem profile nhà xe: thông tin, đánh giá, scorecard, tuyến tiêu biểu.
 - Chọn ghế, giữ ghế tạm thời, đặt vé.
-- Thanh toán trực tuyến hoặc thanh toán theo cấu hình của nhà xe/nền tảng.
-- Xuất vé điện tử với mã vé/QR code.
-- Quản lý lịch sử đặt vé, hủy vé, hoàn tiền.
-- Đánh giá chuyến đi/nhà xe.
-- Nhà xe quản lý tuyến, chuyến, xe, tài xế, giá vé, khuyến mãi, đơn vé.
-- Tài xế xem chuyến được phân công, danh sách hành khách, xác nhận check-in.
-- Admin quản lý người dùng, nhà xe, tài xế, nội dung, thanh toán, khiếu nại, báo cáo.
-- Thông báo qua email, SMS, push notification hoặc in-app notification.
+- Áp dụng mã giảm giá nếu thỏa điều kiện.
+- Thanh toán qua cổng thanh toán tích hợp; tiền được giữ ở **escrow account của Platform** đến khi chuyến hoàn thành.
+- Phát hành vé điện tử có mã vé / QR code.
+- Quản lý lịch sử đặt vé, hủy vé, yêu cầu hoàn tiền theo chính sách.
+- Đánh giá chuyến đi / nhà xe sau khi chuyến hoàn thành.
+- Tạo và theo dõi khiếu nại / yêu cầu hỗ trợ.
+- Nhận thông báo (email / SMS / push / in-app) cho các sự kiện quan trọng.
 
-### 6.2. Ngoài phạm vi phiên bản đầu
+### 6.2. Trong phạm vi — Operator OS layer (cho nhà xe và nhân viên)
 
+**Quản lý hồ sơ và tài chính nhà xe:**
+
+- Đăng ký nhà xe, gửi hồ sơ KYC (giấy phép, hợp đồng, tài khoản nhận tiền) và chờ admin phê duyệt.
+- Quản lý hồ sơ doanh nghiệp: tên, logo, mô tả, hotline, email, địa chỉ.
+- Xem **escrow balance** (số tiền Platform đang giữ thuộc về Operator), lịch sử payout, lịch sử commission, đối soát giao dịch.
+- Yêu cầu payout sớm (nếu Platform hỗ trợ) hoặc nhận theo chu kỳ T+N tự động.
+
+**Quản lý hạ tầng vận tải (Operator tự quản lý trong tenant của mình):**
+
+- Quản lý phương tiện: danh sách xe, biển số, loại xe, sơ đồ ghế, tiện ích.
+- Quản lý tuyến đường: tạo tuyến, gắn vào catalog điểm đón / trả chuẩn của Platform.
+- Quản lý chuyến xe: tạo chuyến theo ngày giờ, lịch lặp lại, gán xe, gán nhân viên (Employee có role DRIVER), mở / khóa bán.
+- Cấu hình giá vé: theo tuyến / chuyến / loại ghế / thời điểm / chặng. Operator tự định giá theo kê khai pháp luật, Platform có thể cảnh báo hoặc chặn nếu vượt khung trần / sàn áp dụng (MQ-02).
+- Tạo chương trình khuyến mãi của riêng nhà xe (nếu được Platform cho phép).
+
+**Quản lý nhân viên (Operator OS, không phải Platform admin):**
+
+- Tạo, cập nhật, khóa / mở khóa tài khoản Employee thuộc nhà xe.
+- Gán role cho Employee: DRIVER, phụ xe, điều phối viên, nhân viên hỗ trợ.
+- Phân quyền chi tiết cho Employee theo role và phạm vi công việc.
+- Phân công Employee có role DRIVER cho chuyến.
+
+**Quản lý đơn vé và vận hành:**
+
+- Xem danh sách booking / ticket thuộc nhà xe theo chuyến / ngày / trạng thái.
+- Xác nhận đơn nếu dùng phương thức thanh toán sau (nếu mở).
+- Xử lý yêu cầu hủy / đổi vé trong phạm vi quyền được Platform cấu hình.
+- Phản hồi đánh giá và khiếu nại của hành khách.
+- Xem nhật trình xe và báo cáo vận hành mà Employee gửi về (lộ trình thực tế, sự cố, chi phí phát sinh).
+
+**App / Portal cho Employee:**
+
+- Đăng nhập theo phân quyền Operator cấp.
+- Xem lịch chuyến / công việc được phân công.
+- Xem chi tiết chuyến và danh sách hành khách (số điện thoại có thể được mask).
+- Soát vé QR / nhập mã vé để check-in hành khách (nếu role DRIVER hoặc được phân quyền).
+- Cập nhật trạng thái chuyến và trạng thái hành khách.
+- Ghi nhật trình xe và báo cáo vận hành đầy đủ (lộ trình thực tế, thời gian, điểm dừng, chi phí, tình trạng xe / hành khách).
+- Báo cáo sự cố (tai nạn, hỏng xe, kẹt xe, trễ giờ, khách không hợp tác).
+- Đồng bộ realtime hoặc khi có mạng nếu offline.
+
+**Báo cáo nhà xe:**
+
+- Doanh thu theo ngày / tuần / tháng / tuyến / chuyến / xe.
+- Tỷ lệ lấp đầy ghế, tỷ lệ hủy, tỷ lệ hoàn tiền.
+- Hiệu suất Employee theo chuyến được phân công.
+- Đánh giá trung bình và phản hồi khách hàng.
+
+### 6.3. Trong phạm vi — Platform admin layer
+
+- KYC: phê duyệt, từ chối, yêu cầu bổ sung, khóa / mở khóa nhà xe.
+- Quản lý tài khoản người dùng và tài khoản admin nội bộ.
+- Giám sát Employee toàn hệ thống (read-only) phục vụ kiểm duyệt và audit (`FR-ADMIN-21`).
+- Cấu hình **commission engine**: % commission mặc định, override per-Operator hoặc theo tier.
+- Cấu hình **payout policy**: chu kỳ T+N, ngưỡng tối thiểu, kênh chuyển tiền.
+- Cấu hình danh mục chuẩn: tỉnh / thành, bến xe, điểm đón / trả, loại xe, tiện ích.
+- Cấu hình chính sách: phí nền tảng, phí hủy vé, chính sách hoàn tiền, thời gian giữ ghế, thời gian cho phép hủy vé.
+- Kiểm tra và áp khung giá trần / sàn theo quy định pháp luật vào các dịp quan trọng (MQ-02).
+- Giám sát giao dịch thanh toán, escrow, payout, refund.
+- Xử lý hoàn tiền thủ công khi cần; **Platform có quyền refund đơn phương** với tư cách arbiter cuối cùng (MQ-03), thao tác này phải có audit log và thông báo Operator.
+- Quản lý khiếu nại và dispute resolution: phân công, theo dõi, đóng ticket, leo thang.
+- Kiểm duyệt đánh giá, nội dung vi phạm, banner, FAQ, nội dung tĩnh.
+- Quản lý chương trình khuyến mãi cấp Platform.
+- Cấu hình trạng thái bảo trì hệ thống.
+- Xem trạng thái tích hợp: cổng thanh toán, SMS, email, push notification.
+- Khóa chuyến / nhà xe khi vi phạm nghiêm trọng.
+- Xem báo cáo toàn hệ thống và audit log.
+
+### 6.4. Ngoài phạm vi phiên bản đầu
+
+- API integration cho Operator lớn đã có hệ thống vận hành riêng (mô hình hybrid C — chưa hỗ trợ ở v1).
+- Subsidy promotion (Platform bù tiền cho khuyến mãi).
 - Tối ưu lộ trình bằng AI theo thời gian thực.
-- Bán vé liên tuyến phức tạp có trung chuyển nhiều chặng.
+- Bán vé liên tuyến phức tạp có trung chuyển nhiều chặng giữa nhiều nhà xe.
 - Quản lý bảo dưỡng xe chuyên sâu.
-- Quản lý lương, chấm công, hợp đồng lao động của tài xế.
-- Tích hợp thiết bị IoT trên xe ở mức phần cứng.
+- Quản lý lương, chấm công, hợp đồng lao động của Employee (Platform không thuê tài xế của Operator).
+- Tích hợp thiết bị IoT trên xe ở mức phần cứng (GPS, OBD).
+- Multi-currency, multi-language ở phiên bản đầu.
+- Tự nghiên cứu / phát hành dịch vụ vận tải dưới brand của Platform (Platform là marketplace, không phải hãng vận tải).
 
 ---
 
@@ -187,7 +335,7 @@ Quyền chính: đăng nhập vào hệ thống theo quyền được cấp, xem
 
 ---
 
-## 8. Giả định, ràng buộc, phụ thuộc
+## 8. Giả định, ràng buộc, phụ thuộc (Chưa hoàn chỉnh)
 
 ### 8.1. Giả định
 
@@ -1619,23 +1767,33 @@ Các module sau **có thư mục nhưng chưa có Mongoose schema** (chỉ có T
 
 ## 24. Open Questions / TBD
 
-| ID        | Câu hỏi                                                                                                                                                                                                                                                                                                                                                                                   | Tác động                                                        |
-| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| ~~OQ-01~~ | **CHỐT (05/05/2026):** dùng tập 10 trạng thái Trip của SRS. Code phải mở rộng từ 5 → 10 trạng thái theo §17.1.                                                                                                                                                                                                                                                                            | (đã chốt) — code phải align về SRS                              |
-| ~~OQ-02~~ | **CHỐT (05/05/2026):** dùng tập 10 trạng thái Booking của SRS. Code phải bổ sung `PAID`, `PARTIALLY_CANCELLED`, `REFUND_FAILED`, `PENDING_PAYMENT`, `PENDING_CONFIRMATION` theo §17.3.                                                                                                                                                                                                    | (đã chốt) — code phải align về SRS                              |
-| ~~OQ-03~~ | **CHỐT (05/05/2026):** Payment status chuẩn hóa tên `SUCCESS`. Code phải đổi `COMPLETED` → `SUCCESS` và bổ sung `INITIATED`, `EXPIRED`, `CANCELLED`, `RECONCILING` theo §17.5.                                                                                                                                                                                                            | (đã chốt) — code phải align về SRS                              |
-| ~~OQ-04~~ | **CHỐT (05/05/2026):** dùng `Employee` với hệ role (DRIVER, phụ xe, điều phối viên, nhân viên hỗ trợ). SRS đã được cập nhật: §7.4 actor mới, §10.4 đổi prefix `FR-DRIVER-*` → `FR-EMP-*` và bổ sung FR vận hành (nhật trình, báo cáo lộ trình, sự cố), §10.3 thêm `FR-OP-21..23` cho việc nhà xe quản lý / phân quyền Employee, §10.5 thêm `FR-ADMIN-21..22` cho admin giám sát Employee. | (đã chốt)                                                       |
-| OQ-05     | Cổng thanh toán cụ thể nào sẽ tích hợp đầu tiên (VNPay, MoMo, ZaloPay, Stripe...)?                                                                                                                                                                                                                                                                                                        | Ảnh hưởng `05-API Specification`, schema Payment, callback flow |
-| OQ-06     | Thời gian giữ ghế chính thức là bao nhiêu phút? Có cấu hình per nhà xe hay toàn hệ thống?                                                                                                                                                                                                                                                                                                 | Ảnh hưởng `Booking` flow, test case chống bán trùng ghế         |
-| OQ-07     | Có hỗ trợ thanh toán sau (`PENDING_CONFIRMATION` flow) trong phiên bản đầu không?                                                                                                                                                                                                                                                                                                         | Ảnh hưởng phạm vi `06-UI/UX Flow` và FR-OP-12                   |
-| OQ-08     | Mô hình `Fare`: gắn vào `Route`, `Trip`, hay riêng (lookup table)? Hỗ trợ giá theo chặng (segment-based) ở phiên bản đầu không?                                                                                                                                                                                                                                                           | Ảnh hưởng `04-Database Design`                                  |
-| OQ-09     | OTP cho đăng ký / đăng nhập: dùng SMS provider nào? Email OTP hay chỉ SMS?                                                                                                                                                                                                                                                                                                                | Ảnh hưởng FR-AUTH-01, FR-AUTH-02 và Notification Service        |
-| OQ-10     | Mobile app dành cho User và Driver dùng chung 1 codebase Expo hay tách 2 app riêng?                                                                                                                                                                                                                                                                                                       | Hiện tại có 1 thư mục `apps/mobile/` — cần xác nhận             |
-| OQ-11     | Dữ liệu mask số điện thoại hành khách hiển thị cho tài xế: rule mask cụ thể (mấy số đầu / cuối)?                                                                                                                                                                                                                                                                                          | BR-19, NFR-PRIV-04                                              |
-| OQ-12     | Hệ thống có hỗ trợ multi-currency / multi-language ở phiên bản đầu không?                                                                                                                                                                                                                                                                                                                 | Ảnh hưởng schema Payment, Fare, UI                              |
-| OQ-13     | Chính sách hủy vé / hoàn tiền: cấu hình per nhà xe hay áp chung toàn nền tảng?                                                                                                                                                                                                                                                                                                            | BR-07, FR-ADMIN-07, FR-ADMIN-18                                 |
-| OQ-14     | Audit log lưu ở MongoDB cùng cluster hay tách ra storage riêng?                                                                                                                                                                                                                                                                                                                           | NFR-AUDIT-01–04                                                 |
-| OQ-15     | Reporting dùng aggregation trực tiếp trên MongoDB hay tách read model / data warehouse?                                                                                                                                                                                                                                                                                                   | NFR-PERF-05, NFR-SCALE-04                                       |
+| ID        | Câu hỏi                                                                                                                                                                                                                                                                                                                      | Tác động                                                                       |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| ~~OQ-01~~ | **CHỐT (05/05/2026):** dùng tập 10 trạng thái Trip của SRS. Code phải mở rộng từ 5 → 10 trạng thái theo §17.1.                                                                                                                                                                                                               | (đã chốt)                                                                      |
+| ~~OQ-02~~ | **CHỐT (05/05/2026):** dùng tập 10 trạng thái Booking của SRS. Code phải bổ sung `PAID`, `PARTIALLY_CANCELLED`, `REFUND_FAILED`, `PENDING_PAYMENT`, `PENDING_CONFIRMATION` theo §17.3.                                                                                                                                       | (đã chốt)                                                                      |
+| ~~OQ-03~~ | **CHỐT (05/05/2026):** Payment status chuẩn hóa tên `SUCCESS`. Code phải đổi `COMPLETED` → `SUCCESS` và bổ sung `INITIATED`, `EXPIRED`, `CANCELLED`, `RECONCILING` theo §17.5.                                                                                                                                               | (đã chốt)                                                                      |
+| ~~OQ-04~~ | **CHỐT (05/05/2026):** dùng `Employee` với hệ role (DRIVER, phụ xe, điều phối viên, nhân viên hỗ trợ). SRS đã được cập nhật ở §7.4, §10.4 (`FR-EMP-*`), §10.3 (`FR-OP-21..23`), §10.5 (`FR-ADMIN-21..22`).                                                                                                                   | (đã chốt)                                                                      |
+| OQ-05     | Cổng thanh toán cụ thể nào sẽ tích hợp đầu tiên (VNPay, MoMo, ZaloPay, Stripe...)?                                                                                                                                                                                                                                           | Ảnh hưởng `05-API Specification`, schema Payment, callback flow                |
+| OQ-06     | Thời gian giữ ghế chính thức là bao nhiêu phút? Có cấu hình per nhà xe hay toàn hệ thống?                                                                                                                                                                                                                                    | Ảnh hưởng `Booking` flow, test case chống bán trùng ghế                        |
+| OQ-07     | Có hỗ trợ thanh toán sau (`PENDING_CONFIRMATION` flow) trong phiên bản đầu không?                                                                                                                                                                                                                                            | Ảnh hưởng phạm vi `06-UI/UX Flow` và FR-OP-12                                  |
+| OQ-08     | Mô hình `Fare`: gắn vào `Route`, `Trip`, hay riêng (lookup table)? Hỗ trợ giá theo chặng (segment-based) ở phiên bản đầu không?                                                                                                                                                                                              | Ảnh hưởng `04-Database Design`                                                 |
+| OQ-09     | OTP cho đăng ký / đăng nhập: dùng SMS provider nào? Email OTP hay chỉ SMS?                                                                                                                                                                                                                                                   | Ảnh hưởng FR-AUTH-01, FR-AUTH-02 và Notification Service                       |
+| OQ-10     | Mobile app dành cho User và Driver dùng chung 1 codebase Expo hay tách 2 app riêng?                                                                                                                                                                                                                                          | Hiện tại có 1 thư mục `apps/mobile/` — cần xác nhận                            |
+| OQ-11     | Dữ liệu mask số điện thoại hành khách hiển thị cho tài xế: rule mask cụ thể (mấy số đầu / cuối)?                                                                                                                                                                                                                             | BR-19, NFR-PRIV-04                                                             |
+| OQ-12     | Hệ thống có hỗ trợ multi-currency / multi-language ở phiên bản đầu không?                                                                                                                                                                                                                                                    | Ảnh hưởng schema Payment, Fare, UI                                             |
+| OQ-13     | Chính sách hủy vé / hoàn tiền: cấu hình per nhà xe hay áp chung toàn nền tảng?                                                                                                                                                                                                                                               | BR-07, FR-ADMIN-07, FR-ADMIN-18                                                |
+| OQ-14     | Audit log lưu ở MongoDB cùng cluster hay tách ra storage riêng?                                                                                                                                                                                                                                                              | NFR-AUDIT-01–04                                                                |
+| OQ-15     | Reporting dùng aggregation trực tiếp trên MongoDB hay tách read model / data warehouse?                                                                                                                                                                                                                                      | NFR-PERF-05, NFR-SCALE-04                                                      |
+| ~~MQ-01~~ | **CHỐT (05/05/2026):** Payment flow = **escrow**. Platform giữ tiền trong escrow account và chuyển cho Operator theo chu kỳ T+N sau khi chuyến hoàn thành. Đã phản ánh trong §4.2, §6.1, §6.2.                                                                                                                               | (đã chốt) — chi tiết N, ngưỡng tối thiểu, kênh chuyển tiền chuyển sang `OQ-16` |
+| ~~MQ-02~~ | **CHỐT (05/05/2026):** Operator tự định giá theo những gì đã kê khai với cơ quan nhà nước. Platform có quyền kiểm tra và áp khung giá trần / sàn theo quy định pháp luật vào các dịp quan trọng. Đã phản ánh trong §5.3, §6.2, §6.3.                                                                                         | (đã chốt) — quy tắc cảnh báo / chặn cụ thể chuyển sang `OQ-17`                 |
+| ~~MQ-03~~ | **CHỐT (05/05/2026):** Platform là **arbiter cuối cùng** trong tranh chấp. Có quyền refund đơn phương qua đầu Operator, có audit log + thông báo bắt buộc cho Operator. Đã phản ánh trong §4.2, §6.3. Cần cập nhật UC-28, UC-29, BR-16, FR-ADMIN-09 ở phiên bản sau.                                                         | (đã chốt)                                                                      |
+| ~~MQ-04~~ | **CHỐT (05/05/2026):** Mô hình thu phí = **commission % mặc định** trên mỗi giao dịch vé bán thành công, cấu hình per-Operator hoặc theo tier. Service fee phụ thu khách + subsidy promotion chưa hỗ trợ ở v1. Đã phản ánh trong §4.3, §6.3.                                                                                 | (đã chốt) — % commission mặc định cụ thể chuyển sang `OQ-18`                   |
+| ~~MQ-05~~ | **CHỐT (05/05/2026):** Mô hình marketplace = **B (Managed marketplace)**. Platform cung cấp đủ 3 lớp: Marketplace + Operator OS + Platform admin. Pure marketplace (A) và pure SaaS bị loại. Hybrid (C) — API integration cho Operator lớn — chưa hỗ trợ ở v1, đặt vào §6.4. SRS §4, §5, §6 đã được tái cấu trúc theo MQ-05. | (đã chốt)                                                                      |
+| OQ-16     | Escrow payout: chu kỳ T+N cụ thể là bao nhiêu ngày? Có ngưỡng tối thiểu để trigger payout không? Kênh chuyển tiền: chuyển khoản ngân hàng trực tiếp hay qua bên thứ ba?                                                                                                                                                      | Ảnh hưởng `04-Database Design` (Payout collection), Operator OS UI             |
+| OQ-17     | Khi giá vé Operator vượt khung trần / sàn pháp luật vào dịp quan trọng: Platform chỉ cảnh báo cho Operator, hay tự động chặn không cho mở bán? Có cần admin duyệt từng trường hợp?                                                                                                                                           | Ảnh hưởng FR-OP-09, FR-ADMIN-07, UI Operator                                   |
+| OQ-18     | Commission % mặc định cho Operator mới onboard là bao nhiêu? Có nhiều tier không và tier theo tiêu chí gì (volume / rating / thâm niên)?                                                                                                                                                                                     | Ảnh hưởng commission engine, báo cáo, Operator dashboard                       |
+| OQ-19     | KYC Operator: bộ giấy tờ bắt buộc gồm những gì (giấy phép kinh doanh vận tải, giấy phép kinh doanh, bảo hiểm xe, hợp đồng đại lý ...)?                                                                                                                                                                                       | Ảnh hưởng FR-ADMIN-04, UI onboarding nhà xe                                    |
+| OQ-20     | Platform có brand riêng đối với hành khách (giống FlixBus / Vexere) hay chỉ là marketplace trung lập với tên nhà xe nổi bật?                                                                                                                                                                                                 | Ảnh hưởng UI hành khách, công thức tính rating, dispute                        |
 
 ---
 
