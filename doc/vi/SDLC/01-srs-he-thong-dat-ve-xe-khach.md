@@ -9,7 +9,7 @@
 | Tên tài liệu | Software Requirements Specification - Hệ thống đặt vé xe khách |
 | Mã tài liệu  | 01-srs-he-thong-dat-ve-xe-khach                                |
 | Dự án        | Hệ thống đặt vé xe khách                                       |
-| Phiên bản    | v1.0                                                           |
+| Phiên bản    | v1.5                                                           |
 | Trạng thái   | Draft                                                          |
 | Người viết   | Nguyễn Hồng Khanh, Nguyễn Xuân Trường, Lê Võ Thanh Uy          |
 | Người duyệt  | Nguyễn Hồng Khanh                                              |
@@ -25,6 +25,7 @@
 | v1.3      | 10/05/2026 | AI Agent, Nguyễn Hồng Khanh | Chốt MQ-01..05 (định vị marketplace). Tái cấu trúc §4 (6 mục con: định vị, vai trò 3 bên, mô hình doanh thu, 3 lớp dịch vụ, boundary, kiến trúc triển khai), §5 (4 nhóm mục tiêu: sản phẩm, nền tảng, tin cậy / compliance, vận hành), §6 (4 nhóm phạm vi: Marketplace layer, Operator OS layer, Platform admin layer, Ngoài phạm vi). §24 ghi nhận MQ-01..05 đã chốt và bổ sung OQ-16..20 phái sinh từ marketplace model |
 | v1.4      | 10/05/2026 | Nguyễn Xuân Trường          | Hiệu chỉnh mục 7 Actor và vai trò theo cấu trúc thống nhất; làm rõ quan hệ giữa Người dùng, Nhà xe, Admin toàn hệ thống và Nhân viên nhà xe trong mô hình marketplace; cập nhật Employee gồm 3 role `TICKET_STAFF`, `DRIVER`, `SUPPORT_STAFF` và gom nhóm quyền của nhân viên nhà xe theo chức năng vận hành.                                                                                                             |
 | v1.5      | 10/05/2026 | AI Agent, Lê Võ Thanh Uy    | liệt kê các giả định, ràng buộc, phụ thuộc cần có.                                                                                                                                                                                                                                                                                                                                                                        |
+| v1.6      | 10/05/2026 | Nguyễn Hồng Khanh           | Hiệu chỉnh lỗi định dạng file thủ công, Điều chỉnh mục 6.2 sửa role cho Employee còn lỗi ở phiên bản trước đó                                                                                                                                                                                                                                                                                                             |
 
 ---
 
@@ -82,14 +83,25 @@ Tài liệu KHÔNG mô tả: chi tiết kiến trúc kỹ thuật (xem `02-hld-.
 
 ### 3.4. Tài liệu tham chiếu
 
-| Mã                             | Tên                                     | Vai trò                                    |
-| ------------------------------ | --------------------------------------- | ------------------------------------------ |
-| ISO/IEC/IEEE 15289:2019        | Content of life-cycle information items | Chuẩn nền cho cấu trúc tài liệu            |
-| ISO/IEC/IEEE 29148:2018        | Requirements engineering                | Chuẩn nền cho viết và kiểm tra yêu cầu     |
-| 00a                            | Quy chuẩn SDLC cho lập trình viên       | Quy chuẩn nội bộ cao nhất                  |
-| `he-thong-dat-ve-xe-khach.md`  | Tài liệu ý tưởng nghiệp vụ              | Nguồn nghiệp vụ ban đầu                    |
-| `context/PROJECT-STRUCTURE.md` | Cấu trúc thư mục code hiện tại          | Đối chiếu với code backend/frontend/mobile |
-| `context/TECH-STACK.md`        | Tech stack đang sử dụng                 | Ràng buộc kỹ thuật                         |
+#### 3.4.1. Tham chiếu chính
+
+Các tài liệu cung cấp quy chuẩn chung và phương pháp luận cho dự án.
+
+| Mã                      | Tên                                     | Vai trò                                |
+| :---------------------- | :-------------------------------------- | :------------------------------------- |
+| ISO/IEC/IEEE 15289:2019 | Content of life-cycle information items | Chuẩn nền cho cấu trúc tài liệu        |
+| ISO/IEC/IEEE 29148:2018 | Requirements engineering                | Chuẩn nền cho viết và kiểm tra yêu cầu |
+| 00                      | Quy chuẩn SDLC cho lập trình viên       | Quy chuẩn nội bộ cao nhất              |
+
+#### 3.4.2. Tham chiếu phụ
+
+Các tài liệu cụ thể liên quan đến nghiệp vụ và hiện trạng kỹ thuật của dự án.
+
+| Mã                             | Tên                            | Vai trò                                    |
+| :----------------------------- | :----------------------------- | :----------------------------------------- |
+| `he-thong-dat-ve-xe-khach.md`  | Tài liệu ý tưởng nghiệp vụ     | Nguồn nghiệp vụ ban đầu                    |
+| `context/PROJECT-STRUCTURE.md` | Cấu trúc thư mục code hiện tại | Đối chiếu với code backend/frontend/mobile |
+| `context/TECH-STACK.md`        | Tech stack đang sử dụng        | Ràng buộc kỹ thuật                         |
 
 ### 3.5. Định nghĩa và viết tắt
 
@@ -242,10 +254,13 @@ Backend: NestJS 11 + MongoDB (mongoose) + Redis (ioredis) + Bull queue + Socket.
 
 **Quản lý nhân viên (Operator OS, không phải Platform admin):**
 
-- Tạo, cập nhật, khóa / mở khóa tài khoản Employee thuộc nhà xe.
-- Gán role cho Employee: DRIVER, phụ xe, điều phối viên, nhân viên hỗ trợ.
-- Phân quyền chi tiết cho Employee theo role và phạm vi công việc.
-- Phân công Employee có role DRIVER cho chuyến.
+- **Tạo và quản trị tài khoản:** Tạo mới, cập nhật thông tin, khóa hoặc mở khóa tài khoản Employee thuộc phạm vi quản lý của nhà xe.
+- **Gán vai trò hệ thống:** Phân định quyền hạn cho Employee theo 3 nhóm role chính:
+  - `TICKET_STAFF`: Nhân viên bán vé và điều phối khách.
+  - `DRIVER`: Tài xế vận hành chuyến xe.
+  - `SUPPORT_STAFF`: Nhân viên hỗ trợ và phụ xe.
+- **Phân quyền chi tiết:** Thiết lập quyền hạn chuyên sâu cho Employee dựa trên role đã gán và phạm vi công việc cụ thể.
+- **Điều động nhân sự:** Phân công nhân viên có role `DRIVER` trực tiếp vào danh sách vận hành các chuyến xe.
 
 **Quản lý đơn vé và vận hành:**
 
@@ -426,7 +441,7 @@ Phần này chốt các điều kiện nền để hệ thống có thể vận 
 | CO-26 | Khi notification gửi thất bại, hệ thống phải retry và hiển thị trạng thái gửi cho admin / nhà xe khi cần.                               | Vé vẫn phải tra cứu được trong hệ thống dù email / SMS gửi lỗi.                                              |
 | CO-27 | Các thao tác thủ công của admin hoặc nhà xe làm ảnh hưởng tiền / vé / ghế phải ghi rõ người thực hiện, lý do và thời điểm.              | Cần để audit, xử lý khiếu nại và đối soát nội bộ.                                                            |
 
-### 8.3. Phụ thuộc
+### 8.3. Phụ thuộc (chưa chính thức)
 
 | ID    | Phụ thuộc                                                                                                         | Mức độ ảnh hưởng                                                                              |
 | ----- | ----------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
