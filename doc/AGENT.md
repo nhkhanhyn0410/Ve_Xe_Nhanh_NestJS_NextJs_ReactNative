@@ -18,7 +18,7 @@ Forbidden:
 - Promoting any document `status` to `Approved`.
 - Expanding scope (new module, actor, technology, business rule) without explicit human review.
 
-Full rules: `@en/agent/00-standard-for-ai-agent`.
+Full rules: use `@vi/agent/00-quy-chuan-cho-ai-agent` for Vietnamese documentation work, or `@en/agent/00-standard-for-ai-agent` for English documentation work.
 
 ## 2. DIRECTORY MAP
 
@@ -31,12 +31,12 @@ doc/
 │   ├── DOMAIN-MAP.md         (TBD)
 │   ├── GLOSSARY.md           (TBD)
 │   └── PROJECT-STATE.md      (TBD)
-├── en/                                       ← AGENT working area
-│   ├── agent/                                ← SDLC tailored for AI consumption
+├── en/                                       ← English working area
+│   ├── agent/                                ← SDLC tailored for AI consumption in English
 │   └── SDLC/                                 ← SDLC for English-reading humans
-└── vi/                                       ← HUMAN reference only, do NOT edit
-    ├── agent/
-    └── SDLC/
+└── vi/                                       ← Vietnamese working area
+    ├── agent/                                ← Agent standards in Vietnamese
+    └── SDLC/                                 ← Primary Vietnamese SDLC documents
 ```
 
 ## 3. WORKING SURFACE
@@ -44,16 +44,18 @@ doc/
 | Path        | Read | Write | Purpose                                  |
 | ----------- | ---- | ----- | ---------------------------------------- |
 | `context/`  | YES  | YES   | Codebase facts. Maintained by agent.     |
-| `en/agent/` | YES  | YES   | Primary working area. AI-tailored SDLC.  |
+| `en/agent/` | YES  | YES   | English AI-tailored SDLC.                |
 | `en/SDLC/`  | YES  | YES   | Full SDLC for English-reading engineers. |
-| `vi/agent/` | YES  | YES   | Vietnamese mirror.                       |
-| `vi/SDLC/`  | YES  | YES   | Vietnamese full SDLC.                    |
+| `vi/agent/` | YES  | YES   | Vietnamese agent standards.              |
+| `vi/SDLC/`  | YES  | YES   | Primary Vietnamese full SDLC.            |
 
-If `en/` is empty for a file, read the `vi/` counterpart for context, then write the new content into `en/`. Never mutate `vi/`.
+When the user requests Vietnamese SDLC work, edit `vi/SDLC/` directly. Use `en/` only when the user requests English documents, English counterparts, or AI-tailored English material.
+
+If a document exists only in one language, it may be read as context for the other language. Do not create a parallel translation unless explicitly requested.
 
 ## 4. FILE RULES
 
-- Max 150 lines per file. Split if exceeded.
+- Max 150 lines per file applies only to agent-context files intended for coding agents. It does not apply to official SDLC documents under `vi/SDLC/` or `en/SDLC/`.
 - Cross-reference syntax: `@path/filename` (no `.md` extension).
 - Lazy load. Do not enumerate the entire `doc/` tree per task.
 - All `en/` content is in English. All `vi/` content is in Vietnamese. Do not mix languages within a file.
@@ -62,41 +64,40 @@ If `en/` is empty for a file, read the `vi/` counterpart for context, then write
 
 ### A. Lookup or business question
 
-1. `@en/agent/00-standard-for-ai-agent`
-2. `@context/GLOSSARY`
-3. `@context/DOMAIN-MAP`
-4. Relevant SDLC file under `@en/agent/`
+1. `@vi/agent/00-quy-chuan-cho-ai-agent` for Vietnamese work, or `@en/agent/00-standard-for-ai-agent` for English work.
+2. `@context/GLOSSARY` if available.
+3. `@context/DOMAIN-MAP` if available.
+4. Relevant SDLC file under `@vi/SDLC/` unless the user requests English.
 
 ### B. Edit an existing SDLC document
 
-1. `@en/agent/00-standard-for-ai-agent`
-2. `@context/PROJECT-STATE`
-3. Target file under `@en/agent/`
-4. Edit. Update `@context/PROJECT-STATE` after the edit.
+1. `@vi/agent/00-quy-chuan-cho-ai-agent` for Vietnamese work, or `@en/agent/00-standard-for-ai-agent` for English work.
+2. `@context/PROJECT-STATE` if available.
+3. Target file under `@vi/SDLC/`, `@vi/agent/`, `@en/SDLC/`, or `@en/agent/` according to the user request.
+4. Edit. Update `@context/PROJECT-STATE` after the edit when that file exists or when the task includes context maintenance.
 
 ### C. Author a new design document (HLD, LLD, DB, API, UI, Security)
 
-1. `@en/agent/00-standard-for-ai-agent` (sections B1, B3)
-2. `@en/agent/01-srs-bus-ticket-system` (or `@vi/SDLC/01-...` if `en/` not yet populated)
-3. `@context/DOMAIN-MAP`
+1. `@vi/agent/00-quy-chuan-cho-ai-agent` for Vietnamese work, or `@en/agent/00-standard-for-ai-agent` for English work (sections B1, B3).
+2. `@vi/SDLC/01-srs-he-thong-dat-ve-xe-khach` for Vietnamese work, or the English SRS counterpart when requested.
+3. `@context/DOMAIN-MAP` if available.
 4. `@context/PROJECT-STRUCTURE` and relevant `@context/STRUCTURE-*`
 5. `@context/TECH-STACK` for technical constraints
-6. Create the new file under `@en/agent/` following the SDLC catalog.
+6. Create the new file under the requested SDLC language directory, defaulting to `@vi/SDLC/` for Vietnamese work.
 
 ### D. Reverse-engineer SRS from source code
 
-1. `@en/agent/00-standard-for-ai-agent`
-2. `@context/DOMAIN-MAP` for module ↔ folder mapping
+1. `@vi/agent/00-quy-chuan-cho-ai-agent` for Vietnamese work, or `@en/agent/00-standard-for-ai-agent` for English work.
+2. `@context/DOMAIN-MAP` for module ↔ folder mapping if available.
 3. `@context/PROJECT-STRUCTURE` (or `@context/STRUCTURE-BACKEND` when split)
 4. Source code in scope (read minimum needed)
-5. Write FR/BR into `@en/agent/01-srs-bus-ticket-system`
+5. Write FR/BR into `@vi/SDLC/01-srs-he-thong-dat-ve-xe-khach` unless the user requests English output.
 
 ## 6. HARD CONSTRAINTS
 
-- Do not write source code under `apps/` or `packages/`.
-- Do not edit `vi/` files under any condition.
+- Do not write or modify application source code under `apps/` or `packages/` when working on documentation.
 - Do not change document `status` to `Approved`.
 - Do not invent business rules, modules, actors, technologies. Mark gaps with `TBD`, `OPEN QUESTION`, or `ASSUMPTION`.
 - On conflict between `vi/` and `en/`, treat as `OPEN QUESTION` and surface to the user.
 - On conflict between an assumption and `@context/PROJECT-STATE`, trust the file.
-- After any write, update `@context/PROJECT-STATE` with what changed.
+- Update `@context/PROJECT-STATE` after documentation edits when it exists or when context maintenance is part of the task. Do not create context files unless requested or necessary for the task.
