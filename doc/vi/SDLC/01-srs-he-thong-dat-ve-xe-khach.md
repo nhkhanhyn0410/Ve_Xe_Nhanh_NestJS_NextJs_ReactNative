@@ -17,20 +17,21 @@
 
 ### 1.2. Lịch sử thay đổi
 
-| Phiên bản | Ngày       | Người cập nhật              | Nội dung thay đổi                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| --------- | ---------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| v1.0      | 05/05/2026 | AI Agent, Nguyễn Hồng Khanh | Tạo bản đầu từ tài liệu ý tưởng `he-thong-dat-ve-xe-khach.md` và đối chiếu với code backend hiện có                                                                                                                                                                                                                                                                                                                                |
-| v1.1      | 08/05/2026 | Nguyễn Hồng Khanh           | Hiệu chỉnh 7.4 bỏ Tài xế (Drive) thay bằng Nhân viên nhà xe (Employee) và hiệu chỉnh một số điểm.                                                                                                                                                                                                                                                                                                                                  |
-| v1.2      | 10/05/2026 | AI Agent, Nguyễn Hồng Khanh | Chốt OQ-01..04 (state enum + Employee) và đồng bộ FR: §10.1 cập nhật `FR-AUTH-04`, §10.3 cập nhật `FR-OP-13..15` và thêm `FR-OP-21..23`, §10.4 đổi tên thành "Nhân viên nhà xe (Employee)" và đổi prefix `FR-DRIVER-*` → `FR-EMP-*` (18 FR có cột Role áp dụng), §10.5 thêm `FR-ADMIN-21..22`, §24 đánh dấu OQ-01..04 đã chốt                                                                                                      |
-| v1.3      | 10/05/2026 | AI Agent, Nguyễn Hồng Khanh | Chốt MQ-01..05 (định vị marketplace). Tái cấu trúc §4 (6 mục con: định vị, vai trò 3 bên, mô hình doanh thu, 3 lớp dịch vụ, boundary, kiến trúc triển khai), §5 (4 nhóm mục tiêu: sản phẩm, nền tảng, tin cậy / compliance, vận hành), §6 (4 nhóm phạm vi: Marketplace layer, Operator OS layer, Platform admin layer, Ngoài phạm vi). §24 ghi nhận MQ-01..05 đã chốt và bổ sung OQ-16..20 phái sinh từ marketplace model          |
-| v1.4      | 10/05/2026 | Nguyễn Xuân Trường          | Hiệu chỉnh mục 7 Actor và vai trò theo cấu trúc thống nhất; làm rõ quan hệ giữa Người dùng, Nhà xe, Admin toàn hệ thống và Nhân viên nhà xe trong mô hình marketplace; cập nhật Employee gồm 3 role `TICKET_STAFF`, `DRIVER`, `SUPPORT_STAFF` và gom nhóm quyền của nhân viên nhà xe theo chức năng vận hành.                                                                                                                      |
-| v1.5      | 10/05/2026 | AI Agent, Lê Võ Thanh Uy    | liệt kê các giả định, ràng buộc, phụ thuộc cần có.                                                                                                                                                                                                                                                                                                                                                                                 |
-| v1.6      | 10/05/2026 | Nguyễn Hồng Khanh           | Hiệu chỉnh lỗi định dạng file thủ công, Điều chỉnh mục 6.2 sửa role cho Employee còn lỗi ở phiên bản trước đó                                                                                                                                                                                                                                                                                                                      |
-| v1.7      | 10/05/2026 | AI Agent, Nguyễn Hồng Khanh | Hiệu chỉnh mục 9 Mô hình dữ liệu mức cao theo định vị managed marketplace, bổ sung nhóm dữ liệu escrow / payout / policy / audit và làm rõ boundary dữ liệu theo Operator.                                                                                                                                                                                                                                                         |
-| v1.8      | 10/05/2026 | AI Agent, Nguyễn Hồng Khanh | Hiệu chỉnh mục 10 Functional Requirements để phù hợp managed marketplace, Operator OS, Platform admin, Employee role model, Vehicle model, escrow / payout, policy snapshot, audit và data isolation theo Operator.                                                                                                                                                                                                                |
-| v1.9      | 10/05/2026 | AI Agent, Nguyễn Hồng Khanh | Hiệu chỉnh mục 11 Non-Functional Requirements và mục 12 Use Case tổng quan để đồng bộ với managed marketplace, Operator OS, Employee role model, Vehicle model, escrow / payout, audit và các FR mới ở mục 10.                                                                                                                                                                                                                     |
-| v1.10     | 10/05/2026 | Nguyễn Hồng Khanh           | Hiệu chỉnh SRS theo tiêu chí atomic requirement: tách IAM theo actor, bổ sung Guest, Promotion, Session Management, Dispute Case workflow, Notification Preference, Operator Scorecard; đồng bộ use case, trạng thái dữ liệu, module, AC và làm rõ mobile app / Marketplace layer.                                                                                                                                                 |
-| v1.11     | 11/05/2026 | Nguyễn Xuân Trường          | Hiệu chỉnh mục 13 Use Case chi tiết từ `UC-01` đến `UC-12`; viết lại các use case theo mô hình managed marketplace gồm Marketplace layer, Operator OS layer và Platform admin layer; làm rõ đăng nhập / xác thực theo actor, tìm kiếm / so sánh chuyến, chọn ghế / giữ ghế, booking, payment, ticket, refund, review / support / complaint, KYC Operator, tài chính Operator và Vehicle / SeatMap. Hiệu chỉnh lại một vài FR và UC |
+| Phiên bản | Ngày       | Người cập nhật              | Nội dung thay đổi                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| --------- | ---------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| v1.0      | 05/05/2026 | AI Agent, Nguyễn Hồng Khanh | Tạo bản đầu từ tài liệu ý tưởng `he-thong-dat-ve-xe-khach.md` và đối chiếu với code backend hiện có                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| v1.1      | 08/05/2026 | Nguyễn Hồng Khanh           | Hiệu chỉnh 7.4 bỏ Tài xế (Drive) thay bằng Nhân viên nhà xe (Employee) và hiệu chỉnh một số điểm.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| v1.2      | 10/05/2026 | AI Agent, Nguyễn Hồng Khanh | Chốt OQ-01..04 (state enum + Employee) và đồng bộ FR: §10.1 cập nhật `FR-AUTH-04`, §10.3 cập nhật `FR-OP-13..15` và thêm `FR-OP-21..23`, §10.4 đổi tên thành "Nhân viên nhà xe (Employee)" và đổi prefix `FR-DRIVER-*` → `FR-EMP-*` (18 FR có cột Role áp dụng), §10.5 thêm `FR-ADMIN-21..22`, §24 đánh dấu OQ-01..04 đã chốt                                                                                                                                                                                                                                                             |
+| v1.3      | 10/05/2026 | AI Agent, Nguyễn Hồng Khanh | Chốt MQ-01..05 (định vị marketplace). Tái cấu trúc §4 (6 mục con: định vị, vai trò 3 bên, mô hình doanh thu, 3 lớp dịch vụ, boundary, kiến trúc triển khai), §5 (4 nhóm mục tiêu: sản phẩm, nền tảng, tin cậy / compliance, vận hành), §6 (4 nhóm phạm vi: Marketplace layer, Operator OS layer, Platform admin layer, Ngoài phạm vi). §24 ghi nhận MQ-01..05 đã chốt và bổ sung OQ-16..20 phái sinh từ marketplace model                                                                                                                                                                 |
+| v1.4      | 10/05/2026 | Nguyễn Xuân Trường          | Hiệu chỉnh mục 7 Actor và vai trò theo cấu trúc thống nhất; làm rõ quan hệ giữa Người dùng, Nhà xe, Admin toàn hệ thống và Nhân viên nhà xe trong mô hình marketplace; cập nhật Employee gồm 3 role `TICKET_STAFF`, `DRIVER`, `SUPPORT_STAFF` và gom nhóm quyền của nhân viên nhà xe theo chức năng vận hành.                                                                                                                                                                                                                                                                             |
+| v1.5      | 10/05/2026 | AI Agent, Lê Võ Thanh Uy    | liệt kê các giả định, ràng buộc, phụ thuộc cần có.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| v1.6      | 10/05/2026 | Nguyễn Hồng Khanh           | Hiệu chỉnh lỗi định dạng file thủ công, Điều chỉnh mục 6.2 sửa role cho Employee còn lỗi ở phiên bản trước đó                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| v1.7      | 10/05/2026 | AI Agent, Nguyễn Hồng Khanh | Hiệu chỉnh mục 9 Mô hình dữ liệu mức cao theo định vị managed marketplace, bổ sung nhóm dữ liệu escrow / payout / policy / audit và làm rõ boundary dữ liệu theo Operator.                                                                                                                                                                                                                                                                                                                                                                                                                |
+| v1.8      | 10/05/2026 | AI Agent, Nguyễn Hồng Khanh | Hiệu chỉnh mục 10 Functional Requirements để phù hợp managed marketplace, Operator OS, Platform admin, Employee role model, Vehicle model, escrow / payout, policy snapshot, audit và data isolation theo Operator.                                                                                                                                                                                                                                                                                                                                                                       |
+| v1.9      | 10/05/2026 | AI Agent, Nguyễn Hồng Khanh | Hiệu chỉnh mục 11 Non-Functional Requirements và mục 12 Use Case tổng quan để đồng bộ với managed marketplace, Operator OS, Employee role model, Vehicle model, escrow / payout, audit và các FR mới ở mục 10.                                                                                                                                                                                                                                                                                                                                                                            |
+| v1.10     | 10/05/2026 | Nguyễn Hồng Khanh           | Hiệu chỉnh SRS theo tiêu chí atomic requirement: tách IAM theo actor, bổ sung Guest, Promotion, Session Management, Dispute Case workflow, Notification Preference, Operator Scorecard; đồng bộ use case, trạng thái dữ liệu, module, AC và làm rõ mobile app / Marketplace layer.                                                                                                                                                                                                                                                                                                        |
+| v1.11     | 11/05/2026 | Nguyễn Xuân Trường          | Hiệu chỉnh mục 13 Use Case chi tiết từ `UC-01` đến `UC-12`; viết lại các use case theo mô hình managed marketplace gồm Marketplace layer, Operator OS layer và Platform admin layer; làm rõ đăng nhập / xác thực theo actor, tìm kiếm / so sánh chuyến, chọn ghế / giữ ghế, booking, payment, ticket, refund, review / support / complaint, KYC Operator, tài chính Operator và Vehicle / SeatMap. Hiệu chỉnh lại một vài FR và UC                                                                                                                                                        |
+| v1.12     | 11/05/2026 | Lê Võ Thanh Uy              | Hiệu chỉnh mục 13 Use Case chi tiết từ `UC-13` đến `UC-24`; viết lại các use case theo mô hình managed marketplace gồm Operator OS layer, Employee app / portal và Platform admin layer; làm rõ quản lý route / stop point, trip / fare / mở bán / inventory, booking / ticket thuộc Operator, Employee và phân công nhiệm vụ, báo cáo Operator, manifest hành khách, check-in QR / mã vé, cập nhật trạng thái chuyến, nhật trình / báo cáo sự cố, duyệt KYC Operator và quản lý catalog chuẩn. Đối chiếu logic website xe khách kiểu FutaBus và hiện trạng các module backend liên quan. |
 
 ---
 
@@ -1032,15 +1033,15 @@ Mỗi Use Case dưới đây trình bày: actor, mục tiêu, tiền điều ki�
 
 ### UC-01: Đăng nhập / xác thực theo actor
 
-| Thuộc tính | Nội dung |
-| --- | --- |
-| Actor chính | Người dùng (User), Nhà xe (Operator), Nhân viên nhà xe (Employee), Admin toàn hệ thống (Admin) |
-| Actor phụ | Hệ thống |
-| Mục tiêu | Xác thực đúng danh tính, đúng loại actor và cấp phiên truy cập phù hợp với vai trò, quyền hạn và tenant boundary. |
+| Thuộc tính     | Nội dung                                                                                                                |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Người dùng (User), Nhà xe (Operator), Nhân viên nhà xe (Employee), Admin toàn hệ thống (Admin)                          |
+| Actor phụ      | Hệ thống                                                                                                                |
+| Mục tiêu       | Xác thực đúng danh tính, đúng loại actor và cấp phiên truy cập phù hợp với vai trò, quyền hạn và tenant boundary.       |
 | Tiền điều kiện | Actor đã có tài khoản hợp lệ theo cơ chế tương ứng; tài khoản chưa bị khóa, chưa bị thu hồi quyền và chưa hết hiệu lực. |
-| Kích hoạt | Actor mở màn hình đăng nhập, làm mới phiên, hoặc hệ thống yêu cầu xác thực lại trước thao tác nhạy cảm. |
-| Hậu điều kiện | Actor có session / token hợp lệ, lịch sử đăng nhập được ghi nhận, quyền truy cập được giới hạn theo actor và tenant. |
-| Ưu tiên | Cao |
+| Kích hoạt      | Actor mở màn hình đăng nhập, làm mới phiên, hoặc hệ thống yêu cầu xác thực lại trước thao tác nhạy cảm.                 |
+| Hậu điều kiện  | Actor có session / token hợp lệ, lịch sử đăng nhập được ghi nhận, quyền truy cập được giới hạn theo actor và tenant.    |
+| Ưu tiên        | Cao                                                                                                                     |
 
 Luồng chính:
 
@@ -1064,15 +1065,15 @@ Luồng thay thế / ngoại lệ:
 
 ### UC-02: Tìm kiếm và so sánh chuyến
 
-| Thuộc tính | Nội dung |
-| --- | --- |
-| Actor chính | Người dùng (User), Khách vãng lai (Guest) |
-| Actor phụ | Hệ thống |
-| Mục tiêu | Giúp hành khách tìm và so sánh các chuyến đang mở bán từ nhiều Operator trên Marketplace layer. |
+| Thuộc tính     | Nội dung                                                                                                     |
+| -------------- | ------------------------------------------------------------------------------------------------------------ |
+| Actor chính    | Người dùng (User), Khách vãng lai (Guest)                                                                    |
+| Actor phụ      | Hệ thống                                                                                                     |
+| Mục tiêu       | Giúp hành khách tìm và so sánh các chuyến đang mở bán từ nhiều Operator trên Marketplace layer.              |
 | Tiền điều kiện | Hệ thống có dữ liệu tuyến, điểm dừng, chuyến, giá vé, trạng thái ghế và Operator đã được phép bán công khai. |
-| Kích hoạt | User hoặc Guest nhập điểm đi, điểm đến, ngày đi và số lượng khách. |
-| Hậu điều kiện | Danh sách chuyến phù hợp được hiển thị với thông tin đủ để so sánh giữa các Operator. |
-| Ưu tiên | Cao |
+| Kích hoạt      | User hoặc Guest nhập điểm đi, điểm đến, ngày đi và số lượng khách.                                           |
+| Hậu điều kiện  | Danh sách chuyến phù hợp được hiển thị với thông tin đủ để so sánh giữa các Operator.                        |
+| Ưu tiên        | Cao                                                                                                          |
 
 Luồng chính:
 
@@ -1095,15 +1096,15 @@ Luồng thay thế / ngoại lệ:
 
 ### UC-03: Xem chi tiết chuyến và profile Operator
 
-| Thuộc tính | Nội dung |
-| --- | --- |
-| Actor chính | Người dùng (User), Khách vãng lai (Guest) |
-| Actor phụ | Hệ thống |
-| Mục tiêu | Cung cấp thông tin đầy đủ về chuyến, Operator và điều kiện giao dịch để hành khách quyết định đặt vé. |
-| Tiền điều kiện | User hoặc Guest đã chọn một chuyến từ kết quả tìm kiếm hoặc từ liên kết chi tiết hợp lệ. |
-| Kích hoạt | User hoặc Guest mở trang / màn hình chi tiết chuyến. |
-| Hậu điều kiện | Chi tiết chuyến và profile Operator được hiển thị; nếu chuyến không còn hợp lệ thì luồng đặt vé bị chặn. |
-| Ưu tiên | Cao |
+| Thuộc tính     | Nội dung                                                                                                 |
+| -------------- | -------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Người dùng (User), Khách vãng lai (Guest)                                                                |
+| Actor phụ      | Hệ thống                                                                                                 |
+| Mục tiêu       | Cung cấp thông tin đầy đủ về chuyến, Operator và điều kiện giao dịch để hành khách quyết định đặt vé.    |
+| Tiền điều kiện | User hoặc Guest đã chọn một chuyến từ kết quả tìm kiếm hoặc từ liên kết chi tiết hợp lệ.                 |
+| Kích hoạt      | User hoặc Guest mở trang / màn hình chi tiết chuyến.                                                     |
+| Hậu điều kiện  | Chi tiết chuyến và profile Operator được hiển thị; nếu chuyến không còn hợp lệ thì luồng đặt vé bị chặn. |
+| Ưu tiên        | Cao                                                                                                      |
 
 Luồng chính:
 
@@ -1124,15 +1125,15 @@ Luồng thay thế / ngoại lệ:
 
 ### UC-04: Chọn ghế và giữ ghế
 
-| Thuộc tính | Nội dung |
-| --- | --- |
-| Actor chính | Người dùng (User), Hệ thống |
-| Actor phụ | Không có |
-| Mục tiêu | Cho phép User chọn một hoặc nhiều ghế / giường khả dụng và giữ tạm thời bằng SeatHold có TTL để chống bán trùng ghế. |
-| Tiền điều kiện | User đang ở chi tiết chuyến hợp lệ; chuyến còn mở bán, còn ghế phù hợp và chưa hết thời gian bán online. |
-| Kích hoạt | User chọn ghế / giường trên seat map. |
-| Hậu điều kiện | Ghế được giữ tạm thời cho phiên đặt vé của User hoặc được giải phóng khi giữ ghế thất bại / hết hạn. |
-| Ưu tiên | Cao |
+| Thuộc tính     | Nội dung                                                                                                             |
+| -------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Người dùng (User), Hệ thống                                                                                          |
+| Actor phụ      | Không có                                                                                                             |
+| Mục tiêu       | Cho phép User chọn một hoặc nhiều ghế / giường khả dụng và giữ tạm thời bằng SeatHold có TTL để chống bán trùng ghế. |
+| Tiền điều kiện | User đang ở chi tiết chuyến hợp lệ; chuyến còn mở bán, còn ghế phù hợp và chưa hết thời gian bán online.             |
+| Kích hoạt      | User chọn ghế / giường trên seat map.                                                                                |
+| Hậu điều kiện  | Ghế được giữ tạm thời cho phiên đặt vé của User hoặc được giải phóng khi giữ ghế thất bại / hết hạn.                 |
+| Ưu tiên        | Cao                                                                                                                  |
 
 Luồng chính:
 
@@ -1154,15 +1155,15 @@ Luồng thay thế / ngoại lệ:
 
 ### UC-05: Tạo booking
 
-| Thuộc tính | Nội dung |
-| --- | --- |
-| Actor chính | Người dùng (User), Hệ thống |
-| Actor phụ | Không có |
-| Mục tiêu | Tạo booking hợp lệ từ ghế đang được giữ, thông tin hành khách, điểm đón / trả, fare, policy và promotion snapshot. |
-| Tiền điều kiện | User có SeatHold còn hiệu lực cho các ghế đã chọn; chuyến vẫn đủ điều kiện bán. |
-| Kích hoạt | User nhập thông tin hành khách / liên hệ, chọn điểm đón / trả, áp dụng promotion nếu có và xác nhận tạo booking. |
-| Hậu điều kiện | Booking được tạo ở trạng thái `PENDING_PAYMENT` hoặc `PENDING_CONFIRMATION`; dữ liệu snapshot bắt buộc được lưu. |
-| Ưu tiên | Cao |
+| Thuộc tính     | Nội dung                                                                                                           |
+| -------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Actor chính    | Người dùng (User), Hệ thống                                                                                        |
+| Actor phụ      | Không có                                                                                                           |
+| Mục tiêu       | Tạo booking hợp lệ từ ghế đang được giữ, thông tin hành khách, điểm đón / trả, fare, policy và promotion snapshot. |
+| Tiền điều kiện | User có SeatHold còn hiệu lực cho các ghế đã chọn; chuyến vẫn đủ điều kiện bán.                                    |
+| Kích hoạt      | User nhập thông tin hành khách / liên hệ, chọn điểm đón / trả, áp dụng promotion nếu có và xác nhận tạo booking.   |
+| Hậu điều kiện  | Booking được tạo ở trạng thái `PENDING_PAYMENT` hoặc `PENDING_CONFIRMATION`; dữ liệu snapshot bắt buộc được lưu.   |
+| Ưu tiên        | Cao                                                                                                                |
 
 Luồng chính:
 
@@ -1187,15 +1188,15 @@ Luồng thay thế / ngoại lệ:
 
 ### UC-06: Thanh toán booking
 
-| Thuộc tính | Nội dung |
-| --- | --- |
-| Actor chính | Người dùng (User), Hệ thống |
-| Actor phụ | Cổng thanh toán, Admin toàn hệ thống (Admin) |
-| Mục tiêu | Thu tiền booking hợp lệ, cập nhật trạng thái booking / payment / seat, ghi escrow ledger và chuẩn bị phát hành ticket. |
-| Tiền điều kiện | Booking tồn tại, thuộc User, còn hạn thanh toán và chưa bị hủy, hết hạn hoặc thanh toán thành công. |
-| Kích hoạt | User chọn phương thức thanh toán hoặc hệ thống nhận callback / webhook từ cổng thanh toán. |
-| Hậu điều kiện | Booking được thanh toán thành công, thất bại, hết hạn hoặc chuyển đối soát; dòng tiền thành công được ghi vào escrow của Platform. |
-| Ưu tiên | Cao |
+| Thuộc tính     | Nội dung                                                                                                                           |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Người dùng (User), Hệ thống                                                                                                        |
+| Actor phụ      | Cổng thanh toán, Admin toàn hệ thống (Admin)                                                                                       |
+| Mục tiêu       | Thu tiền booking hợp lệ, cập nhật trạng thái booking / payment / seat, ghi escrow ledger và chuẩn bị phát hành ticket.             |
+| Tiền điều kiện | Booking tồn tại, thuộc User, còn hạn thanh toán và chưa bị hủy, hết hạn hoặc thanh toán thành công.                                |
+| Kích hoạt      | User chọn phương thức thanh toán hoặc hệ thống nhận callback / webhook từ cổng thanh toán.                                         |
+| Hậu điều kiện  | Booking được thanh toán thành công, thất bại, hết hạn hoặc chuyển đối soát; dòng tiền thành công được ghi vào escrow của Platform. |
+| Ưu tiên        | Cao                                                                                                                                |
 
 Luồng chính:
 
@@ -1219,15 +1220,15 @@ Luồng thay thế / ngoại lệ:
 
 ### UC-07: Nhận và xem vé điện tử
 
-| Thuộc tính | Nội dung |
-| --- | --- |
-| Actor chính | Người dùng (User), Hệ thống |
-| Actor phụ | Dịch vụ thông báo, Nhân viên nhà xe (Employee) |
-| Mục tiêu | Phát hành và hiển thị ticket điện tử hợp lệ để User sử dụng khi lên xe và Employee có thể xác thực server-side. |
-| Tiền điều kiện | Booking đã thanh toán thành công hoặc đã được xác nhận hợp lệ theo luồng thanh toán sau. |
-| Kích hoạt | Hệ thống phát hành ticket sau sự kiện đủ điều kiện hoặc User mở mục vé / lịch sử booking. |
-| Hậu điều kiện | User xem được ticket điện tử có mã vé, QR token, thông tin chuyến, ghế, hành khách, điểm đón / trả và trạng thái ticket. |
-| Ưu tiên | Cao |
+| Thuộc tính     | Nội dung                                                                                                                 |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Actor chính    | Người dùng (User), Hệ thống                                                                                              |
+| Actor phụ      | Dịch vụ thông báo, Nhân viên nhà xe (Employee)                                                                           |
+| Mục tiêu       | Phát hành và hiển thị ticket điện tử hợp lệ để User sử dụng khi lên xe và Employee có thể xác thực server-side.          |
+| Tiền điều kiện | Booking đã thanh toán thành công hoặc đã được xác nhận hợp lệ theo luồng thanh toán sau.                                 |
+| Kích hoạt      | Hệ thống phát hành ticket sau sự kiện đủ điều kiện hoặc User mở mục vé / lịch sử booking.                                |
+| Hậu điều kiện  | User xem được ticket điện tử có mã vé, QR token, thông tin chuyến, ghế, hành khách, điểm đón / trả và trạng thái ticket. |
+| Ưu tiên        | Cao                                                                                                                      |
 
 Luồng chính:
 
@@ -1250,15 +1251,15 @@ Luồng thay thế / ngoại lệ:
 
 ### UC-08: Hủy vé / yêu cầu hoàn tiền
 
-| Thuộc tính | Nội dung |
-| --- | --- |
-| Actor chính | Người dùng (User), Admin toàn hệ thống (Admin) |
-| Actor phụ | Hệ thống, Nhà xe (Operator), Cổng thanh toán |
-| Mục tiêu | Cho phép hủy vé theo policy snapshot tại thời điểm booking và tạo / xử lý refund request khi đủ điều kiện. |
-| Tiền điều kiện | Booking / ticket tồn tại, thuộc quyền User hoặc thuộc phạm vi xử lý của Admin; dữ liệu policy snapshot có sẵn. |
-| Kích hoạt | User chọn hủy vé / yêu cầu hoàn tiền hoặc Admin xử lý refund thủ công. |
-| Hậu điều kiện | Ticket / booking được cập nhật trạng thái phù hợp; refund request được tạo hoặc xử lý; audit log và notification được ghi nhận. |
-| Ưu tiên | Cao |
+| Thuộc tính     | Nội dung                                                                                                                        |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Người dùng (User), Admin toàn hệ thống (Admin)                                                                                  |
+| Actor phụ      | Hệ thống, Nhà xe (Operator), Cổng thanh toán                                                                                    |
+| Mục tiêu       | Cho phép hủy vé theo policy snapshot tại thời điểm booking và tạo / xử lý refund request khi đủ điều kiện.                      |
+| Tiền điều kiện | Booking / ticket tồn tại, thuộc quyền User hoặc thuộc phạm vi xử lý của Admin; dữ liệu policy snapshot có sẵn.                  |
+| Kích hoạt      | User chọn hủy vé / yêu cầu hoàn tiền hoặc Admin xử lý refund thủ công.                                                          |
+| Hậu điều kiện  | Ticket / booking được cập nhật trạng thái phù hợp; refund request được tạo hoặc xử lý; audit log và notification được ghi nhận. |
+| Ưu tiên        | Cao                                                                                                                             |
 
 Luồng chính:
 
@@ -1281,15 +1282,15 @@ Luồng thay thế / ngoại lệ:
 
 ### UC-09: Đánh giá, hỗ trợ và khiếu nại
 
-| Thuộc tính | Nội dung |
-| --- | --- |
-| Actor chính | Người dùng (User) |
-| Actor phụ | Hệ thống, Nhà xe (Operator), Admin toàn hệ thống (Admin) |
-| Mục tiêu | Cho phép User đánh giá dịch vụ hợp lệ, tạo support ticket / complaint và theo dõi quá trình xử lý trong Marketplace layer. |
+| Thuộc tính     | Nội dung                                                                                                                                                                                |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Người dùng (User)                                                                                                                                                                       |
+| Actor phụ      | Hệ thống, Nhà xe (Operator), Admin toàn hệ thống (Admin)                                                                                                                                |
+| Mục tiêu       | Cho phép User đánh giá dịch vụ hợp lệ, tạo support ticket / complaint và theo dõi quá trình xử lý trong Marketplace layer.                                                              |
 | Tiền điều kiện | User đã đăng nhập; với đánh giá, User phải có ticket hợp lệ và chuyến đã hoàn thành; với hỗ trợ / khiếu nại, User có thông tin booking / ticket / payment / trip liên quan nếu áp dụng. |
-| Kích hoạt | User chọn đánh giá chuyến / Operator hoặc tạo yêu cầu hỗ trợ / khiếu nại. |
-| Hậu điều kiện | Review, support ticket hoặc complaint được lưu; trao đổi, attachment và trạng thái xử lý được theo dõi; scorecard Operator được cập nhật theo policy nếu dữ liệu hợp lệ. |
-| Ưu tiên | Trung bình |
+| Kích hoạt      | User chọn đánh giá chuyến / Operator hoặc tạo yêu cầu hỗ trợ / khiếu nại.                                                                                                               |
+| Hậu điều kiện  | Review, support ticket hoặc complaint được lưu; trao đổi, attachment và trạng thái xử lý được theo dõi; scorecard Operator được cập nhật theo policy nếu dữ liệu hợp lệ.                |
+| Ưu tiên        | Trung bình                                                                                                                                                                              |
 
 Luồng chính:
 
@@ -1313,15 +1314,15 @@ Luồng thay thế / ngoại lệ:
 
 ### UC-10: Đăng ký Operator và gửi hồ sơ KYC
 
-| Thuộc tính | Nội dung |
-| --- | --- |
-| Actor chính | Nhà xe (Operator) |
-| Actor phụ | Hệ thống, Admin toàn hệ thống (Admin) |
-| Mục tiêu | Onboard nhà xe vào marketplace bằng hồ sơ doanh nghiệp, giấy tờ KYC và thông tin nhận tiền để Platform kiểm soát quyền tham gia nền tảng. |
-| Tiền điều kiện | Operator chưa có hồ sơ được duyệt hoặc cần bổ sung hồ sơ theo yêu cầu của Platform. |
-| Kích hoạt | Operator mở luồng đăng ký nhà xe / onboarding KYC. |
-| Hậu điều kiện | Hồ sơ Operator được tạo hoặc cập nhật ở trạng thái chờ duyệt, cần bổ sung, được duyệt, bị từ chối hoặc bị khóa. |
-| Ưu tiên | Cao |
+| Thuộc tính     | Nội dung                                                                                                                                  |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Nhà xe (Operator)                                                                                                                         |
+| Actor phụ      | Hệ thống, Admin toàn hệ thống (Admin)                                                                                                     |
+| Mục tiêu       | Onboard nhà xe vào marketplace bằng hồ sơ doanh nghiệp, giấy tờ KYC và thông tin nhận tiền để Platform kiểm soát quyền tham gia nền tảng. |
+| Tiền điều kiện | Operator chưa có hồ sơ được duyệt hoặc cần bổ sung hồ sơ theo yêu cầu của Platform.                                                       |
+| Kích hoạt      | Operator mở luồng đăng ký nhà xe / onboarding KYC.                                                                                        |
+| Hậu điều kiện  | Hồ sơ Operator được tạo hoặc cập nhật ở trạng thái chờ duyệt, cần bổ sung, được duyệt, bị từ chối hoặc bị khóa.                           |
+| Ưu tiên        | Cao                                                                                                                                       |
 
 Luồng chính:
 
@@ -1345,15 +1346,15 @@ Luồng thay thế / ngoại lệ:
 
 ### UC-11: Quản lý hồ sơ và tài chính Operator
 
-| Thuộc tính | Nội dung |
-| --- | --- |
-| Actor chính | Nhà xe (Operator) |
-| Actor phụ | Hệ thống, Admin toàn hệ thống (Admin) |
-| Mục tiêu | Cho phép Operator quản lý hồ sơ công khai, tài khoản nhận tiền và theo dõi tài chính marketplace trong phạm vi tenant của mình. |
+| Thuộc tính     | Nội dung                                                                                                                              |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Nhà xe (Operator)                                                                                                                     |
+| Actor phụ      | Hệ thống, Admin toàn hệ thống (Admin)                                                                                                 |
+| Mục tiêu       | Cho phép Operator quản lý hồ sơ công khai, tài khoản nhận tiền và theo dõi tài chính marketplace trong phạm vi tenant của mình.       |
 | Tiền điều kiện | Operator đã có tài khoản hợp lệ và có quyền truy cập Operator OS; các chức năng tài chính có thể phụ thuộc trạng thái KYC / approval. |
-| Kích hoạt | Operator mở mục hồ sơ, tài khoản nhận tiền, escrow, payout, commission hoặc đối soát. |
-| Hậu điều kiện | Hồ sơ / tài chính được xem hoặc cập nhật theo quyền; thao tác nhạy cảm được xác thực lại và ghi audit log. |
-| Ưu tiên | Cao |
+| Kích hoạt      | Operator mở mục hồ sơ, tài khoản nhận tiền, escrow, payout, commission hoặc đối soát.                                                 |
+| Hậu điều kiện  | Hồ sơ / tài chính được xem hoặc cập nhật theo quyền; thao tác nhạy cảm được xác thực lại và ghi audit log.                            |
+| Ưu tiên        | Cao                                                                                                                                   |
 
 Luồng chính:
 
@@ -1376,15 +1377,15 @@ Luồng thay thế / ngoại lệ:
 
 ### UC-12: Quản lý Vehicle, VehicleType và SeatMap
 
-| Thuộc tính | Nội dung |
-| --- | --- |
-| Actor chính | Nhà xe (Operator) |
-| Actor phụ | Hệ thống, Admin toàn hệ thống (Admin) |
-| Mục tiêu | Cho phép Operator quản lý phương tiện, loại phương tiện, tiện ích và sơ đồ ghế làm nền cho TripSeat, SeatHold và Booking. |
-| Tiền điều kiện | Operator có quyền quản lý tài nguyên vận tải trong tenant của mình; trạng thái KYC / approval đáp ứng policy nền tảng. |
-| Kích hoạt | Operator mở mục quản lý Vehicle, VehicleType hoặc SeatMap trong Operator OS. |
-| Hậu điều kiện | Vehicle, VehicleType và SeatMap được tạo / cập nhật hợp lệ, sẵn sàng dùng cho trip và inventory sau này. |
-| Ưu tiên | Cao |
+| Thuộc tính     | Nội dung                                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Nhà xe (Operator)                                                                                                         |
+| Actor phụ      | Hệ thống, Admin toàn hệ thống (Admin)                                                                                     |
+| Mục tiêu       | Cho phép Operator quản lý phương tiện, loại phương tiện, tiện ích và sơ đồ ghế làm nền cho TripSeat, SeatHold và Booking. |
+| Tiền điều kiện | Operator có quyền quản lý tài nguyên vận tải trong tenant của mình; trạng thái KYC / approval đáp ứng policy nền tảng.    |
+| Kích hoạt      | Operator mở mục quản lý Vehicle, VehicleType hoặc SeatMap trong Operator OS.                                              |
+| Hậu điều kiện  | Vehicle, VehicleType và SeatMap được tạo / cập nhật hợp lệ, sẵn sàng dùng cho trip và inventory sau này.                  |
+| Ưu tiên        | Cao                                                                                                                       |
 
 Luồng chính:
 
@@ -1404,307 +1405,651 @@ Luồng thay thế / ngoại lệ:
 - A4: Operator chưa được duyệt hoặc bị khóa → hệ thống cho xem dữ liệu theo quyền nhưng không cho mở bán / dùng Vehicle cho chuyến công khai.
 - A5: Operator cố truy cập Vehicle / SeatMap của Operator khác → hệ thống từ chối theo tenant boundary và ghi log nếu có dấu hiệu vi phạm.
 
+### UC-13: Quản lý route, stop point và đề xuất điểm mới
 
-### UC-13: Quản lý xe và sơ đồ ghế
-
-| Thuộc tính     | Nội dung                                        |
-| -------------- | ----------------------------------------------- |
-| Actor chính    | Nhà xe                                          |
-| Mục tiêu       | Tạo và quản lý thông tin xe, loại xe, sơ đồ ghế |
-| Tiền điều kiện | Nhà xe đã được phê duyệt                        |
-| Kích hoạt      | Nhà xe chọn mục quản lý xe                      |
-| Hậu điều kiện  | Xe và sơ đồ ghế được lưu để dùng cho chuyến     |
-| Ưu tiên        | Cao                                             |
-
-Luồng chính: nhà xe tạo mới xe, nhập biển số, loại xe, số ghế, tiện ích; chọn hoặc tạo sơ đồ ghế; cấu hình mã ghế, tầng, vị trí, loại ghế; hệ thống kiểm tra trùng biển số và lưu.
-
-Luồng thay thế: A1 - biển số đã tồn tại → báo lỗi. A2 - sơ đồ ghế không khớp số ghế → yêu cầu điều chỉnh. A3 - xe đang có chuyến tương lai thì một số thông tin bị hạn chế chỉnh sửa.
-
-### UC-14: Quản lý tuyến đường và điểm đón / trả
-
-| Thuộc tính     | Nội dung                             |
-| -------------- | ------------------------------------ |
-| Actor chính    | Nhà xe                               |
-| Mục tiêu       | Tạo tuyến và cấu hình điểm đón / trả |
-| Tiền điều kiện | Nhà xe có quyền quản lý tuyến        |
-| Kích hoạt      | Nhà xe mở mục tuyến đường            |
-| Hậu điều kiện  | Tuyến có thể được dùng để tạo chuyến |
-| Ưu tiên        | Cao                                  |
-
-Luồng chính: nhà xe tạo tuyến mới, chọn tỉnh / thành / điểm đi / điểm đến, thêm các điểm đón / trả theo thứ tự, nhập thời gian dự kiến giữa các điểm, hệ thống kiểm tra dữ liệu và lưu.
-
-Luồng thay thế: A1 - điểm đón / trả chưa có trong danh mục thì gửi đề xuất hoặc admin tạo mới. A2 - trùng tuyến thì cảnh báo để tránh tạo dư thừa.
-
-### UC-15: Tạo và quản lý chuyến xe
-
-| Thuộc tính     | Nội dung                            |
-| -------------- | ----------------------------------- |
-| Actor chính    | Nhà xe                              |
-| Mục tiêu       | Mở bán chuyến xe cụ thể             |
-| Tiền điều kiện | Có tuyến, xe, sơ đồ ghế hợp lệ      |
-| Kích hoạt      | Nhà xe tạo chuyến xe                |
-| Hậu điều kiện  | Chuyến xe được lưu và có thể mở bán |
-| Ưu tiên        | Cao                                 |
-
-Luồng chính: nhà xe chọn tuyến, chọn ngày giờ khởi hành, chọn xe, nhập giá vé hoặc chọn bảng giá, cấu hình điểm đón / trả áp dụng cho chuyến, chọn trạng thái mở bán hoặc lưu nháp; hệ thống kiểm tra xung đột lịch xe và tạo chuyến.
-
-Luồng thay thế: A1 - xe đã được gán cho chuyến khác cùng thời gian → báo xung đột. A2 - thiếu giá vé → không cho mở bán. A3 - chuyến đã có vé bán → thay đổi quan trọng cần xác nhận và gửi thông báo cho hành khách.
-
-### UC-16: Cấu hình giá vé
-
-| Thuộc tính     | Nội dung                                  |
-| -------------- | ----------------------------------------- |
-| Actor chính    | Nhà xe                                    |
-| Actor phụ      | Admin                                     |
-| Mục tiêu       | Thiết lập giá vé cho tuyến / chuyến / ghế |
-| Tiền điều kiện | Nhà xe có tuyến hoặc chuyến hợp lệ        |
-| Kích hoạt      | Nhà xe mở chức năng giá vé                |
-| Hậu điều kiện  | Giá vé được áp dụng cho đặt vé            |
-| Ưu tiên        | Cao                                       |
-
-Luồng chính: nhà xe chọn tuyến hoặc chuyến, nhập giá cơ bản, cấu hình giá theo loại ghế / ngày lễ / khung giờ / chặng, hệ thống kiểm tra giá trong giới hạn và lưu bảng giá, áp dụng cho các chuyến liên quan.
-
-Luồng thay thế: A1 - giá vượt ngưỡng cấu hình thì yêu cầu xác nhận hoặc admin phê duyệt. A2 - chuyến đã có người đặt thì giá mới chỉ áp dụng cho booking mới.
-
-### UC-17: Quản lý đơn đặt vé
-
-| Thuộc tính     | Nội dung                              |
-| -------------- | ------------------------------------- |
-| Actor chính    | Nhà xe                                |
-| Mục tiêu       | Theo dõi và xử lý đơn vé của nhà xe   |
-| Tiền điều kiện | Nhà xe có đơn vé phát sinh            |
-| Kích hoạt      | Nhà xe mở danh sách đơn vé            |
-| Hậu điều kiện  | Đơn vé được xem / cập nhật theo quyền |
-| Ưu tiên        | Cao                                   |
-
-Luồng chính: nhà xe lọc đơn theo chuyến / ngày / trạng thái / số điện thoại, hệ thống hiển thị danh sách booking / ticket, nhà xe mở chi tiết, xem thông tin hành khách / ghế / thanh toán / điểm đón / trả, thực hiện hành động được phép (xác nhận / ghi chú / hỗ trợ hủy / xuất danh sách), hệ thống ghi log thao tác.
-
-Luồng thay thế: A1 - nhà xe cố truy cập đơn không thuộc quyền → từ chối. A2 - đơn đã hoàn thành / hủy → hạn chế chỉnh sửa.
-
-### UC-18: Phân công Employee vận hành
-
-| Thuộc tính     | Nội dung                                       |
-| -------------- | ---------------------------------------------- |
-| Actor chính    | Nhà xe                                         |
-| Actor phụ      | Employee                                       |
-| Mục tiêu       | Gán Employee có role phù hợp cho chuyến xe     |
-| Tiền điều kiện | Có Employee và chuyến xe hợp lệ                |
-| Kích hoạt      | Nhà xe chọn phân công Employee                 |
-| Hậu điều kiện  | Employee được gán vào chuyến và nhận thông báo |
-| Ưu tiên        | Cao                                            |
-
-Luồng chính: nhà xe mở chi tiết chuyến, chọn Employee có role `DRIVER`, `TICKET_STAFF` hoặc `SUPPORT_STAFF` theo nhu cầu vận hành, hệ thống kiểm tra lịch phân công có bị trùng không, nhà xe xác nhận, hệ thống lưu phân công và gửi thông báo cho Employee.
-
-Luồng thay thế: A1 - Employee bị trùng lịch → cảnh báo hoặc không cho phân công. A2 - Employee chưa kích hoạt tài khoản → yêu cầu kích hoạt trước.
-
-### UC-19: Xem báo cáo nhà xe
-
-| Thuộc tính     | Nội dung                             |
-| -------------- | ------------------------------------ |
-| Actor chính    | Nhà xe                               |
-| Mục tiêu       | Theo dõi hiệu quả bán vé và vận hành |
-| Tiền điều kiện | Nhà xe có dữ liệu chuyến / booking   |
-| Kích hoạt      | Nhà xe mở dashboard báo cáo          |
-| Hậu điều kiện  | Báo cáo được hiển thị hoặc xuất file |
-| Ưu tiên        | Trung bình                           |
-
-Luồng chính: nhà xe chọn khoảng thời gian, chọn bộ lọc tuyến / chuyến / xe, hệ thống tổng hợp dữ liệu doanh thu / số vé / tỷ lệ lấp đầy / hủy vé, hiển thị biểu đồ và bảng dữ liệu, cho phép xuất báo cáo nếu có quyền.
-
-Luồng thay thế: A1 - dữ liệu quá lớn → tạo báo cáo bất đồng bộ. A2 - không có dữ liệu → hiển thị trạng thái rỗng.
-
-### UC-20: Xem lịch chuyến được phân công
-
-| Thuộc tính     | Nội dung                           |
-| -------------- | ---------------------------------- |
-| Actor chính    | Employee                           |
-| Mục tiêu       | Biết các chuyến cần thực hiện      |
-| Tiền điều kiện | Employee đã được nhà xe phân công  |
-| Kích hoạt      | Employee mở app / portal nhân viên |
-| Hậu điều kiện  | Lịch chuyến được hiển thị          |
-| Ưu tiên        | Cao                                |
-
-Luồng chính: Employee đăng nhập, mở mục lịch chuyến, hệ thống hiển thị các chuyến được phân công theo ngày, Employee chọn một chuyến để xem chi tiết (tuyến, xe, giờ đi, điểm đón / trả, ghi chú vận hành).
-
-Luồng thay thế: A1 - Employee chưa có chuyến → hiển thị thông báo không có lịch. A2 - chuyến bị hủy / đổi → hiển thị trạng thái mới nhất.
-
-### UC-21: Xem danh sách hành khách
-
-| Thuộc tính     | Nội dung                           |
-| -------------- | ---------------------------------- |
-| Actor chính    | Employee                           |
-| Mục tiêu       | Nắm danh sách khách cần đón / trả  |
-| Tiền điều kiện | Employee được phân công chuyến     |
-| Kích hoạt      | Employee mở chi tiết chuyến        |
-| Hậu điều kiện  | Danh sách hành khách được hiển thị |
-| Ưu tiên        | Cao                                |
-
-Luồng chính: Employee chọn chuyến, hệ thống hiển thị danh sách hành khách theo điểm đón, Employee xem thông tin tên / số điện thoại đã mask theo cấu hình / ghế / điểm đón / trả; có thể tìm kiếm theo tên / số điện thoại / mã vé.
-
-Luồng thay thế: A1 - Employee không được phân công chuyến → từ chối truy cập. A2 - dữ liệu chưa đồng bộ → cho tải lại danh sách.
-
-### UC-22: Check-in hành khách
-
-| Thuộc tính     | Nội dung                             |
-| -------------- | ------------------------------------ |
-| Actor chính    | Employee                             |
-| Actor phụ      | Người dùng                           |
-| Mục tiêu       | Xác nhận hành khách đã lên xe        |
-| Tiền điều kiện | Hành khách có vé hợp lệ              |
-| Kích hoạt      | Employee quét QR hoặc nhập mã vé     |
-| Hậu điều kiện  | Vé được cập nhật trạng thái check-in |
-| Ưu tiên        | Cao                                  |
+| Thuộc tính     | Nội dung                                                                                                                                       |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Nhà xe (Operator), Admin toàn hệ thống (Admin)                                                                                                 |
+| Actor phụ      | Hệ thống                                                                                                                                       |
+| Mục tiêu       | Tạo và duy trì tuyến hoạt động thực tế, cấu hình các điểm đón / trả hợp lệ cho từng tuyến và đề xuất điểm mới khi danh mục chuẩn chưa đáp ứng. |
+| Tiền điều kiện | Operator đã được phê duyệt; danh mục tỉnh / thành, phường / xã và stop point chuẩn khả dụng ở mức tối thiểu.                                   |
+| Kích hoạt      | Operator mở quản lý tuyến hoặc cần thêm điểm đón / trả mới.                                                                                    |
+| Hậu điều kiện  | Route được tạo / cập nhật hợp lệ; stop point mới được tạo đúng phạm vi quyền hoặc đi vào luồng đề xuất chờ Admin xử lý.                        |
+| Ưu tiên        | Cao                                                                                                                                            |
 
 Luồng chính:
 
-1. Hành khách xuất trình vé điện tử.
-2. Employee quét QR code hoặc nhập mã vé.
-3. Hệ thống kiểm tra mã vé, chuyến, trạng thái vé.
-4. Hệ thống hiển thị thông tin hành khách và ghế.
-5. Employee xác nhận hành khách lên xe.
-6. Hệ thống cập nhật vé thành `CHECKED_IN`.
-7. Nhà xe có thể thấy trạng thái check-in theo thời gian thực (qua Socket.IO).
+1. Operator mở danh sách route thuộc nhà xe và chọn tạo mới hoặc chỉnh sửa route.
+2. Hệ thống hiển thị các stop point chuẩn và các stop point riêng thuộc nhà xe trong phạm vi được phép dùng.
+3. Operator chọn điểm đầu, điểm cuối và các điểm đón / trả trung gian theo đúng thứ tự hành trình.
+4. Operator khai báo vai trò từng điểm, thời gian dự kiến giữa các điểm, ghi chú vận hành và trạng thái hoạt động.
+5. Hệ thống kiểm tra tuyến có tối thiểu điểm đầu và điểm cuối, thứ tự điểm dừng hợp lệ, không có vòng lặp bất hợp lý và các điểm đều còn hiệu lực.
+6. Operator lưu route để dùng cho khâu tạo trip, tìm kiếm chuyến, hiển thị lịch trình và cấu hình pickup / dropoff theo chuyến.
+7. Nếu điểm cần dùng chưa có trong danh mục, Operator tạo đề xuất stop point mới với tên, địa chỉ, tọa độ, loại điểm, tỉnh / thành, phường / xã và mô tả nhận diện.
+8. Hệ thống lưu đề xuất điểm mới ở trạng thái chờ xử lý và đưa vào hàng đợi để Admin rà soát.
+9. Sau khi stop point được duyệt hoặc được tạo hợp lệ, Operator gắn điểm đó vào route và route trở thành dữ liệu đầu vào cho `search`, `trip`, `booking`.
 
-Luồng thay thế: A1 - mã vé không hợp lệ → báo lỗi. A2 - vé thuộc chuyến khác → cảnh báo. A3 - vé đã hủy → không cho check-in. A4 - vé đã check-in trước đó → cảnh báo tránh gian lận. A5 - mất mạng → ứng dụng có thể lưu tạm thao tác nếu được thiết kế offline, sau đó đồng bộ lại.
+Luồng thay thế / ngoại lệ:
 
-### UC-23: Cập nhật trạng thái chuyến đi
+- A1: Stop point đã ngừng hoạt động, bị ẩn hoặc không thuộc phạm vi được phép dùng, hệ thống từ chối lưu.
+- A2: Route bị trùng hoàn toàn với route đã có của cùng Operator, hệ thống cảnh báo để tránh tạo dữ liệu dư thừa.
+- A3: Tọa độ, tỉnh / thành hoặc phường / xã của stop point mới không hợp lệ, hệ thống yêu cầu bổ sung trước khi gửi đề xuất.
+- A4: Admin từ chối stop point đề xuất, hệ thống lưu lý do để Operator sửa và gửi lại.
+- A5: Route đang được dùng bởi trip tương lai, hệ thống cho cập nhật có kiểm soát và phải đánh giá ảnh hưởng đến các chuyến đã mở bán.
 
-| Thuộc tính     | Nội dung                                             |
-| -------------- | ---------------------------------------------------- |
-| Actor chính    | Employee có role `DRIVER`                            |
-| Actor phụ      | Nhà xe, Người dùng                                   |
-| Mục tiêu       | Cập nhật tiến độ thực tế của chuyến                  |
-| Tiền điều kiện | Employee được phân công chuyến                       |
-| Kích hoạt      | Employee chọn cập nhật trạng thái                    |
-| Hậu điều kiện  | Trạng thái chuyến được cập nhật và thông báo nếu cần |
-| Ưu tiên        | Cao                                                  |
+### UC-14: Quản lý trip, fare, mở bán và inventory
 
-Luồng chính: Employee mở chi tiết chuyến, chọn trạng thái mới (chuẩn bị / đang đón khách / đã khởi hành / đang chạy / hoàn thành), hệ thống kiểm tra thứ tự chuyển trạng thái hợp lệ, lưu trạng thái mới, thông báo cho nhà xe và hành khách nếu trạng thái quan trọng.
+| Thuộc tính     | Nội dung                                                                                                                                             |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Nhà xe (Operator)                                                                                                                                    |
+| Actor phụ      | Hệ thống, Admin toàn hệ thống (Admin)                                                                                                                |
+| Mục tiêu       | Tạo chuyến bán vé cụ thể từ route, gắn xe, cấu hình giá vé, mở bán và kiểm soát inventory ghế để hỗ trợ luồng bán vé giống website xe khách thực tế. |
+| Tiền điều kiện | Operator đã có route hợp lệ; xe và seat map khả dụng; tài khoản Operator chưa bị khóa bán.                                                           |
+| Kích hoạt      | Operator tạo trip mới, cập nhật trip hiện có hoặc thay đổi trạng thái mở bán / tồn ghế.                                                              |
+| Hậu điều kiện  | Trip được lưu ở trạng thái phù hợp; fare và ghế bán được xác lập; inventory phản ánh đúng ghế còn trống, ghế hold, ghế khóa.                         |
+| Ưu tiên        | Cao                                                                                                                                                  |
 
-Luồng thay thế: A1 - chuyển trạng thái không hợp lệ → từ chối. A2 - chuyến đã hoàn thành / hủy → không cho cập nhật trạng thái vận hành thông thường.
+Luồng chính:
 
-### UC-24: Báo cáo sự cố chuyến đi
+1. Operator chọn route, ngày giờ khởi hành, ngày giờ đến và tạo trip mới.
+2. Hệ thống kiểm tra thời gian đến phải sau thời gian đi và kiểm soát xung đột xe nếu trip được gắn xe ngay từ đầu.
+3. Operator chọn xe áp dụng cho chuyến; hệ thống nạp seat map, số ghế và loại xe từ phương tiện đã gắn.
+4. Operator khai báo fare áp dụng cho trip, gồm giá cơ bản, quy tắc theo loại ghế, theo chặng hoặc theo thời điểm nếu có.
+5. Hệ thống tính giá cuối cùng và cảnh báo nếu giá vượt khung kiểm tra của Platform; ở v1 chỉ cảnh báo theo quyết định tại `OQ-17`.
+6. Operator cấu hình điểm đón / trả thực tế của chuyến, cửa sổ thời gian đón khách, thời gian ngừng bán online, ghi chú như trung chuyển, đón dọc đường, hành lý hoặc phụ thu.
+7. Nếu khai thác tuyến lặp lại, Operator có thể tạo lịch chuyến lặp theo rule ngày chạy, giờ chạy và thời gian áp dụng.
+8. Operator chọn trạng thái lưu nháp, lên lịch bán hoặc mở bán ngay.
+9. Hệ thống kiểm tra trip có đủ route, xe, seat map, fare và dữ liệu tối thiểu trước khi cho phép chuyển sang trạng thái mở bán.
+10. Khi mở bán, hệ thống công bố trip cho Marketplace layer để search có thể hiển thị lịch trình, loại xe, thời gian hành trình, giá vé, điểm đón / trả và số ghế khả dụng.
+11. Trong quá trình bán, hệ thống cập nhật inventory dựa trên ghế đã bán, ghế đang hold, ghế bị khóa thủ công và ghế bán ngoài nền tảng nếu Operator đồng bộ đa kênh.
+12. Operator có thể tạm khóa bán, mở bán lại, khóa từng ghế hoặc hủy chuyến theo phạm vi quyền được cấp.
 
-| Thuộc tính     | Nội dung                                                   |
-| -------------- | ---------------------------------------------------------- |
-| Actor chính    | Employee                                                   |
-| Actor phụ      | Nhà xe, Admin                                              |
-| Mục tiêu       | Ghi nhận sự cố trong quá trình vận hành                    |
-| Tiền điều kiện | Employee đang có chuyến hoặc nhiệm vụ liên quan            |
-| Kích hoạt      | Employee chọn báo cáo sự cố                                |
-| Hậu điều kiện  | Sự cố được ghi nhận và gửi thông báo cho bộ phận liên quan |
-| Ưu tiên        | Trung bình                                                 |
+Luồng thay thế / ngoại lệ:
 
-Luồng chính: Employee chọn loại sự cố, nhập mô tả / mức độ / ảnh minh chứng, hệ thống ghi nhận thời gian và chuyến liên quan, gửi thông báo cho nhà xe; nếu sự cố nghiêm trọng thì cảnh báo cho admin.
+- A1: Xe đã được gắn cho trip khác trùng thời gian, hệ thống từ chối tạo hoặc gắn xe.
+- A2: Xe chưa có seat map hợp lệ, hệ thống không cho mở bán.
+- A3: Trip chưa có fare hoặc thiếu dữ liệu pickup / dropoff bắt buộc, hệ thống chỉ cho lưu nháp.
+- A4: Trip đã có vé bán, các thay đổi quan trọng như đổi xe, đổi giờ, đổi điểm đón / trả phải ghi lý do và kích hoạt thông báo cho hành khách.
+- A5: Operator bỏ gắn xe khỏi trip đã có booking, hệ thống từ chối thao tác.
+- A6: Operator khóa ghế để xử lý bán đa kênh hoặc ghế kỹ thuật, inventory phải cập nhật ngay và không cho khách online chọn các ghế đó.
+- A7: Đã qua thời gian ngừng bán online, hệ thống không còn hiển thị trip cho luồng đặt vé web / app dù chuyến chưa khởi hành.
 
-Luồng thay thế: A1 - không có kết nối mạng → lưu nháp cục bộ nếu ứng dụng hỗ trợ. A2 - thiếu mô tả bắt buộc → yêu cầu bổ sung.
+### UC-15: Quản lý booking / ticket thuộc Operator
 
-### UC-25: Quản lý người dùng
+| Thuộc tính     | Nội dung                                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Nhà xe (Operator)                                                                                                         |
+| Actor phụ      | Hệ thống                                                                                                                  |
+| Mục tiêu       | Theo dõi booking, ticket và manifest hành khách thuộc phạm vi nhà xe để phục vụ vận hành, hỗ trợ khách và đối soát.       |
+| Tiền điều kiện | Nhà xe có trip đã phát sinh booking hoặc ticket.                                                                          |
+| Kích hoạt      | Operator mở màn hình danh sách booking / ticket hoặc manifest theo chuyến.                                                |
+| Hậu điều kiện  | Operator xem đúng dữ liệu thuộc nhà xe mình, có thể lọc, tra cứu, xuất danh sách và thực hiện các thao tác được cho phép. |
+| Ưu tiên        | Cao                                                                                                                       |
 
-| Thuộc tính     | Nội dung                                          |
-| -------------- | ------------------------------------------------- |
-| Actor chính    | Admin                                             |
-| Mục tiêu       | Kiểm soát tài khoản người dùng trên toàn hệ thống |
-| Tiền điều kiện | Admin đã đăng nhập và có quyền quản lý người dùng |
-| Kích hoạt      | Admin mở mục người dùng                           |
-| Hậu điều kiện  | Thông tin hoặc trạng thái tài khoản được cập nhật |
-| Ưu tiên        | Cao                                               |
+Luồng chính:
 
-Luồng chính: admin tìm kiếm người dùng theo tên / số điện thoại / email / trạng thái, hệ thống hiển thị danh sách, admin mở chi tiết, xem thông tin tài khoản / lịch sử booking / khiếu nại, thực hiện hành động được phép (khóa, mở khóa, ghi chú, hỗ trợ cập nhật thông tin), hệ thống ghi audit log.
+1. Operator vào danh sách booking / ticket và lọc theo ngày đi, trip, trạng thái, mã booking, mã vé, kênh bán hoặc số điện thoại.
+2. Hệ thống chỉ trả về booking có ticket thuộc Operator hiện tại theo đúng ranh giới tenant.
+3. Operator mở chi tiết booking để xem người liên hệ, hành khách, ghế, điểm đón / trả, trạng thái thanh toán, trạng thái vé và ghi chú.
+4. Hệ thống hiển thị dữ liệu snapshot tại thời điểm mua vé để phục vụ hỗ trợ khách và xử lý tranh chấp.
+5. Operator có thể tra cứu nhanh booking / ticket khi khách liên hệ qua hotline hoặc cung cấp mã vé như luồng tra cứu vé thực tế.
+6. Operator mở danh sách hành khách theo chuyến để dùng như manifest trước giờ chạy.
+7. Operator xuất danh sách hành khách hoặc danh sách booking theo phạm vi quyền được cấp.
+8. Nếu được cấu hình, Operator ghi chú nội bộ, đánh dấu hành khách đặc biệt hoặc khóa ghế bổ sung phục vụ vận hành đa kênh.
 
-Luồng thay thế: A1 - admin không đủ quyền → từ chối. A2 - tài khoản đang có giao dịch tranh chấp → cảnh báo trước khi khóa.
+Luồng thay thế / ngoại lệ:
 
-### UC-26: Phê duyệt và quản lý nhà xe
+- A1: Operator cố truy cập booking của nhà xe khác, hệ thống từ chối.
+- A2: Booking đã hủy, hoàn tiền hoặc chuyến đã kết thúc, hệ thống hạn chế các thao tác chỉnh sửa nhưng vẫn cho tra cứu lịch sử.
+- A3: Dữ liệu manifest quá lớn, hệ thống cho xuất file hoặc phân trang thay vì tải toàn bộ một lần.
+- A4: Số điện thoại hoặc dữ liệu cá nhân nằm trong nhóm phải mask, hệ thống chỉ hiển thị theo policy bảo mật áp dụng.
 
-| Thuộc tính     | Nội dung                                                  |
-| -------------- | --------------------------------------------------------- |
-| Actor chính    | Admin                                                     |
-| Actor phụ      | Nhà xe                                                    |
-| Mục tiêu       | Kiểm soát nhà xe tham gia nền tảng                        |
-| Tiền điều kiện | Nhà xe đã gửi hồ sơ đăng ký / phê duyệt                   |
-| Kích hoạt      | Admin mở danh sách nhà xe chờ duyệt                       |
-| Hậu điều kiện  | Nhà xe được phê duyệt, từ chối, khóa hoặc yêu cầu bổ sung |
-| Ưu tiên        | Cao                                                       |
+### UC-16: Quản lý Employee và phân công nhiệm vụ
 
-Luồng chính: admin xem danh sách nhà xe chờ duyệt, mở hồ sơ, kiểm tra thông tin doanh nghiệp / giấy phép / tài khoản nhận tiền, chọn phê duyệt hoặc yêu cầu bổ sung, hệ thống cập nhật trạng thái nhà xe / gửi thông báo / ghi audit log.
+| Thuộc tính     | Nội dung                                                                                                                               |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Nhà xe (Operator)                                                                                                                      |
+| Actor phụ      | Nhân viên nhà xe (Employee), Hệ thống                                                                                                  |
+| Mục tiêu       | Tạo tài khoản nhân viên, quản lý trạng thái làm việc và phân công đúng người cho đúng chuyến / nhiệm vụ vận hành.                      |
+| Tiền điều kiện | Operator đã được duyệt; có nhu cầu tổ chức nhân sự vận hành; trip hoặc công việc đã tồn tại.                                           |
+| Kích hoạt      | Operator mở màn hình quản lý nhân viên hoặc phân công crew cho trip.                                                                   |
+| Hậu điều kiện  | Employee được tạo / cập nhật / ngừng hoạt động đúng phạm vi nhà xe; phân công nhiệm vụ được lưu và đồng bộ tới app / portal nhân viên. |
+| Ưu tiên        | Cao                                                                                                                                    |
 
-Luồng thay thế: A1 - hồ sơ không hợp lệ → từ chối và nhập lý do. A2 - cần xác minh thêm → chuyển trạng thái cần bổ sung. A3 - nhà xe vi phạm → khóa tạm thời hoặc vĩnh viễn.
+Luồng chính:
 
-### UC-27: Cấu hình danh mục và chính sách hệ thống
+1. Operator tạo hồ sơ Employee với thông tin nhận diện, liên hệ, role, trạng thái kích hoạt và dữ liệu nội bộ cần thiết.
+2. Hệ thống sinh mã nhân viên duy nhất theo prefix của Operator và lưu Employee thuộc đúng tenant.
+3. Operator cập nhật role, số điện thoại, trạng thái hoạt động hoặc đánh dấu nghỉ việc khi cần.
+4. Operator mở chi tiết trip và chọn crew thực hiện chuyến, ví dụ tài xế, nhân viên điều hành, nhân viên soát vé hoặc hỗ trợ.
+5. Hệ thống kiểm tra Employee thuộc đúng Operator, còn hiệu lực và phù hợp với loại nhiệm vụ được giao.
+6. Operator xác nhận phân công; hệ thống lưu crew cho trip và đồng bộ lịch nhiệm vụ cho Employee.
+7. Hệ thống gửi thông báo đến Employee về lịch chạy, tuyến, xe, giờ đón khách và ghi chú vận hành.
 
-| Thuộc tính     | Nội dung                                  |
-| -------------- | ----------------------------------------- |
-| Actor chính    | Admin                                     |
-| Mục tiêu       | Thiết lập dữ liệu nền và quy tắc vận hành |
-| Tiền điều kiện | Admin có quyền cấu hình hệ thống          |
-| Kích hoạt      | Admin mở mục cấu hình                     |
-| Hậu điều kiện  | Cấu hình mới được áp dụng theo phạm vi    |
-| Ưu tiên        | Cao                                       |
+Luồng thay thế / ngoại lệ:
 
-Luồng chính: admin chọn nhóm cấu hình (danh mục / phí / hủy vé / hoàn tiền / thời gian giữ ghế), cập nhật giá trị, hệ thống kiểm tra định dạng và phạm vi hợp lệ, admin xác nhận lưu, hệ thống áp dụng cấu hình và ghi audit log.
+- A1: Employee không thuộc nhà xe hiện tại, hệ thống từ chối phân công.
+- A2: Employee đã bị ngừng hoạt động hoặc nghỉ việc, hệ thống không cho gán nhiệm vụ mới.
+- A3: Employee bị trùng lịch hoặc trùng chuyến, hệ thống cảnh báo; tùy policy có thể chặn hoặc cho xác nhận có kiểm soát.
+- A4: Trip đã quá gần giờ khởi hành hoặc đang vận hành, việc thay đổi crew phải ghi lý do và lưu audit.
 
-Luồng thay thế: A1 - cấu hình ảnh hưởng giao dịch đang chạy → cảnh báo. A2 - giá trị không hợp lệ → từ chối lưu.
+### UC-17: Xem báo cáo Operator
 
-### UC-28: Quản lý thanh toán và hoàn tiền
+| Thuộc tính     | Nội dung                                                                                                      |
+| -------------- | ------------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Nhà xe (Operator)                                                                                             |
+| Actor phụ      | Hệ thống                                                                                                      |
+| Mục tiêu       | Theo dõi hiệu quả bán vé, vận hành chuyến và dữ liệu tài chính thuộc phạm vi nhà xe để điều chỉnh kinh doanh. |
+| Tiền điều kiện | Nhà xe đã có dữ liệu trip, booking, ticket hoặc giao dịch tài chính.                                          |
+| Kích hoạt      | Operator mở dashboard hoặc màn hình báo cáo.                                                                  |
+| Hậu điều kiện  | Chỉ số vận hành và doanh thu được hiển thị hoặc xuất ra trong phạm vi dữ liệu của nhà xe.                     |
+| Ưu tiên        | Trung bình                                                                                                    |
 
-| Thuộc tính     | Nội dung                                         |
-| -------------- | ------------------------------------------------ |
-| Actor chính    | Admin                                            |
-| Actor phụ      | Người dùng, Nhà xe                               |
-| Mục tiêu       | Giám sát và xử lý giao dịch tài chính            |
-| Tiền điều kiện | Có dữ liệu thanh toán / hoàn tiền                |
-| Kích hoạt      | Admin mở mục thanh toán                          |
-| Hậu điều kiện  | Giao dịch được cập nhật, đối soát hoặc hoàn tiền |
-| Ưu tiên        | Cao                                              |
+Luồng chính:
 
-Luồng chính: admin tìm kiếm giao dịch theo mã booking / mã thanh toán / người dùng / nhà xe, hệ thống hiển thị trạng thái, admin xem chi tiết booking / payment / refund, thực hiện đối soát hoặc khởi tạo hoàn tiền, hệ thống yêu cầu xác nhận thao tác nhạy cảm, gửi yêu cầu tới cổng thanh toán hoặc ghi nhận xử lý thủ công, cập nhật trạng thái và ghi audit log.
+1. Operator chọn khoảng thời gian, tuyến, xe, điểm đi / đến hoặc trạng thái chuyến để xem báo cáo.
+2. Hệ thống tổng hợp các KPI như số chuyến mở bán, số booking, số vé đã bán, tỷ lệ lấp đầy, tỷ lệ hủy, doanh thu gộp và các chỉ số hoàn tiền liên quan.
+3. Hệ thống cho phép drill-down từ chỉ số tổng quan xuống trip, booking hoặc chuyến có hiệu suất bất thường.
+4. Operator xem báo cáo theo bảng, biểu đồ hoặc xuất file nếu quyền cho phép.
 
-Luồng thay thế: A1 - không tìm thấy giao dịch → báo không có dữ liệu. A2 - cổng thanh toán từ chối hoàn tiền → ghi nhận lỗi và cho xử lý thủ công. A3 - admin không đủ quyền → từ chối thao tác hoàn tiền.
+Luồng thay thế / ngoại lệ:
 
-### UC-29: Quản lý khiếu nại
+- A1: Dải thời gian quá lớn, hệ thống chuyển sang xuất báo cáo bất đồng bộ.
+- A2: Không có dữ liệu phù hợp bộ lọc, hệ thống hiển thị trạng thái rỗng thay vì lỗi.
+- A3: Chỉ số tài chính nhạy cảm có thể bị giới hạn theo vai trò nội bộ của Operator nếu sau này bật phân quyền chi tiết hơn.
 
-| Thuộc tính     | Nội dung                                       |
-| -------------- | ---------------------------------------------- |
-| Actor chính    | Admin                                          |
-| Actor phụ      | Người dùng, Nhà xe                             |
-| Mục tiêu       | Theo dõi và giải quyết khiếu nại trên nền tảng |
-| Tiền điều kiện | Có ticket hỗ trợ / khiếu nại                   |
-| Kích hoạt      | Admin mở danh sách khiếu nại                   |
-| Hậu điều kiện  | Khiếu nại được xử lý hoặc đóng                 |
-| Ưu tiên        | Trung bình                                     |
+### UC-18: Xem nhiệm vụ được phân công
 
-Luồng chính: admin lọc khiếu nại theo loại / trạng thái / mức độ / nhà xe, mở chi tiết, xem thông tin vé / chuyến / thanh toán và trao đổi liên quan, phản hồi hoặc yêu cầu nhà xe cung cấp thông tin, cập nhật trạng thái xử lý, hệ thống thông báo cho người dùng và nhà xe; khi xử lý xong thì admin đóng ticket.
+| Thuộc tính     | Nội dung                                                                                                 |
+| -------------- | -------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Nhân viên nhà xe (Employee)                                                                              |
+| Actor phụ      | Hệ thống                                                                                                 |
+| Mục tiêu       | Cho Employee biết lịch chuyến, nhiệm vụ và thông tin vận hành cần thực hiện trong ngày.                  |
+| Tiền điều kiện | Employee có tài khoản hợp lệ và đã được phân công ít nhất một nhiệm vụ.                                  |
+| Kích hoạt      | Employee đăng nhập app / portal nhân viên và mở màn hình lịch công việc.                                 |
+| Hậu điều kiện  | Employee xem được danh sách nhiệm vụ thuộc phạm vi được phân công, kèm chi tiết cần thiết để tác nghiệp. |
+| Ưu tiên        | Cao                                                                                                      |
 
-Luồng thay thế: A1 - cần thêm bằng chứng → chuyển trạng thái chờ bổ sung. A2 - khiếu nại nghiêm trọng → đánh dấu ưu tiên cao và có thể khóa chuyến / nhà xe liên quan.
+Luồng chính:
 
-### UC-30: Xem báo cáo toàn hệ thống
+1. Employee đăng nhập bằng tài khoản do Operator cấp.
+2. Hệ thống xác thực actor là `EMPLOYEE`, nạp đúng tenant và chỉ trả dữ liệu theo role, chuyến và công việc được giao.
+3. Employee xem danh sách nhiệm vụ theo ngày, gồm tuyến, giờ chạy, xe, biển số, điểm đón / trả và ghi chú vận hành.
+4. Employee mở chi tiết một nhiệm vụ để xem dữ liệu cần tác nghiệp như danh sách khách, hướng dẫn check-in hoặc trạng thái chuyến.
 
-| Thuộc tính     | Nội dung                                 |
-| -------------- | ---------------------------------------- |
-| Actor chính    | Admin                                    |
-| Mục tiêu       | Theo dõi hiệu quả vận hành toàn nền tảng |
-| Tiền điều kiện | Hệ thống có dữ liệu vận hành             |
-| Kích hoạt      | Admin mở dashboard báo cáo               |
-| Hậu điều kiện  | Báo cáo được hiển thị hoặc xuất file     |
-| Ưu tiên        | Trung bình                               |
+Luồng thay thế / ngoại lệ:
 
-Luồng chính: admin chọn khoảng thời gian, chọn bộ lọc theo nhà xe / tuyến / tỉnh thành / phương thức thanh toán, hệ thống tổng hợp doanh thu / số booking / số vé / tỷ lệ hủy / tỷ lệ hoàn tiền / khiếu nại, hiển thị biểu đồ / bảng / KPI, admin xuất báo cáo nếu có quyền.
+- A1: Employee chưa được phân công nhiệm vụ nào, hệ thống hiển thị trạng thái chưa có lịch.
+- A2: Nhiệm vụ vừa bị đổi hoặc hủy, hệ thống hiển thị trạng thái mới nhất và ghi nhận thay đổi.
+- A3: Employee cố truy cập nhiệm vụ ngoài phạm vi phân công, hệ thống từ chối.
 
-Luồng thay thế: A1 - báo cáo quá lớn → tạo file bất đồng bộ và thông báo khi hoàn tất. A2 - admin không đủ quyền xem dữ liệu tài chính → ẩn chỉ số nhạy cảm.
+### UC-19: Xem danh sách hành khách
 
-### UC-31: Quản lý audit log
+| Thuộc tính     | Nội dung                                                                                            |
+| -------------- | --------------------------------------------------------------------------------------------------- |
+| Actor chính    | Nhân viên nhà xe (Employee)                                                                         |
+| Actor phụ      | Hệ thống                                                                                            |
+| Mục tiêu       | Cung cấp manifest hành khách theo chuyến để nhân viên đón khách, kiểm ghế và xử lý lên xe.          |
+| Tiền điều kiện | Employee được phân công cho trip và có quyền xem hành khách.                                        |
+| Kích hoạt      | Employee mở chi tiết chuyến hoặc màn hình manifest trước giờ chạy.                                  |
+| Hậu điều kiện  | Danh sách hành khách được hiển thị theo chuyến với dữ liệu đã mask phù hợp và có thể tra cứu nhanh. |
+| Ưu tiên        | Cao                                                                                                 |
 
-| Thuộc tính     | Nội dung                                    |
-| -------------- | ------------------------------------------- |
-| Actor chính    | Admin                                       |
-| Mục tiêu       | Truy vết thao tác quan trọng trong hệ thống |
-| Tiền điều kiện | Admin có quyền xem audit log                |
-| Kích hoạt      | Admin mở mục audit log                      |
-| Hậu điều kiện  | Nhật ký thao tác được tra cứu               |
-| Ưu tiên        | Trung bình                                  |
+Luồng chính:
 
-Luồng chính: admin nhập điều kiện tìm kiếm (người thao tác / thời gian / module / hành động), hệ thống hiển thị danh sách audit log, admin mở chi tiết một log, xem dữ liệu trước / sau / IP / thiết bị / thời gian / kết quả, xuất log nếu có quyền.
+1. Employee chọn chuyến được giao.
+2. Hệ thống tải manifest gồm tên hành khách, ghế, điểm đón, điểm trả, trạng thái vé và thông tin liên hệ theo policy hiển thị.
+3. Hệ thống nhóm khách theo điểm đón hoặc thứ tự đón để hỗ trợ thao tác thực địa.
+4. Employee tìm nhanh hành khách bằng tên, số điện thoại được phép xem hoặc mã vé.
 
-Luồng thay thế: A1 - không có dữ liệu phù hợp → hiển thị trạng thái rỗng. A2 - log chứa dữ liệu nhạy cảm → mask một phần theo quyền admin.
+Luồng thay thế / ngoại lệ:
+
+- A1: Employee không có quyền hoặc không được phân công chuyến đó, hệ thống từ chối truy cập.
+- A2: Dữ liệu đồng bộ chậm, hệ thống cho phép tải lại manifest và hiển thị thời điểm cập nhật cuối.
+- A3: Thông tin cá nhân nhạy cảm phải mask, hệ thống chỉ lộ phần tối thiểu cần cho tác nghiệp.
+
+### UC-20: Check-in ticket bằng QR / mã vé
+
+| Thuộc tính     | Nội dung                                                                                                |
+| -------------- | ------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Nhân viên nhà xe (Employee)                                                                             |
+| Actor phụ      | Người dùng (User), Hệ thống                                                                             |
+| Mục tiêu       | Xác thực vé server-side và ghi nhận hành khách đã lên xe, tránh check-in trùng hoặc dùng vé sai chuyến. |
+| Tiền điều kiện | Employee được giao chuyến và có quyền check-in; hành khách có ticket hợp lệ.                            |
+| Kích hoạt      | Employee quét QR, nhập mã vé hoặc tìm hành khách rồi chọn check-in.                                     |
+| Hậu điều kiện  | Ticket được cập nhật trạng thái check-in hợp lệ, manifest và trạng thái ghế được đồng bộ cho chuyến.    |
+| Ưu tiên        | Cao                                                                                                     |
+
+Luồng chính:
+
+1. Hành khách xuất trình QR ticket hoặc mã vé.
+2. Employee quét QR hoặc nhập mã vé trên app / portal.
+3. Hệ thống xác thực mã vé, ticket status, trip liên quan, quyền của Employee và tính hợp lệ của QR token trên server.
+4. Hệ thống hiển thị thông tin đối chiếu như tên khách, ghế, điểm đón / trả và trạng thái hiện tại.
+5. Employee xác nhận cho hành khách lên xe.
+6. Hệ thống cập nhật ticket sang trạng thái check-in, ghi log thao tác và đồng bộ manifest theo thời gian gần thực.
+
+Luồng thay thế / ngoại lệ:
+
+- A1: Vé không tồn tại, QR sai chữ ký hoặc token hết hiệu lực, hệ thống từ chối check-in.
+- A2: Vé thuộc chuyến khác, hệ thống cảnh báo sai chuyến.
+- A3: Vé đã hủy, đã hoàn tiền hoặc đã check-in trước đó, hệ thống không cho check-in lần nữa.
+- A4: Thiết bị tạm mất mạng, ứng dụng có thể hỗ trợ ghi nhớ cục bộ nếu sau này bật offline mode; khi chưa có cơ chế đó, thao tác phải chờ có mạng.
+
+### UC-21: Cập nhật trạng thái chuyến
+
+| Thuộc tính     | Nội dung                                                                                              |
+| -------------- | ----------------------------------------------------------------------------------------------------- |
+| Actor chính    | Nhân viên nhà xe (Employee)                                                                           |
+| Actor phụ      | Nhà xe (Operator), Hệ thống                                                                           |
+| Mục tiêu       | Phản ánh tiến độ vận hành thực tế của chuyến để nhà xe và hệ thống theo dõi được trạng thái hiện tại. |
+| Tiền điều kiện | Employee được phân công cho chuyến; role của Employee cho phép thao tác trạng thái chuyến.            |
+| Kích hoạt      | Employee chọn hành động cập nhật trạng thái trên chi tiết chuyến.                                     |
+| Hậu điều kiện  | Trạng thái chuyến được cập nhật đúng thứ tự chuyển trạng thái và lưu lịch sử thao tác.                |
+| Ưu tiên        | Cao                                                                                                   |
+
+Luồng chính:
+
+1. Employee mở chi tiết chuyến mình phụ trách.
+2. Hệ thống hiển thị trạng thái hiện tại và các trạng thái kế tiếp hợp lệ theo workflow vận hành.
+3. Employee chọn trạng thái mới như bắt đầu đón khách, đã khởi hành, đang chạy hoặc hoàn thành.
+4. Hệ thống kiểm tra quyền, thứ tự chuyển trạng thái và thời điểm cập nhật.
+5. Hệ thống lưu trạng thái mới, lịch sử cập nhật và đồng bộ cho Operator để theo dõi vận hành.
+
+Luồng thay thế / ngoại lệ:
+
+- A1: Chuyển trạng thái không đúng thứ tự hoặc không phù hợp với trạng thái hiện tại, hệ thống từ chối.
+- A2: Chuyến đã hủy hoặc đã hoàn thành, hệ thống không cho cập nhật theo luồng vận hành thông thường.
+- A3: Thay đổi trạng thái quan trọng sau giờ dự kiến có thể kéo theo cảnh báo nội bộ hoặc thông báo cho bộ phận liên quan.
+
+### UC-22: Ghi nhật trình và báo cáo sự cố
+
+| Thuộc tính     | Nội dung                                                                                                        |
+| -------------- | --------------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Nhân viên nhà xe (Employee)                                                                                     |
+| Actor phụ      | Nhà xe (Operator), Admin toàn hệ thống (Admin), Hệ thống                                                        |
+| Mục tiêu       | Ghi nhận diễn biến thực tế của chuyến và các sự cố phát sinh để phục vụ điều hành, hậu kiểm và xử lý khiếu nại. |
+| Tiền điều kiện | Employee có chuyến hoặc nhiệm vụ đang hoạt động; quyền ghi nhật trình / báo cáo sự cố đã được cấp.              |
+| Kích hoạt      | Employee cập nhật nhật trình theo chặng hoặc tạo báo cáo sự cố khi có vấn đề phát sinh.                         |
+| Hậu điều kiện  | Nhật trình và báo cáo sự cố được lưu với thời gian, bối cảnh, mức độ ưu tiên và bằng chứng liên quan.           |
+| Ưu tiên        | Cao                                                                                                             |
+
+Luồng chính:
+
+1. Employee mở chuyến đang vận hành và chọn ghi nhật trình hoặc báo cáo sự cố.
+2. Với nhật trình, Employee ghi nhận mốc thời gian thực tế, điểm dừng, trạng thái xe, ghi chú vận hành hoặc độ trễ.
+3. Với sự cố, Employee chọn loại sự cố, mức độ ảnh hưởng, mô tả, vị trí và đính kèm minh chứng nếu có.
+4. Hệ thống lưu dữ liệu kèm actor, thời gian, chuyến liên quan và phát cảnh báo tới Operator.
+5. Nếu sự cố đạt ngưỡng nghiêm trọng theo policy, hệ thống leo thang cho Admin hoặc bộ phận kiểm soát nền tảng.
+
+Luồng thay thế / ngoại lệ:
+
+- A1: Attachment không hợp lệ hoặc quá dung lượng, hệ thống yêu cầu bổ sung lại.
+- A2: Employee cố gửi báo cáo cho chuyến ngoài phạm vi phụ trách, hệ thống từ chối.
+- A3: Mạng gián đoạn, hệ thống cần retry đồng bộ hoặc lưu nháp cục bộ nếu có hỗ trợ.
+
+### UC-23: Duyệt KYC và quản lý Operator
+
+| Thuộc tính     | Nội dung                                                                                                                                      |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Admin toàn hệ thống (Admin)                                                                                                                   |
+| Actor phụ      | Nhà xe (Operator), Hệ thống                                                                                                                   |
+| Mục tiêu       | Kiểm soát việc tham gia marketplace của nhà xe thông qua quy trình KYC, phê duyệt, từ chối, tạm ngưng và mở lại hoạt động.                    |
+| Tiền điều kiện | Có hồ sơ Operator đã đăng ký hoặc Operator đang hoạt động cần được quản trị.                                                                  |
+| Kích hoạt      | Admin mở hàng đợi KYC hoặc danh sách Operator toàn hệ thống.                                                                                  |
+| Hậu điều kiện  | Operator được cập nhật trạng thái phù hợp như chờ duyệt, được duyệt, bị từ chối hoặc bị tạm ngưng; quyền mở bán công khai thay đổi tương ứng. |
+| Ưu tiên        | Cao                                                                                                                                           |
+
+Luồng chính:
+
+1. Admin xem danh sách Operator theo trạng thái hồ sơ, mức độ hoàn thiện và chỉ dấu rủi ro.
+2. Admin mở chi tiết hồ sơ để kiểm tra thông tin doanh nghiệp, người liên hệ, giấy tờ KYC, tài khoản nhận tiền, lịch sử chỉnh sửa và trạng thái vận hành hiện tại.
+3. Admin chọn một trong các hành động: yêu cầu bổ sung, phê duyệt, từ chối, tạm ngưng hoặc mở lại Operator đang hoạt động.
+4. Hệ thống bắt buộc lưu lý do đối với các quyết định nhạy cảm như từ chối, tạm ngưng hoặc yêu cầu bổ sung.
+5. Khi phê duyệt, hệ thống chuyển Operator sang trạng thái được phép mở bán và ghi nhận người duyệt, thời điểm duyệt.
+6. Khi từ chối hoặc tạm ngưng, hệ thống cập nhật trạng thái, chặn hoặc hạn chế hoạt động theo policy và gửi thông báo cho Operator.
+
+Luồng thay thế / ngoại lệ:
+
+- A1: Admin cố duyệt hồ sơ không còn ở trạng thái chờ duyệt, hệ thống từ chối.
+- A2: Admin cố mở lại Operator không ở trạng thái tạm ngưng, hệ thống từ chối.
+- A3: Hồ sơ thiếu tài liệu quan trọng, Admin không thể phê duyệt nếu policy yêu cầu bắt buộc.
+
+### UC-24: Quản lý catalog chuẩn
+
+| Thuộc tính     | Nội dung                                                                                                                                                             |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Admin toàn hệ thống (Admin)                                                                                                                                          |
+| Actor phụ      | Nhà xe (Operator), Hệ thống                                                                                                                                          |
+| Mục tiêu       | Duy trì danh mục chuẩn dùng chung cho marketplace như tỉnh / thành, phường / xã, stop point, loại điểm, vehicle type và tiện ích để dữ liệu toàn hệ thống nhất quán. |
+| Tiền điều kiện | Admin có quyền quản trị catalog.                                                                                                                                     |
+| Kích hoạt      | Admin mở module catalog để thêm, sửa, vô hiệu hóa hoặc duyệt đề xuất từ Operator.                                                                                    |
+| Hậu điều kiện  | Danh mục chuẩn được cập nhật nhất quán và trở thành nguồn dữ liệu chính cho route, search, trip, vehicle presentation và booking.                                    |
+| Ưu tiên        | Cao                                                                                                                                                                  |
+
+Luồng chính:
+
+1. Admin quản lý danh mục tỉnh / thành, phường / xã, stop point chuẩn, vehicle type và tiện ích chuẩn của toàn hệ thống.
+2. Admin tạo mới, cập nhật hoặc vô hiệu hóa catalog item theo chuẩn đặt tên, địa giới, loại hình điểm và chuẩn hiển thị công khai.
+3. Admin rà soát stop point do Operator đề xuất, đối chiếu tọa độ, mô tả và phạm vi sử dụng trước khi quyết định.
+4. Khi duyệt, hệ thống đưa item vào danh mục chuẩn để các Operator khác có thể dùng theo policy công khai.
+5. Vehicle type và amenity chuẩn được dùng thống nhất cho màn hình tìm chuyến, chi tiết chuyến và so sánh loại xe.
+6. Khi vô hiệu hóa catalog item, hệ thống phải kiểm soát ảnh hưởng đến route, trip, search và dữ liệu hiển thị công khai đang sử dụng item đó.
+
+Luồng thay thế / ngoại lệ:
+
+- A1: Catalog item đang được nhiều route hoặc trip dùng, hệ thống không cho xóa cứng mà chỉ cho vô hiệu hóa có kiểm soát.
+- A2: Dữ liệu địa giới không hợp lệ hoặc ward không thuộc province tương ứng, hệ thống từ chối lưu.
+- A3: Hai item bị trùng tên, trùng tọa độ và cùng vai trò nghiệp vụ, hệ thống cảnh báo hợp nhất để tránh phân mảnh dữ liệu.
+
+### UC-25: Cấu hình policy, commission và payout
+
+| Thuộc tính     | Nội dung                                                                                                 |
+| -------------- | -------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Admin                                                                                                    |
+| Mục tiêu       | Thiết lập các chính sách nền tảng ảnh hưởng đến hủy / đổi / hoàn tiền, commission và payout cho Operator |
+| Tiền điều kiện | Admin đã đăng nhập và có quyền cấu hình chính sách hệ thống                                              |
+| Kích hoạt      | Admin cần cập nhật policy, commission hoặc payout                                                        |
+| Hậu điều kiện  | Chính sách được lưu, có hiệu lực theo phạm vi / thời gian cấu hình và có audit log                       |
+| Ưu tiên        | Cao                                                                                                      |
+
+Luồng chính:
+
+1. Admin khai báo thời gian giữ ghế, thời gian ngừng bán online, chính sách hủy / hoàn tiền, commission hoặc payout.
+2. Admin nhập phạm vi áp dụng, thời gian hiệu lực và giá trị cấu hình.
+3. Hệ thống kiểm tra dữ liệu, ngưỡng tối thiểu, trạng thái payout và xung đột với cấu hình hiện hành.
+4. Admin xác nhận lưu cấu hình.
+5. Hệ thống lưu chính sách mới, áp dụng cho booking phát sinh sau thời điểm hiệu lực và không áp dụng ngược cho booking cũ.
+6. Hệ thống ghi audit log cho thao tác cấu hình.
+
+Luồng thay thế / ngoại lệ:
+
+- A1: Giá trị cấu hình không hợp lệ -> hệ thống từ chối lưu và yêu cầu chỉnh sửa.
+- A2: Cấu hình mới xung đột với policy đang có hiệu lực -> hệ thống cảnh báo và yêu cầu xác nhận lại.
+- A3: Admin không đủ quyền cấu hình nhóm chính sách -> hệ thống từ chối thao tác.
+- A4: Cấu hình payout chưa đủ thông tin T+N hoặc ngưỡng tối thiểu -> hệ thống yêu cầu bổ sung.
+
+### UC-26: Giám sát payment, refund, escrow, payout
+
+| Thuộc tính     | Nội dung                                                                    |
+| -------------- | --------------------------------------------------------------------------- |
+| Actor chính    | Admin                                                                       |
+| Mục tiêu       | Theo dõi, tra cứu và kiểm soát trạng thái giao dịch tài chính toàn hệ thống |
+| Tiền điều kiện | Có dữ liệu payment, refund, escrow hoặc payout phát sinh                    |
+| Kích hoạt      | Admin cần tra cứu hoặc đối soát giao dịch tài chính                         |
+| Hậu điều kiện  | Giao dịch được xem, đánh dấu, đối soát hoặc chuyển xử lý theo quyền         |
+| Ưu tiên        | Cao                                                                         |
+
+Luồng chính:
+
+1. Admin nhập điều kiện tra cứu theo booking, payment, refund, Operator hoặc provider transaction id.
+2. Hệ thống lọc và hiển thị các giao dịch tài chính phù hợp.
+3. Hệ thống hiển thị trạng thái payment, refund, escrow ledger, commission, payout và reconciliation liên quan.
+4. Admin xem chi tiết giao dịch cần kiểm tra.
+5. Admin đánh dấu giao dịch cần đối soát, callback trễ, refund treo hoặc payout bất thường.
+6. Hệ thống cập nhật trạng thái xử lý theo quyền và ghi nhận lịch sử thao tác.
+7. Hệ thống ghi audit log cho các thao tác nhạy cảm.
+
+Luồng thay thế / ngoại lệ:
+
+- A1: Không tìm thấy giao dịch phù hợp -> hệ thống hiển thị trạng thái rỗng.
+- A2: Callback từ provider đến trễ -> hệ thống đối chiếu lại trạng thái trước khi cập nhật.
+- A3: Refund treo hoặc payout bất thường -> hệ thống chuyển sang hàng đợi xử lý thủ công.
+- A4: Admin không đủ quyền thao tác tài chính -> hệ thống chỉ cho xem dữ liệu được phân quyền.
+
+### UC-27: Xử lý dispute case và refund thủ công
+
+| Thuộc tính     | Nội dung                                                                                        |
+| -------------- | ----------------------------------------------------------------------------------------------- |
+| Actor chính    | Admin                                                                                           |
+| Actor phụ      | User, Nhà xe                                                                                    |
+| Mục tiêu       | Giải quyết tranh chấp và thực hiện refund thủ công khi đủ căn cứ                                |
+| Tiền điều kiện | Có dispute case, complaint, support ticket, booking, ticket hoặc payment liên quan              |
+| Kích hoạt      | Có dispute case hoặc yêu cầu xử lý thủ công cần Admin giải quyết                                |
+| Hậu điều kiện  | Dispute được cập nhật trạng thái, các bên được thông báo và quyết định xử lý được ghi audit log |
+| Ưu tiên        | Cao                                                                                             |
+
+Luồng chính:
+
+1. Admin xác định dispute case hoặc yêu cầu xử lý thủ công cần giải quyết.
+2. Hệ thống hiển thị lịch sử booking, payment, ticket, check-in, notification và attachment liên quan.
+3. Admin yêu cầu User hoặc Nhà xe cung cấp thêm minh chứng nếu cần.
+4. Admin đối chiếu minh chứng với policy hủy / hoàn tiền và trạng thái vận hành.
+5. Admin chọn quyết định xử lý gồm refund, không refund, đổi vé hoặc phương án khác theo policy.
+6. Hệ thống cập nhật trạng thái dispute và thực hiện tác vụ tài chính nếu có.
+7. Hệ thống thông báo kết quả cho các bên và ghi audit log.
+
+Luồng thay thế / ngoại lệ:
+
+- A1: Minh chứng chưa đủ -> hệ thống chuyển hồ sơ sang trạng thái chờ bổ sung.
+- A2: Booking hoặc payment không đủ điều kiện refund -> hệ thống yêu cầu Admin nhập lý do từ chối.
+- A3: Refund thủ công thất bại -> hệ thống ghi lỗi và giữ hồ sơ ở trạng thái cần xử lý.
+- A4: Có dấu hiệu gian lận hoặc vi phạm nghiêm trọng -> Admin chuyển hồ sơ sang luồng xử lý nâng cao.
+
+### UC-28: Kiểm duyệt nội dung, review và nội dung công khai
+
+| Thuộc tính     | Nội dung                                                                 |
+| -------------- | ------------------------------------------------------------------------ |
+| Actor chính    | Admin                                                                    |
+| Mục tiêu       | Kiểm soát nội dung công khai, review và nội dung vi phạm trên nền tảng   |
+| Tiền điều kiện | Có review, báo cáo vi phạm, banner, FAQ hoặc content page cần kiểm duyệt |
+| Kích hoạt      | Có nội dung công khai, review hoặc báo cáo vi phạm cần kiểm duyệt        |
+| Hậu điều kiện  | Nội dung được duyệt, ẩn, từ chối hoặc cập nhật trạng thái theo policy    |
+| Ưu tiên        | Trung bình                                                               |
+
+Luồng chính:
+
+1. Admin lọc danh sách review, báo cáo vi phạm, banner, FAQ hoặc content page theo trạng thái.
+2. Hệ thống hiển thị các nội dung cần kiểm duyệt theo điều kiện đã chọn.
+3. Admin xem chi tiết nội dung cần kiểm duyệt.
+4. Admin kiểm tra nội dung theo policy của Platform.
+5. Admin chọn duyệt, ẩn, từ chối hoặc yêu cầu cập nhật.
+6. Hệ thống cập nhật trạng thái nội dung và chỉ cho review hợp lệ ảnh hưởng Operator scorecard.
+7. Hệ thống ghi lịch sử kiểm duyệt.
+
+Luồng thay thế / ngoại lệ:
+
+- A1: Nội dung có dấu hiệu vi phạm nghiêm trọng -> hệ thống cho phép ẩn ngay và ghi lý do.
+- A2: Review không liên quan đến booking hợp lệ -> hệ thống không cho ảnh hưởng Operator scorecard.
+- A3: Admin không đủ quyền kiểm duyệt loại nội dung -> hệ thống từ chối thao tác.
+- A4: Nội dung cần chỉnh sửa -> hệ thống chuyển trạng thái chờ cập nhật.
+
+### UC-29: Xem báo cáo toàn hệ thống
+
+| Thuộc tính     | Nội dung                                                                   |
+| -------------- | -------------------------------------------------------------------------- |
+| Actor chính    | Admin                                                                      |
+| Mục tiêu       | Theo dõi tình hình vận hành, tài chính và chất lượng dịch vụ toàn nền tảng |
+| Tiền điều kiện | Admin có quyền xem báo cáo và hệ thống có dữ liệu tổng hợp                 |
+| Kích hoạt      | Admin cần xem dashboard hoặc báo cáo toàn hệ thống                         |
+| Hậu điều kiện  | Báo cáo được hiển thị hoặc được tạo bất đồng bộ / xuất file nếu có quyền   |
+| Ưu tiên        | Trung bình                                                                 |
+
+Luồng chính:
+
+1. Admin chọn khoảng thời gian và phạm vi báo cáo toàn hệ thống.
+2. Admin bổ sung bộ lọc theo Operator, tuyến, khu vực, phương thức thanh toán, khiếu nại hoặc audit.
+3. Hệ thống tổng hợp doanh thu, booking, refund, payout, tỷ lệ hủy, dispute và chỉ số vận hành.
+4. Hệ thống hiển thị báo cáo dạng bảng, biểu đồ hoặc KPI.
+5. Admin xem chi tiết một nhóm dữ liệu nếu có quyền.
+6. Admin xuất báo cáo hoặc tạo báo cáo bất đồng bộ nếu dữ liệu lớn.
+7. Hệ thống ghi nhận lịch sử tạo / xuất báo cáo theo quyền.
+
+Luồng thay thế / ngoại lệ:
+
+- A1: Báo cáo quá lớn -> hệ thống tạo job nền và thông báo khi hoàn tất.
+- A2: Admin không đủ quyền xem dữ liệu tài chính -> hệ thống ẩn hoặc giới hạn chỉ số nhạy cảm.
+- A3: Không có dữ liệu trong khoảng thời gian chọn -> hệ thống hiển thị trạng thái rỗng.
+- A4: Job tạo báo cáo lỗi -> hệ thống ghi lỗi và cho phép chạy lại theo quyền.
+
+### UC-30: Truy xuất audit log
+
+| Thuộc tính     | Nội dung                                                                  |
+| -------------- | ------------------------------------------------------------------------- |
+| Actor chính    | Admin                                                                     |
+| Mục tiêu       | Tra cứu lịch sử thao tác nhạy cảm và phục vụ kiểm toán / xử lý tranh chấp |
+| Tiền điều kiện | Admin có quyền truy xuất audit log                                        |
+| Kích hoạt      | Admin cần truy xuất audit log                                             |
+| Hậu điều kiện  | Audit log được lọc, xem chi tiết hoặc xuất theo quyền                     |
+| Ưu tiên        | Cao                                                                       |
+
+Luồng chính:
+
+1. Admin nhập điều kiện lọc theo actor, loại actor, thời gian, module, hành động, đối tượng tác động hoặc kết quả.
+2. Hệ thống kiểm tra quyền truy xuất audit log theo phạm vi của Admin.
+3. Hệ thống hiển thị danh sách audit log phù hợp.
+4. Admin xem chi tiết một audit log.
+5. Hệ thống hiển thị thông tin thao tác, kết quả và dữ liệu trước / sau nếu Admin được phân quyền.
+6. Admin xuất audit log theo phạm vi được phép.
+7. Hệ thống ghi nhận thao tác xem / xuất audit log nếu thuộc nhóm nhạy cảm.
+
+Luồng thay thế / ngoại lệ:
+
+- A1: Không có dữ liệu phù hợp -> hệ thống hiển thị trạng thái rỗng.
+- A2: Log chứa dữ liệu nhạy cảm -> hệ thống che một phần hoặc ẩn trường theo quyền.
+- A3: Admin không đủ quyền xem hoặc xuất audit log -> hệ thống từ chối thao tác.
+- A4: Phạm vi xuất quá lớn -> hệ thống yêu cầu thu hẹp bộ lọc hoặc tạo job xuất file.
+
+### UC-31: Gửi notification theo sự kiện nghiệp vụ
+
+| Thuộc tính     | Nội dung                                                                                                                   |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Hệ thống                                                                                                                   |
+| Actor phụ      | User, Guest, Nhà xe, Employee, Admin nếu liên quan                                                                         |
+| Mục tiêu       | Thông báo kịp thời cho actor khi có sự kiện nghiệp vụ quan trọng                                                           |
+| Tiền điều kiện | Có sự kiện nghiệp vụ phát sinh và kênh gửi được cấu hình                                                                   |
+| Kích hoạt      | Hệ thống ghi nhận sự kiện như booking, payment, ticket, hủy / hoàn tiền, đổi / hủy chuyến, phân công Employee hoặc dispute |
+| Hậu điều kiện  | Notification được tạo, gửi hoặc ghi nhận trạng thái lỗi / chờ retry                                                        |
+| Ưu tiên        | Cao                                                                                                                        |
+
+Luồng chính:
+
+1. Hệ thống ghi nhận sự kiện nghiệp vụ cần thông báo.
+2. Hệ thống xác định actor nhận thông báo và loại notification tương ứng.
+3. Hệ thống kiểm tra kênh gửi được cấu hình gồm email, SMS, push hoặc in-app.
+4. Hệ thống tạo nội dung notification theo mẫu và dữ liệu sự kiện.
+5. Hệ thống gửi notification qua các kênh phù hợp.
+6. Hệ thống lưu trạng thái gửi, thời điểm gửi, kênh gửi và lỗi nếu có.
+7. Hệ thống retry theo policy đối với notification lỗi hoặc chờ gửi.
+
+Luồng thay thế / ngoại lệ:
+
+- A1: Không có kênh gửi khả dụng -> hệ thống lưu notification ở trạng thái chờ xử lý.
+- A2: Gửi notification thất bại -> hệ thống ghi lỗi và retry theo policy.
+- A3: Actor đã tắt loại thông báo không bắt buộc -> hệ thống không gửi qua kênh đã tắt.
+- A4: Notification thuộc nhóm bắt buộc -> hệ thống vẫn gửi theo kênh tối thiểu được cấu hình.
+
+### UC-32: Đối soát và chạy lại job nền
+
+| Thuộc tính     | Nội dung                                                                                                  |
+| -------------- | --------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Hệ thống, Admin                                                                                           |
+| Mục tiêu       | Phát hiện lệch trạng thái và chạy lại các job nền quan trọng một cách có kiểm soát                        |
+| Tiền điều kiện | Có job nền hoặc giao dịch cần đối soát như payment callback, refund, payout, notification, reconciliation |
+| Kích hoạt      | Job đối soát tự động chạy theo lịch hoặc Admin kích hoạt chạy lại                                         |
+| Hậu điều kiện  | Trạng thái được đồng bộ, lỗi được ghi nhận hoặc chuyển xử lý thủ công                                     |
+| Ưu tiên        | Cao                                                                                                       |
+
+Luồng chính:
+
+1. Hệ thống chạy job đối soát theo lịch hoặc Admin chọn chạy lại job nền.
+2. Hệ thống xác định phạm vi đối soát gồm booking, payment, refund, escrow, payout, provider hoặc notification.
+3. Hệ thống so sánh trạng thái nội bộ với trạng thái provider hoặc ledger liên quan.
+4. Hệ thống phát hiện giao dịch lệch trạng thái hoặc job lỗi.
+5. Hệ thống retry có kiểm soát và kiểm tra dấu vết đã xử lý để tránh xử lý trùng tiền hoặc gửi trùng thông báo.
+6. Hệ thống cập nhật trạng thái, ghi log kết quả và thống kê lỗi.
+7. Hệ thống chuyển trường hợp không xử lý được sang hàng đợi thủ công.
+
+Luồng thay thế / ngoại lệ:
+
+- A1: Job đang chạy -> hệ thống từ chối chạy trùng hoặc đưa yêu cầu vào hàng đợi.
+- A2: Provider không phản hồi -> hệ thống ghi lỗi tạm thời và retry theo policy.
+- A3: Phát hiện nguy cơ xử lý trùng tiền -> hệ thống dừng tác vụ và yêu cầu Admin kiểm tra.
+- A4: Admin không đủ quyền chạy lại job -> hệ thống từ chối thao tác.
+
+### UC-33: Quản lý promotion cấp Platform / Operator
+
+| Thuộc tính     | Nội dung                                                                       |
+| -------------- | ------------------------------------------------------------------------------ |
+| Actor chính    | Admin, Nhà xe                                                                  |
+| Mục tiêu       | Tạo và quản lý chương trình khuyến mãi theo phạm vi Platform hoặc Operator     |
+| Tiền điều kiện | Actor có quyền quản lý promotion theo phạm vi được cấp                         |
+| Kích hoạt      | Admin hoặc Nhà xe cần tạo, cập nhật hoặc kiểm soát promotion                   |
+| Hậu điều kiện  | Promotion được tạo, cập nhật, tạm dừng, kết thúc hoặc áp dụng theo rule hợp lệ |
+| Ưu tiên        | Trung bình                                                                     |
+
+Luồng chính:
+
+1. Admin hoặc Nhà xe chọn phạm vi promotion cần quản lý.
+2. Hệ thống xác định quyền của actor đối với promotion cấp Platform hoặc Operator.
+3. Actor tạo hoặc cập nhật promotion với thời gian hiệu lực, phạm vi áp dụng, giới hạn lượt dùng và điều kiện booking.
+4. Hệ thống kiểm tra rule promotion và xung đột với cấu hình hiện có.
+5. Actor lưu, tạm dừng hoặc kết thúc promotion.
+6. Hệ thống lưu snapshot promotion khi được áp dụng vào booking.
+7. Hệ thống ghi redemption record khi promotion được sử dụng hợp lệ.
+
+Luồng thay thế / ngoại lệ:
+
+- A1: Nhà xe chưa được cấp quyền tự tạo promotion -> hệ thống từ chối thao tác.
+- A2: Promotion hết hạn, vượt lượt dùng hoặc không thỏa điều kiện booking -> hệ thống không cho áp dụng.
+- A3: Rule promotion không hợp lệ -> hệ thống yêu cầu chỉnh sửa.
+- A4: Admin thay đổi quyền promotion của Operator -> hệ thống áp dụng cho các promotion phát sinh sau thời điểm hiệu lực.
+
+### UC-34: Cấu hình notification preference
+
+| Thuộc tính     | Nội dung                                                       |
+| -------------- | -------------------------------------------------------------- |
+| Actor chính    | User, Nhà xe, Employee                                         |
+| Mục tiêu       | Cho phép actor cấu hình cách nhận các thông báo không bắt buộc |
+| Tiền điều kiện | Actor đã đăng nhập và có loại thông báo được phép cấu hình     |
+| Kích hoạt      | Actor cần cập nhật notification preference                     |
+| Hậu điều kiện  | Preference được lưu và áp dụng cho các notification phù hợp    |
+| Ưu tiên        | Trung bình                                                     |
+
+Luồng chính:
+
+1. Actor chọn loại thông báo và kênh gửi cần cấu hình.
+2. Hệ thống hiển thị các lựa chọn được phép theo actor và loại notification.
+3. Actor bật hoặc tắt kênh gửi cho từng loại thông báo không bắt buộc.
+4. Hệ thống kiểm tra các nhóm thông báo bắt buộc về bảo mật, vé, thanh toán, đổi / hủy chuyến và dispute.
+5. Actor xác nhận lưu cấu hình.
+6. Hệ thống lưu preference theo actor, loại thông báo và kênh gửi.
+7. Hệ thống áp dụng preference khi gửi notification phù hợp.
+
+Luồng thay thế / ngoại lệ:
+
+- A1: Actor cố tắt hoàn toàn thông báo bắt buộc -> hệ thống từ chối và giữ kênh tối thiểu.
+- A2: Kênh gửi chưa được xác minh hoặc chưa cấu hình -> hệ thống không cho bật kênh đó.
+- A3: Preference lưu thất bại -> hệ thống báo lỗi và giữ cấu hình cũ.
+- A4: Actor không có quyền cấu hình loại thông báo -> hệ thống ẩn hoặc khóa tùy chọn tương ứng.
+
+### UC-35: Tra cứu vé khách vãng lai
+
+| Thuộc tính     | Nội dung                                                                                           |
+| -------------- | -------------------------------------------------------------------------------------------------- |
+| Actor chính    | Guest                                                                                              |
+| Mục tiêu       | Cho phép khách chưa đăng nhập tra cứu thông tin vé trong phạm vi được xác minh                     |
+| Tiền điều kiện | Guest có mã vé / mã booking và thông tin liên hệ hợp lệ                                            |
+| Kích hoạt      | Guest yêu cầu tra cứu vé bằng thông tin được phép                                                  |
+| Hậu điều kiện  | Thông tin vé / chuyến được hiển thị nếu xác minh hợp lệ, hoặc yêu cầu bổ sung xác minh nếu chưa đủ |
+| Ưu tiên        | Trung bình                                                                                         |
+
+Luồng chính:
+
+1. Guest nhập mã vé / mã booking và thông tin liên hệ.
+2. Hệ thống kiểm tra định dạng thông tin tra cứu.
+3. Hệ thống đối chiếu thông tin với booking hoặc ticket.
+4. Hệ thống xác minh quyền xem dữ liệu của Guest.
+5. Hệ thống hiển thị thông tin vé / chuyến trong phạm vi đã xác minh.
+6. Hệ thống yêu cầu xác minh bổ sung trước các thao tác nhạy cảm nếu có.
+7. Hệ thống gợi ý đăng ký / đăng nhập nếu Guest cần quản lý vé thuận tiện hơn.
+
+Luồng thay thế / ngoại lệ:
+
+- A1: Mã vé / mã booking hoặc thông tin liên hệ không khớp -> hệ thống từ chối hiển thị dữ liệu.
+- A2: Thao tác nhạy cảm chưa đủ xác minh -> hệ thống yêu cầu xác minh bổ sung.
+- A3: Guest cố xem lịch sử booking dài hạn -> hệ thống chỉ hiển thị dữ liệu thuộc vé đã xác minh.
+- A4: Vé không còn hợp lệ hoặc đã bị hủy -> hệ thống hiển thị trạng thái hiện tại và hướng dẫn liên hệ hỗ trợ nếu cần.
 
 ---
 
