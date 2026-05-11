@@ -1030,37 +1030,49 @@ flowchart LR
 
 Mỗi Use Case dưới đây trình bày: actor, mục tiêu, tiền điều kiện, kích hoạt, hậu điều kiện, ưu tiên, luồng chính và luồng thay thế / ngoại lệ.
 
-### UC-01: Đăng nhập / xác thực theo actor
+### UC-01: Xác thực theo actor và quản lý thông tin
 
 | Thuộc tính | Nội dung |
 | --- | --- |
 | Actor chính | Người dùng (User), Nhà xe (Operator), Nhân viên nhà xe (Employee), Admin toàn hệ thống (Admin) |
-| Actor phụ | Hệ thống |
-| Mục tiêu | Xác thực đúng danh tính, đúng loại actor và cấp phiên truy cập phù hợp với vai trò, quyền hạn và tenant boundary. |
-| Tiền điều kiện | Actor đã có tài khoản hợp lệ theo cơ chế tương ứng; tài khoản chưa bị khóa, chưa bị thu hồi quyền và chưa hết hiệu lực. |
-| Kích hoạt | Actor mở màn hình đăng nhập, làm mới phiên, hoặc hệ thống yêu cầu xác thực lại trước thao tác nhạy cảm. |
-| Hậu điều kiện | Actor có session / token hợp lệ, lịch sử đăng nhập được ghi nhận, quyền truy cập được giới hạn theo actor và tenant. |
+| Actor phụ | Hệ thống; Guest chỉ tham gia xác minh thao tác nhạy cảm nếu có luồng tra cứu vé / guest flow |
+| Mục tiêu | Cung cấp luồng xác thực và quản lý thông tin phù hợp cho từng actor, bao gồm đăng ký / đăng nhập User, đăng nhập Operator / Employee / Admin theo đúng cổng, đặt lại mật khẩu theo policy, quản lý hồ sơ User, quản lý session / token và xác thực lại cho thao tác nhạy cảm. |
+| Tiền điều kiện | User có thể chưa có tài khoản khi đăng ký; các actor nội bộ đã có tài khoản hợp lệ theo cơ chế tương ứng; tài khoản chưa bị khóa, chưa bị thu hồi quyền và chưa hết hiệu lực. |
+| Kích hoạt | Actor mở luồng đăng ký, đăng nhập, quên mật khẩu / đặt lại mật khẩu, cập nhật hồ sơ, làm mới phiên, hoặc hệ thống yêu cầu xác thực lại trước thao tác nhạy cảm. |
+| Hậu điều kiện | Actor có session / token hợp lệ hoặc yêu cầu được xử lý đúng policy; hồ sơ User được cập nhật nếu hợp lệ; lịch sử đăng nhập, thay đổi và revoke session được ghi nhận. |
 | Ưu tiên | Cao |
 
 Luồng chính:
 
-1. Actor chọn đúng cổng đăng nhập theo vai trò: User, Operator / Employee hoặc Admin.
-2. User nhập số điện thoại hoặc email theo cơ chế xác thực dành cho hành khách.
-3. Admin nhập tài khoản admin nội bộ; hệ thống không cung cấp luồng tự đăng ký public cho Admin.
-4. Operator hoặc Employee nhập username và mật khẩu được cấp; hệ thống không cho nhóm này dùng luồng số điện thoại / email dành cho User.
-5. Hệ thống xác thực thông tin đăng nhập, trạng thái tài khoản, loại actor, role và quyền truy cập hiện tại.
-6. Hệ thống kiểm tra tenant boundary: Operator chỉ thuộc tenant của chính mình; Employee chỉ thuộc Operator và phạm vi được phân công.
-7. Hệ thống tạo access token, refresh token hoặc session theo policy của từng nhóm actor, ghi lịch sử đăng nhập, thiết bị và thời điểm đăng nhập.
-8. Hệ thống chuyển actor vào giao diện phù hợp: Marketplace layer, Operator OS layer, Employee app / portal hoặc Platform admin layer.
-9. Khi actor thực hiện thao tác nhạy cảm, hệ thống yêu cầu xác thực lại theo `FR-IAM-10` trước khi cho phép tiếp tục.
+1. User có thể đăng ký tài khoản bằng số điện thoại hoặc email theo cơ chế dành cho hành khách.
+2. User đăng nhập bằng số điện thoại hoặc email theo cơ chế xác thực dành cho Marketplace layer.
+3. User có thể dùng luồng quên mật khẩu / đặt lại mật khẩu bằng cơ chế xác minh dành cho hành khách.
+4. Admin đăng nhập bằng tài khoản Admin nội bộ đã được tạo sẵn; hệ thống không cung cấp luồng tự đăng ký public hoặc public reset password cho Admin.
+5. Operator đăng nhập vào Operator OS portal bằng username/password của tài khoản nhà xe đã được cấp hoặc đã được tạo qua quy trình onboarding.
+6. Employee đăng nhập vào app/portal nhân viên bằng username/password do Operator cấp; Employee không dùng chung giao diện nghiệp vụ với Operator.
+7. Hệ thống xác thực loại actor, trạng thái tài khoản, quyền, role và tenant boundary.
+8. Hệ thống tạo session/token, áp dụng refresh policy, timeout phiên, giới hạn phiên hoặc quản lý đa thiết bị nếu policy được bật.
+9. Hệ thống chuyển actor vào đúng giao diện:
+   - User vào Marketplace layer.
+   - Operator vào Operator OS portal.
+   - Employee vào Employee app/portal.
+   - Admin vào Platform admin portal.
+10. User có thể xem và cập nhật hồ sơ cá nhân của chính mình trong phạm vi được phép.
+11. Với thao tác nhạy cảm, hệ thống yêu cầu xác thực lại theo `FR-IAM-10`.
+12. Khi tài khoản bị khóa, mật khẩu bị cấp lại, quyền bị thu hồi hoặc phát hiện rủi ro bảo mật, hệ thống revoke session/token liên quan.
 
 Luồng thay thế / ngoại lệ:
 
-- A1: Actor nhập sai thông tin đăng nhập → hệ thống từ chối, ghi nhận lần thất bại và áp dụng giới hạn / khóa tạm thời theo policy.
-- A2: Actor dùng sai cổng đăng nhập, ví dụ Operator đăng nhập bằng luồng User hoặc Admin dùng luồng public → hệ thống từ chối và không tiết lộ thông tin tài khoản.
-- A3: Tài khoản bị khóa, bị thu hồi quyền, mật khẩu bị cấp lại hoặc phát hiện rủi ro bảo mật → hệ thống revoke session / token hiện có và yêu cầu xử lý theo quy trình vận hành.
-- A4: Refresh token hết hạn, không hợp lệ hoặc không khớp phiên đã lưu → hệ thống yêu cầu đăng nhập lại.
-- A5: Xác thực lại cho thao tác nhạy cảm thất bại → hệ thống từ chối thao tác, ghi log và giữ nguyên dữ liệu trước đó.
+- A1: User đăng ký bằng email hoặc số điện thoại đã tồn tại → hệ thống từ chối đăng ký và hướng dẫn đăng nhập hoặc đặt lại mật khẩu.
+- A2: User đăng nhập sai thông tin hoặc vượt số lần thử → hệ thống từ chối, ghi nhận lần thất bại và áp dụng giới hạn / khóa tạm thời theo policy.
+- A3: User đặt lại mật khẩu nhưng OTP / email token không hợp lệ, hết hạn hoặc xác minh thất bại → hệ thống từ chối đặt lại mật khẩu.
+- A4: Admin cố dùng luồng public registration hoặc public reset password → hệ thống từ chối và yêu cầu thực hiện theo quy trình nội bộ có thẩm quyền.
+- A5: Operator hoặc Employee cố đăng nhập bằng luồng User số điện thoại / email → hệ thống từ chối và không tiết lộ thông tin tài khoản.
+- A6: Actor dùng sai portal, ví dụ Employee vào Operator OS hoặc Operator vào Employee app → hệ thống từ chối hoặc chuyển hướng sang cổng phù hợp nếu policy cho phép.
+- A7: Tài khoản bị khóa, bị thu hồi quyền, mật khẩu bị cấp lại hoặc phát hiện rủi ro bảo mật → hệ thống revoke session/token hiện có và yêu cầu xử lý theo quy trình.
+- A8: Refresh token hết hạn, không hợp lệ hoặc không khớp phiên đã lưu → hệ thống yêu cầu đăng nhập lại.
+- A9: Xác thực lại cho thao tác nhạy cảm thất bại → hệ thống từ chối thao tác, ghi log và giữ nguyên dữ liệu trước đó.
+- A10: User cập nhật hồ sơ thiếu dữ liệu hợp lệ hoặc vượt phạm vi được phép → hệ thống từ chối cập nhật và hiển thị lỗi phù hợp.
 
 ### UC-02: Tìm kiếm và so sánh chuyến
 
@@ -1113,12 +1125,12 @@ Luồng chính:
 4. Hệ thống hiển thị sơ đồ ghế / giường và trạng thái khả dụng ở mức phục vụ quyết định đặt vé.
 5. Hệ thống hiển thị giá vé, phí nếu có, chính sách hủy / hoàn tiền, thời gian ngừng bán online và các điều kiện quan trọng trước khi đặt.
 6. Hệ thống hiển thị profile Operator gồm thông tin công khai, logo, mô tả, hotline, email, scorecard, review hợp lệ, tuyến tiêu biểu và điều khoản dịch vụ.
-7. User hoặc Guest so sánh thông tin và chọn tiếp tục sang bước chọn ghế nếu chuyến còn đủ điều kiện bán.
+7. User hoặc Guest chọn tiếp tục sang UC-04 để chọn ghế và giữ ghế nếu chuyến còn đủ điều kiện bán. Với Guest, hệ thống sử dụng phiên guest/session tạm để theo dõi quá trình chọn ghế và sẽ yêu cầu cung cấp hoặc xác minh thông tin liên hệ ở bước tạo booking / thao tác nhạy cảm nếu cần.
 
 Luồng thay thế / ngoại lệ:
 
 - A1: Chuyến bị khóa, hết vé, bị hủy, hết thời gian bán online hoặc Operator không còn được phép bán công khai → hệ thống thông báo và không cho tiếp tục đặt.
-- A2: Giá, điểm đón / trả, phương tiện hoặc chính sách vừa thay đổi → hệ thống tải lại dữ liệu mới nhất và yêu cầu User xác nhận lại trước khi chọn ghế.
+- A2: Giá, điểm đón / trả, phương tiện hoặc chính sách vừa thay đổi → hệ thống tải lại dữ liệu mới nhất và yêu cầu User hoặc Guest xác nhận lại trước khi chọn ghế.
 - A3: Seat map hoặc dữ liệu availability tạm thời không đồng bộ → hệ thống hiển thị trạng thái cần tải lại và không cho giữ ghế cho đến khi xác minh xong.
 - A4: Review hoặc scorecard có dữ liệu không hợp lệ / đang kiểm duyệt → hệ thống chỉ hiển thị phần dữ liệu được phép công khai.
 
@@ -1126,30 +1138,30 @@ Luồng thay thế / ngoại lệ:
 
 | Thuộc tính | Nội dung |
 | --- | --- |
-| Actor chính | Người dùng (User), Hệ thống |
+| Actor chính | Người dùng (User), Khách vãng lai (Guest), Hệ thống |
 | Actor phụ | Không có |
-| Mục tiêu | Cho phép User chọn một hoặc nhiều ghế / giường khả dụng và giữ tạm thời bằng SeatHold có TTL để chống bán trùng ghế. |
-| Tiền điều kiện | User đang ở chi tiết chuyến hợp lệ; chuyến còn mở bán, còn ghế phù hợp và chưa hết thời gian bán online. |
-| Kích hoạt | User chọn ghế / giường trên seat map. |
-| Hậu điều kiện | Ghế được giữ tạm thời cho phiên đặt vé của User hoặc được giải phóng khi giữ ghế thất bại / hết hạn. |
+| Mục tiêu | Cho phép User hoặc Guest chọn một hoặc nhiều ghế / giường khả dụng và giữ tạm thời bằng SeatHold có TTL để chống bán trùng ghế. |
+| Tiền điều kiện | User hoặc Guest đang ở chi tiết chuyến hợp lệ; với Guest, hệ thống có phiên guest/session tạm để gắn SeatHold; chuyến còn mở bán, còn ghế phù hợp và chưa hết thời gian bán online. |
+| Kích hoạt | User hoặc Guest chọn ghế / giường trên seat map. |
+| Hậu điều kiện | Ghế được giữ tạm thời cho phiên đặt vé của User / Guest, hoặc được giải phóng khi giữ ghế thất bại / hết hạn. |
 | Ưu tiên | Cao |
 
 Luồng chính:
 
-1. User xem seat map của chuyến và chọn một hoặc nhiều ghế / giường đang hiển thị là khả dụng.
+1. User hoặc Guest xem seat map của chuyến và chọn một hoặc nhiều ghế / giường đang hiển thị là khả dụng.
 2. Hệ thống kiểm tra realtime trạng thái ghế theo dữ liệu TripSeat, booking đã bán và SeatHold hiện có.
-3. Hệ thống tạo SeatHold cho toàn bộ ghế được chọn bằng cơ chế atomic, gắn với User / phiên đặt vé và thời gian TTL theo policy.
+3. Hệ thống tạo SeatHold cho toàn bộ ghế được chọn bằng cơ chế atomic; nếu là User đã đăng nhập thì gắn SeatHold với User/session, nếu là Guest chưa đăng nhập thì gắn SeatHold với guest session tạm; SeatHold có thời gian TTL theo policy.
 4. Hệ thống chuyển ghế sang trạng thái giữ tạm thời và hiển thị bộ đếm thời gian giữ ghế.
-5. User có thể tiếp tục nhập thông tin booking trong thời gian SeatHold còn hiệu lực.
-6. Nếu User thay đổi lựa chọn, hệ thống giải phóng ghế không còn được chọn và tạo / cập nhật SeatHold cho danh sách ghế mới.
+5. User hoặc Guest có thể tiếp tục nhập thông tin booking trong thời gian SeatHold còn hiệu lực.
+6. Nếu User hoặc Guest thay đổi lựa chọn, hệ thống giải phóng ghế không còn được chọn và tạo / cập nhật SeatHold cho danh sách ghế mới.
 7. Khi TTL hết hạn mà chưa có booking / payment hợp lệ, hệ thống tự động giải phóng ghế để người khác có thể đặt.
 
 Luồng thay thế / ngoại lệ:
 
-- A1: Một hoặc nhiều ghế đã được giữ hoặc đã bán trước khi hệ thống tạo SeatHold → hệ thống từ chối toàn bộ hoặc phần bị xung đột theo policy và yêu cầu User chọn lại.
+- A1: Một hoặc nhiều ghế trong danh sách đã được giữ hoặc đã bán trước khi hệ thống tạo SeatHold → hệ thống từ chối toàn bộ yêu cầu giữ ghế, không tạo SeatHold một phần và yêu cầu User hoặc Guest chọn lại danh sách ghế khả dụng.
 - A2: Chuyến bị khóa, hết thời gian bán online hoặc seat map bị thay đổi trong lúc chọn ghế → hệ thống giải phóng hold liên quan và chặn bước đặt tiếp theo.
-- A3: User vượt số ghế tối đa hoặc chọn ghế không thuộc seat map của chuyến → hệ thống báo lỗi và không tạo SeatHold.
-- A4: SeatHold hết hạn trước khi User xác nhận booking → hệ thống giải phóng ghế và yêu cầu chọn lại.
+- A3: User hoặc Guest vượt số ghế tối đa hoặc chọn ghế không thuộc seat map của chuyến → hệ thống báo lỗi và không tạo SeatHold.
+- A4: SeatHold hết hạn trước khi User / Guest xác nhận booking → hệ thống giải phóng ghế và yêu cầu chọn lại.
 - A5: Dịch vụ giữ ghế tạm thời gặp lỗi → hệ thống không được giả định giữ ghế thành công; thao tác bị từ chối với hướng dẫn thử lại.
 
 ### UC-05: Tạo booking
