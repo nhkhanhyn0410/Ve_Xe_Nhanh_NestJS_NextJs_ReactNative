@@ -96,6 +96,7 @@ If a document exists only in one language, it may be read as context for the oth
 ## 6. HARD CONSTRAINTS
 
 - Do not write or modify application source code under `apps/` or `packages/` when working on documentation.
+- Do not use diff after write a doc
 - Do not change document `status` to `Approved`.
 - Do not invent business rules, modules, actors, technologies. Mark gaps with `TBD`, `OPEN QUESTION`, or `ASSUMPTION`.
 - On conflict between `vi/` and `en/`, treat as `OPEN QUESTION` and surface to the user.
