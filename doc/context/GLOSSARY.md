@@ -44,12 +44,12 @@ Rules:
 | Booking                | Đơn đặt vé                 | A purchase order placed by User or Guest; may contain one or more Tickets and a policy snapshot.      |
 | PassengerInfo          | Thông tin hành khách       | Per-passenger information captured in a Booking.                                                      |
 | Ticket                 | Vé điện tử                 | An electronic ticket representing one passenger on one seat of one Trip; carries a QR token.          |
-| SeatHold               | Bản giữ ghế                | A time-bound, atomic hold on one or more seats during checkout; backed by TTL.                        |
-| Payment                | Giao dịch thanh toán       | A payment intent / record for a Booking; passes through Initiated → Processing → Success / Failed.    |
-| Refund                 | Giao dịch hoàn tiền        | A refund record linked to a Booking / Ticket / Payment; passes through Requested → Approved → ...    |
+| SeatHold               | Bản giữ ghế                | A time-bound, atomic hold on one or more seats during checkout; v1 default TTL is 10 minutes at Platform level. |
+| Payment                | Giao dịch thanh toán       | A payment intent / record for a Booking; v1 integrates VNPay Sandbox first through a payment adapter. |
+| Refund                 | Giao dịch hoàn tiền        | A refund record linked to a Booking / Ticket / Payment; processed by policy, Admin action or dispute decision. |
 | EscrowLedger           | Sổ cái escrow              | Append-only ledger tracking incoming, held, refunded and paid-out amounts owed to an Operator.        |
 | Commission / CommissionRule | Hoa hồng / quy tắc hoa hồng | Platform-defined percentage / fee taken on each successful ticket sale.                       |
-| Payout                 | Khoản chi trả cho nhà xe   | A scheduled transfer from Platform escrow to Operator bank account on cycle T+N.                      |
+| Payout                 | Khoản chi trả cho nhà xe   | A scheduled transfer from Platform escrow to Operator bank account on cycle T+3 after trip completion; v1 uses direct bank transfer with Admin manual confirmation. |
 | Promotion              | Khuyến mãi                 | A discount campaign with rules, validity window, usage limits; can be Platform-level or Operator-level. |
 | PromotionRedemption    | Lượt áp dụng khuyến mãi    | Snapshot record created when a Promotion is applied to a Booking.                                     |
 | Review                 | Đánh giá                   | A passenger review of a completed trip / Operator; subject to moderation policy.                      |
@@ -73,12 +73,14 @@ Rules:
 | Idempotency key  | Khóa idempotency                 | A unique reference attached to a callback / job to prevent duplicate processing.                        |
 | TTL              | Thời gian tồn tại                | Time-to-live for SeatHold and similar short-lived resources.                                            |
 | OTP              | Mật khẩu một lần                 | One-Time Password for sensitive verification flows.                                                     |
+| Guest session    | Phiên khách vãng lai             | Short-lived session used by Guest for seat hold, booking, payment and ticket lookup without a registered account. |
 | QR token         | Mã QR vé                         | Server-verifiable, non-guessable token embedded in QR code used for ticket check-in.                    |
 | Manifest         | Danh sách hành khách             | Per-trip passenger list shown to Employee for boarding and check-in.                                    |
 | Adjustment       | Điều chỉnh giao dịch             | A manual financial correction in escrow ledger; always audited.                                         |
 | Reconciliation   | Đối soát giao dịch               | Process of matching internal state with payment provider state and external bank transfers.             |
 | Escrow           | Tiền giữ hộ của Platform         | Funds held by Platform between successful payment and payout to the Operator.                           |
 | KYC              | Xác minh hồ sơ nhà xe            | Know-Your-Customer process; gate for Operator going public on the marketplace.                          |
+| VNPay Sandbox    | Môi trường thử nghiệm VNPay      | First payment gateway environment for v1 integration and testing; no real-money transaction in SRS scope. |
 
 ## 5. Document and process labels
 

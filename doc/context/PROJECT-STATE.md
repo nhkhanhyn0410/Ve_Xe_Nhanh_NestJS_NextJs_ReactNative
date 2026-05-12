@@ -2,27 +2,27 @@
 
 Live state of the managed marketplace project. Agents must consult this file before writing or editing any SDLC document. Update this file after every documentation change that affects status, decisions or blockers.
 
-Last updated: 11/05/2026.
+Last updated: 12/05/2026.
 
 ## 1. SDLC document status
 
-| Code   | Document                                  | Path                                                                                    | Version | Status   | Owner                    |
-| ------ | ----------------------------------------- | --------------------------------------------------------------------------------------- | ------- | -------- | ------------------------ |
-| 00     | Quy chuẩn SDLC cho lập trình viên         | `vi/SDLC/00-quy-chuan-cho-lap-trinh-vien.md`                                            | v1.0    | Draft    | Nguyễn Hồng Khanh        |
-| 00     | Quy chuẩn SDLC cho AI agent (Vietnamese)  | currently misplaced at `vi/SDLC/00-quy-chuan-cho-ai-agent.md`; should be at `vi/agent/` | v1.0    | Draft    | Nguyễn Hồng Khanh        |
-| 00b-EN | SDLC Standards for AI agent (English)     | `en/agent/00-standard-for-ai-agent.md`                                                  | v1.0    | Draft    | Nguyễn Hồng Khanh        |
-| 01     | SRS - Software Requirements Specification | `vi/SDLC/01-srs-he-thong-dat-ve-xe-khach.md`                                            | v1.19   | Approved | Nguyễn Hồng Khanh + team |
-| 02     | HLD - High Level Design                   | `vi/SDLC/02-hld-he-thong-dat-ve-xe-khach.md`                                            | v0.1    | Draft    | AI Agent                 |
-| 03     | LLD - Low Level Design                    | `vi/SDLC/03-lld-he-thong-dat-ve-xe-khach.md`                                            | v0.1    | Draft    | AI Agent                 |
-| 04     | Database Design                           | `vi/SDLC/04-database-design.md`                                                         | v0.1    | Draft    | AI Agent                 |
-| 05     | API Specification                         | `vi/SDLC/05-api-specification.md`                                                       | v0.1    | Draft    | AI Agent                 |
-| 06     | UI / UX Flow Specification                | `vi/SDLC/06-ui-ux-flow-specification.md`                                                | v0.1    | Draft    | AI Agent                 |
-| 07     | Security & Permission Design              | `vi/SDLC/07-security-permission-design.md`                                              | v0.1    | Draft    | AI Agent                 |
-| 08     | Test Plan & Acceptance Criteria           | `vi/SDLC/08-test-plan-acceptance-criteria.md`                                           | v0.1    | Draft    | AI Agent                 |
-| 09     | Deployment & Operation Standard           | `vi/SDLC/09-deployment-operation-standard.md`                                           | v0.1    | Draft    | AI Agent                 |
-| 10     | Architecture Decision Record              | `vi/SDLC/10-architecture-decision-record.md`                                            | v0.1    | Draft    | AI Agent                 |
-| 11     | Project Task Breakdown                    | `vi/SDLC/11-project-task-breakdown.md`                                                  | v0.1    | Draft    | AI Agent                 |
-| 12     | Release Notes & Change Log                | not yet created                                                                         | —       | —        | —                        |
+| Code   | Document                                  | Path                                                  | Version | Status   | Owner                    |
+| ------ | ----------------------------------------- | ----------------------------------------------------- | ------- | -------- | ------------------------ |
+| 00     | Quy chuẩn SDLC cho lập trình viên         | `vi/SDLC/00-quy-chuan-cho-lap-trinh-vien.md`          | v1.0    | Draft    | Nguyễn Hồng Khanh        |
+| 00-AI  | Quy chuẩn SDLC cho AI agent (Vietnamese)  | `vi/agent/00-quy-chuan-cho-ai-agent.md`               | v1.0    | Draft    | Nguyễn Hồng Khanh        |
+| 00b-EN | SDLC Standards for AI agent (English)     | `en/agent/00-standard-for-ai-agent.md`                | v1.0    | Draft    | Nguyễn Hồng Khanh        |
+| 01     | SRS - Software Requirements Specification | `vi/SDLC/01-srs-he-thong-dat-ve-xe-khach.md`          | v1.19   | Approved | Nguyễn Hồng Khanh + team |
+| 02     | HLD - High Level Design                   | `vi/SDLC/02-hld-he-thong-dat-ve-xe-khach.md`          | v0.1    | Draft    | AI Agent                 |
+| 03     | LLD - Low Level Design                    | `vi/SDLC/03-lld-he-thong-dat-ve-xe-khach.md`          | v0.1    | Draft    | AI Agent                 |
+| 04     | Database Design                           | `vi/SDLC/04-database-design.md`                       | v0.1    | Draft    | AI Agent                 |
+| 05     | API Specification                         | `vi/SDLC/05-api-specification.md`                     | v0.1    | Draft    | AI Agent                 |
+| 06     | UI / UX Flow Specification                | `vi/SDLC/06-ui-ux-flow-specification.md`              | v0.1    | Draft    | AI Agent                 |
+| 07     | Security & Permission Design              | `vi/SDLC/07-security-permission-design.md`            | v0.1    | Draft    | AI Agent                 |
+| 08     | Test Plan & Acceptance Criteria           | `vi/SDLC/08-test-plan-acceptance-criteria.md`         | v0.1    | Draft    | AI Agent                 |
+| 09     | Deployment & Operation Standard           | `vi/SDLC/09-deployment-operation-standard.md`         | v0.1    | Draft    | AI Agent                 |
+| 10     | Architecture Decision Record              | `vi/SDLC/10-architecture-decision-record.md`          | v0.1    | Draft    | AI Agent                 |
+| 11     | Project Task Breakdown                    | `vi/SDLC/11-project-task-breakdown.md`                | v0.1    | Draft    | AI Agent                 |
+| 12     | Release Notes & Change Log                | `vi/SDLC/12-release-notes-change-log.md` (not created) | —       | —        | —                        |
 
 Status legend per `00 §3.2`: `Writing` / `Draft` / `Review` / `Approved` / `Deprecated` / `Superseded`.
 
@@ -63,7 +63,7 @@ All 25 questions raised during SRS authoring are now closed. See SRS §21 for fu
 
 ## 4. Open Questions raised after SRS Approval
 
-Open Questions discovered during HLD / LLD / DB / API / Security / Test work go here. Empty at SRS v1.15.
+Open Questions discovered during HLD / LLD / DB / API / Security / Test work go here. Empty at SRS v1.19.
 
 | ID  | Question | Raised by | Raised on | Impact | Status |
 | --- | -------- | --------- | --------- | ------ | ------ |
@@ -71,26 +71,34 @@ Open Questions discovered during HLD / LLD / DB / API / Security / Test work go 
 
 ## 5. Blockers
 
-Concrete blockers preventing a document from reaching `Review` or `Approved`. Empty at the moment.
+Concrete blockers preventing a document from reaching `Review` or `Approved`.
 
 | Document | Blocker | Owner | Since |
 | -------- | ------- | ----- | ----- |
-| —        | —       | —     | —     |
+| 02-HLD | v0.1 còn nhiều OQ / giả định cũ trước SRS v1.19: VNPay Sandbox, SeatHold 10 phút, Guest checkout, fare, refund, audit, reporting đã được SRS chốt nhưng HLD chưa đồng bộ. | AI Agent | 12/05/2026 |
+| 04-Database Design | Chưa đủ collection / index / TTL / idempotency / ledger / audit-retention để triển khai dữ liệu V1. | AI Agent | 12/05/2026 |
+| 05-API Specification | Chưa đủ contract request/response/error/webhook/realtime cho FE/BE/Mobile tích hợp V1. | AI Agent | 12/05/2026 |
+| 07-Security & Permission Design | Chưa đủ rule chi tiết cho RBAC, tenant boundary, Guest lookup, masking, audit và thao tác nhạy cảm. | AI Agent | 12/05/2026 |
+| 08-Test Plan | Chưa chuyển AC-01..AC-35 của SRS v1.19 thành test case / test data / entry-exit criteria cụ thể. | AI Agent | 12/05/2026 |
+| 11-Project Task Breakdown | Còn rủi ro / task dependency cũ trước khi SRS §13..§21 được chốt; chưa đủ làm backlog V1. | AI Agent | 12/05/2026 |
+| 12-Release Notes & Change Log | Chưa tạo file theo danh mục SDLC. | AI Agent | 12/05/2026 |
 
 ## 6. Known doc / structure issues to clean up
 
-| Issue                                                                                    | Action proposed                                                       | Status  |
-| ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ------- |
-| `vi/SDLC/00-quy-chuan-cho-ai-agent.md` is placed under `vi/SDLC/` instead of `vi/agent/` | Move file to `vi/agent/00-quy-chuan-cho-ai-agent.md`                  | Pending |
-| `vi/agent/01a.md` is empty and unnamed                                                   | Delete file                                                           | Pending |
-| SDLC docs 03-LLD, 04-DB, 07-Security, 09-Deploy lack marketplace context                 | Review v0.1 drafts and align with SRS v1.15                           | Pending |
-| HLD v0.1 was written before `DOMAIN-MAP` existed                                         | Review HLD against new `DOMAIN-MAP` and SRS v1.15                     | Pending |
-| `vi/agent/` is intended to hold AI-tailored abridged SDLC; only standard exists          | When a coding agent needs abridged SRS / HLD, ask user to author them | Pending |
+| Issue | Action proposed | Status |
+| ----- | --------------- | ------ |
+| `vi/agent/01a.md` is empty and unnamed | Delete file or replace with a named agent-context document when needed. | Pending |
+| SDLC docs 02..11 are v0.1 skeletons created before SRS v1.19 was finalized | Rewrite / review in dependency order: 02-HLD → 04-DB → 05-API → 07-Security → 08-Test → 11-Task Breakdown. | Pending |
+| `vi/agent/` is intended to hold AI-tailored abridged SDLC; only standard exists | When a coding agent needs abridged SRS / HLD, ask user to author them. | Pending |
 
 ## 7. Recent change log (latest first)
 
 | Date       | Change                                                                                                   | Author           |
 | ---------- | -------------------------------------------------------------------------------------------------------- | ---------------- |
+| 12/05/2026 | Synced context files with SRS v1.19: corrected AI-agent path, blockers, stale SRS v1.15 references and next-document priorities. | AI Agent |
+| 12/05/2026 | SRS v1.19 completed through §20, with §21 Decisions Log and §22 appendix kept as supporting sections. | AI Agent + Khanh |
+| 12/05/2026 | SRS v1.18 wrote §16 main business flows. | AI Agent + Khanh |
+| 12/05/2026 | SRS v1.16..v1.17 finalized §14 Business Rules, §15 permissions and review fixes for first 15 sections. | AI Agent + Khanh |
 | 11/05/2026 | Created `context/GLOSSARY.md`, `context/DOMAIN-MAP.md`, `context/PROJECT-STATE.md`                       | AI Agent         |
 | 11/05/2026 | AGENT.md updated to managed-marketplace positioning and added context references in task flows A / C / D | AI Agent         |
 | 11/05/2026 | SRS v1.15 published; 5 cosmetic edits closed; all 25 OQ / MQ closed                                      | AI Agent + Khanh |
