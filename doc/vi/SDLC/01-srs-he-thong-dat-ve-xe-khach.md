@@ -9,7 +9,7 @@
 | Tên tài liệu | Software Requirements Specification - Hệ thống đặt vé xe khách |
 | Mã tài liệu  | 01-srs-he-thong-dat-ve-xe-khach                                |
 | Dự án        | Hệ thống đặt vé xe khách                                       |
-| Phiên bản    | v1.14                                                          |
+| Phiên bản    | v1.15                                                          |
 | Trạng thái   | Draft                                                          |
 | Người viết   | Nguyễn Hồng Khanh, Nguyễn Xuân Trường, Lê Võ Thanh Uy          |
 | Người duyệt  | Nguyễn Hồng Khanh                                              |
@@ -34,6 +34,7 @@
 | v1.12     | 11/05/2026 | Lê Võ Thanh Uy              | Hiệu chỉnh mục 13 Use Case chi tiết từ `UC-13` đến `UC-24`; viết lại các use case theo mô hình managed marketplace gồm Operator OS layer, Employee app / portal và Platform admin layer; làm rõ quản lý route / stop point, trip / fare / mở bán / inventory, booking / ticket thuộc Operator, Employee và phân công nhiệm vụ, báo cáo Operator, manifest hành khách, check-in QR / mã vé, cập nhật trạng thái chuyến, nhật trình / báo cáo sự cố, duyệt KYC Operator và quản lý catalog chuẩn. Đối chiếu logic website xe khách kiểu FutaBus và hiện trạng các module backend liên quan. |
 | v1.13     | 11/05/2026 | AI Agent                    | Chốt guest checkout: Guest được giữ ghế, tạo booking và thanh toán bằng guest session; bắt buộc lưu / xác minh thông tin liên hệ cho thao tác nhạy cảm. Sửa lỗi actor `FR-MKT-08`, đồng bộ `FR-MKT-09`, sơ đồ use case, bảng traceability và `UC-05` / `UC-06` / `UC-07`.                                                                                                                                                                                                                                                                                                                 |
 | v1.14     | 11/05/2026 | AI Agent, Nguyễn Hồng Khanh | Hiệu chỉnh lại cấu trúc SRS sau khi loại bỏ các mục 19, 21 và 23: cập nhật mục lục, đánh số lại các mục còn lại, sửa tham chiếu nội bộ sau mục 18 và giữ trạng thái tài liệu Hiệu chỉnh lại toàn bộ mục 13 và chốt toàn bộ OP                                                                                                                                                                                                                                                                                                                                                             |
+| v1.15     | 11/05/2026 | AI Agent                    | Xử lý 5 điểm cosmetic sau review v1.14: bổ sung tham chiếu `00-quy-chuan-cho-ai-agent` vào §3.4.1; thêm §7.6 liệt kê external system actor (Cổng thanh toán, Dịch vụ thông báo, Dịch vụ định tuyến, Dịch vụ lưu trữ tệp, Dịch vụ ngân hàng payout); đổi tiêu đề §21 thành "Quyết định đã chốt (Decisions Log)" và mục lục tương ứng; làm gọn precondition của UC-25 và đẩy baseline value xuống dạng tham chiếu OQ; mở rộng UC-09 cho phép Guest tạo support ticket / khiếu nại sau khi đã xác minh tra cứu vé theo UC-35, đồng thời giữ rule chỉ User mới được gửi review. |
 
 ---
 
@@ -59,7 +60,7 @@
 18. Thông báo hệ thống
 19. Tiêu chí nghiệm thu
 20. Rủi ro và biện pháp giảm thiểu
-21. Open Questions / TBD
+21. Quyết định đã chốt
 22. Phụ lục
 
 ---
@@ -92,11 +93,12 @@ Tài liệu KHÔNG mô tả: chi tiết kiến trúc kỹ thuật (xem `02-hld-.
 
 Các tài liệu cung cấp quy chuẩn chung và phương pháp luận cho dự án.
 
-| Mã                      | Tên                                     | Vai trò                                |
-| :---------------------- | :-------------------------------------- | :------------------------------------- |
-| ISO/IEC/IEEE 15289:2019 | Content of life-cycle information items | Chuẩn nền cho cấu trúc tài liệu        |
-| ISO/IEC/IEEE 29148:2018 | Requirements engineering                | Chuẩn nền cho viết và kiểm tra yêu cầu |
-| 00                      | Quy chuẩn SDLC cho lập trình viên       | Quy chuẩn nội bộ cao nhất              |
+| Mã                                | Tên                                     | Vai trò                                                                  |
+| :-------------------------------- | :-------------------------------------- | :----------------------------------------------------------------------- |
+| ISO/IEC/IEEE 15289:2019           | Content of life-cycle information items | Chuẩn nền cho cấu trúc tài liệu                                          |
+| ISO/IEC/IEEE 29148:2018           | Requirements engineering                | Chuẩn nền cho viết và kiểm tra yêu cầu                                   |
+| `00-quy-chuan-cho-lap-trinh-vien` | Quy chuẩn SDLC cho lập trình viên       | Quy chuẩn nội bộ cao nhất; áp dụng cho lập trình viên / QA / kiến trúc sư |
+| `00-quy-chuan-cho-ai-agent`       | Quy chuẩn SDLC cho AI agent             | Quy chuẩn nội bộ áp dụng cho AI agent khi đọc / sửa / tạo tài liệu SDLC  |
 
 #### 3.4.2. Tham chiếu phụ
 
@@ -408,6 +410,20 @@ Employee gồm ba role chuẩn:
 **Quyền hạn / chức năng chính:** Guest có thể xem dữ liệu công khai, tìm kiếm / lọc / so sánh chuyến, xem chi tiết chuyến, chọn ghế, giữ ghế, tạo booking, thanh toán bằng guest session và tra cứu vé bằng mã vé / mã booking kèm thông tin liên hệ được phép theo `FR-MKT-12`. Booking của Guest phải lưu thông tin liên hệ và cơ chế xác minh tương ứng.
 
 **Giới hạn quyền / quan hệ với actor khác:** Guest không có hồ sơ tài khoản, không quản lý lịch sử booking dài hạn như User và không được truy cập dữ liệu ngoài thông tin đã xác minh. Guest có thể chuyển thành User bằng luồng đăng ký / đăng nhập nếu muốn quản lý vé và hồ sơ thường dùng.
+
+### 7.6. Hệ thống bên ngoài (External system actor)
+
+Phần này liệt kê các hệ thống bên ngoài tham gia vào use case nhưng không phải người dùng nội bộ của Platform. Các actor này được tham chiếu trong §13 với vai trò actor phụ.
+
+| External actor          | Vai trò trong hệ thống                                                                                                                                                          |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Cổng thanh toán         | Provider thanh toán bên thứ ba (v1 dùng VNPay Sandbox theo `OQ-05`). Tham gia luồng tạo payment, callback / webhook, hoàn tiền và đối soát giao dịch.                           |
+| Dịch vụ thông báo       | Provider email / SMS / push notification. Nhận yêu cầu gửi từ Notification Service và trả trạng thái gửi để hệ thống lưu lịch sử.                                               |
+| Dịch vụ định tuyến      | OSRM hoặc tương đương. Cung cấp khoảng cách, thời gian di chuyển và gợi ý điểm đón / trả trong quá trình cấu hình route, trip và search chuyến.                                 |
+| Dịch vụ lưu trữ tệp     | Object storage cho hồ sơ KYC, ảnh sự cố, attachment minh chứng dispute / complaint và file báo cáo bất đồng bộ.                                                                 |
+| Dịch vụ ngân hàng payout| Kênh chuyển khoản ngân hàng phục vụ payout cho Operator theo chu kỳ T+3 (`OQ-16`); có thể là chuyển khoản trực tiếp hoặc qua bên thứ ba khi Platform mở rộng phạm vi tích hợp. |
+
+Các external actor không có quyền truy cập tài khoản nội bộ; mọi giao tiếp phải qua adapter chuẩn của hệ thống và có cơ chế retry, idempotency, audit log phù hợp.
 
 ## 8. Giả định, ràng buộc, phụ thuộc
 
@@ -1305,27 +1321,27 @@ Luồng thay thế / ngoại lệ:
 
 ### UC-09: Đánh giá, hỗ trợ và khiếu nại
 
-| Thuộc tính     | Nội dung                                                                                                                                                                                |
-| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Actor chính    | Người dùng (User)                                                                                                                                                                       |
-| Actor phụ      | Hệ thống, Nhà xe (Operator), Admin toàn hệ thống (Admin)                                                                                                                                |
-| Mục tiêu       | Cho phép User đánh giá dịch vụ hợp lệ, tạo support ticket / complaint và theo dõi quá trình xử lý trong Marketplace layer.                                                              |
-| Tiền điều kiện | User đã đăng nhập; với đánh giá, User phải có ticket hợp lệ và chuyến đã hoàn thành; với hỗ trợ / khiếu nại, User có thông tin booking / ticket / payment / trip liên quan nếu áp dụng. |
-| Kích hoạt      | User chọn đánh giá chuyến / Operator hoặc tạo yêu cầu hỗ trợ / khiếu nại.                                                                                                               |
-| Hậu điều kiện  | Review, support ticket hoặc complaint được lưu; trao đổi, attachment và trạng thái xử lý được theo dõi; scorecard Operator được cập nhật theo policy nếu dữ liệu hợp lệ.                |
-| Ưu tiên        | Trung bình                                                                                                                                                                              |
+| Thuộc tính     | Nội dung                                                                                                                                                                                                                                                                                                                |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Actor chính    | Người dùng (User), Khách vãng lai (Guest) cho luồng hỗ trợ / khiếu nại                                                                                                                                                                                                                                                  |
+| Actor phụ      | Hệ thống, Nhà xe (Operator), Admin toàn hệ thống (Admin)                                                                                                                                                                                                                                                                |
+| Mục tiêu       | Cho phép User đánh giá dịch vụ hợp lệ, đồng thời cho phép User và Guest tạo support ticket / complaint và theo dõi quá trình xử lý trong Marketplace layer.                                                                                                                                                             |
+| Tiền điều kiện | Với đánh giá: chỉ User đã đăng nhập, có ticket hợp lệ và chuyến đã hoàn thành mới được gửi review (Guest không tham gia luồng đánh giá ở v1). Với hỗ trợ / khiếu nại: User đã đăng nhập, hoặc Guest đã xác minh mã vé / mã booking và thông tin liên hệ theo `UC-35` để gắn ticket hỗ trợ với booking / ticket cụ thể. |
+| Kích hoạt      | User chọn đánh giá chuyến / Operator, hoặc User / Guest tạo yêu cầu hỗ trợ / khiếu nại.                                                                                                                                                                                                                                 |
+| Hậu điều kiện  | Review, support ticket hoặc complaint được lưu; trao đổi, attachment và trạng thái xử lý được theo dõi; scorecard Operator được cập nhật theo policy nếu dữ liệu hợp lệ. Ticket của Guest được gắn với mã booking / mã vé đã xác minh và kênh liên hệ đã lưu để Operator / Admin phản hồi.                              |
+| Ưu tiên        | Trung bình                                                                                                                                                                                                                                                                                                              |
 
 Luồng chính:
 
-1. User mở ticket / chuyến đã hoàn thành hoặc trung tâm hỗ trợ.
+1. User mở ticket / chuyến đã hoàn thành hoặc trung tâm hỗ trợ; Guest mở luồng hỗ trợ sau khi đã xác minh mã vé / mã booking và thông tin liên hệ theo `UC-35`.
 2. Nếu User đánh giá, hệ thống kiểm tra ticket hợp lệ, chuyến đã hoàn thành và quyền đánh giá của User.
 3. User nhập rating, nội dung nhận xét và thông tin phản hồi về chuyến / Operator.
 4. Hệ thống kiểm tra nội dung, lưu review và đưa vào hiển thị / kiểm duyệt theo policy.
-5. Nếu User cần hỗ trợ hoặc khiếu nại, User chọn loại vấn đề liên quan đến booking, ticket, payment, trip hoặc chất lượng dịch vụ.
-6. User nhập mô tả, thông tin liên hệ nếu cần và attachment minh chứng hợp lệ.
+5. Nếu User hoặc Guest cần hỗ trợ hoặc khiếu nại, actor chọn loại vấn đề liên quan đến booking, ticket, payment, trip hoặc chất lượng dịch vụ.
+6. Actor nhập mô tả, thông tin liên hệ nếu cần và attachment minh chứng hợp lệ; với Guest, hệ thống bắt buộc gắn support ticket với mã booking / mã vé đã xác minh.
 7. Hệ thống tạo support ticket / complaint, lưu toàn bộ trao đổi, attachment, trạng thái xử lý và phân tuyến cho Operator hoặc Admin theo policy.
-8. User theo dõi trạng thái xử lý; Operator hoặc Admin phản hồi trong phạm vi được phân quyền.
-9. Nếu vụ việc cần phân xử, hệ thống tạo hoặc liên kết DisputeCase và cập nhật scorecard Operator chỉ từ dữ liệu hợp lệ.
+8. User và Guest theo dõi trạng thái xử lý; Operator hoặc Admin phản hồi trong phạm vi được phân quyền. Phản hồi cho Guest gửi qua kênh liên hệ đã lưu trong booking và tra cứu lại theo `UC-35`.
+9. Nếu vụ việc cần phân xử, hệ thống tạo hoặc liên kết DisputeCase theo `UC-27` và cập nhật scorecard Operator chỉ từ dữ liệu hợp lệ.
 
 Luồng thay thế / ngoại lệ:
 
@@ -1334,6 +1350,8 @@ Luồng thay thế / ngoại lệ:
 - A3: Nội dung review / complaint vi phạm policy hoặc nghi ngờ spam → hệ thống ẩn, chuyển kiểm duyệt hoặc từ chối theo cấu hình.
 - A4: Attachment không hợp lệ, quá dung lượng hoặc thiếu thông tin bắt buộc → hệ thống yêu cầu bổ sung.
 - A5: Khiếu nại nghiêm trọng liên quan refund, an toàn, sai chuyến hoặc tranh chấp tiền → hệ thống đánh dấu ưu tiên và có thể chuyển thành DisputeCase.
+- A6: Guest chưa xác minh đủ mã vé / mã booking hoặc thông tin liên hệ → hệ thống không cho tạo support ticket gắn với booking; chỉ cho phép kênh hỗ trợ chung không truy cập dữ liệu nhạy cảm.
+- A7: Guest cố gửi review hoặc thao tác cần tài khoản → hệ thống từ chối và gợi ý đăng ký / đăng nhập để chuyển thành User.
 
 ### UC-10: Đăng ký Operator và gửi hồ sơ KYC
 
@@ -1772,7 +1790,7 @@ Luồng thay thế / ngoại lệ:
 | Actor chính    | Admin toàn hệ thống (Admin)                                                                                                                                                                                                 |
 | Actor phụ      | Hệ thống, Nhà xe (Operator)                                                                                                                                                                                                 |
 | Mục tiêu       | Cho phép Admin cấu hình các policy nền tảng ảnh hưởng trực tiếp đến seat hold, hủy / hoàn tiền, commission và payout; bảo đảm mọi policy có phạm vi, thời gian hiệu lực, version và audit log rõ ràng.                      |
-| Tiền điều kiện | Admin đã đăng nhập, có quyền cấu hình policy tương ứng; các giá trị baseline của v1 đã được xác định gồm thời gian giữ ghế mặc định 10 phút, commission mặc định 5% và payout T+3 sau khi chuyến hoàn thành.                |
+| Tiền điều kiện | Admin đã đăng nhập và có quyền cấu hình nhóm policy tương ứng. Các giá trị baseline cấp Platform (10 phút giữ ghế theo `OQ-06`, commission 5% theo `OQ-18`, payout T+3 theo `OQ-16`) là điểm khởi đầu của cấu hình; mọi thay đổi phải tạo phiên bản policy mới và không áp ngược về booking đã tạo. |
 | Kích hoạt      | Admin cần tạo mới, cập nhật, vô hiệu hóa hoặc thay đổi hiệu lực policy nền tảng / override per-Operator.                                                                                                                    |
 | Hậu điều kiện  | Policy được lưu thành phiên bản mới, chỉ áp dụng theo phạm vi và thời gian hiệu lực đã cấu hình; booking đã tạo trước đó tiếp tục dùng snapshot cũ; thao tác nhạy cảm được audit và thông báo cho bên bị ảnh hưởng nếu cần. |
 | Ưu tiên        | Cao                                                                                                                                                                                                                         |
@@ -2406,9 +2424,9 @@ Lưu ý: các state enum dưới đây là **target** theo SRS. Các điểm cò
 
 ---
 
-## 21. Open Questions / TBD
+## 21. Quyết định đã chốt (Decisions Log)
 
-Các quyết định dưới đây là nguồn chốt cho SRS. Các tài liệu HLD / LLD / DB / API / UI / Security / Test Plan cần đồng bộ theo các quyết định này ở lượt hiệu chỉnh riêng.
+Toàn bộ Open Questions (`OQ-*`) và Marketplace Questions (`MQ-*`) phát sinh trong quá trình viết SRS đã được chốt và liệt kê dưới đây làm nguồn chính thức. Các tài liệu HLD / LLD / DB / API / UI / Security / Test Plan cần đồng bộ theo các quyết định này ở lượt hiệu chỉnh riêng. Open Question mới phát sinh trong các phase thiết kế sẽ được ghi nhận tại `context/PROJECT-STATE.md` và được đồng bộ ngược về SRS khi ảnh hưởng yêu cầu.
 
 | ID        | Quyết định / nội dung chốt                                                                                                                                                                                                                                                                                                      | Ghi chú / hệ quả                                                                           |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
