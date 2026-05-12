@@ -9,7 +9,7 @@
 | Tên tài liệu | Security & Permission Design     |
 | Mã tài liệu  | 07-security-permission-design    |
 | Dự án        | Hệ thống đặt vé xe khách         |
-| Phiên bản    | v0.1                             |
+| Phiên bản    | v0.2                             |
 | Trạng thái   | Draft                            |
 | Người viết   | AI Agent                         |
 | Người duyệt  | Nguyễn Hồng Khanh                |
@@ -19,6 +19,7 @@
 
 | Phiên bản | Ngày       | Người cập nhật | Nội dung thay đổi                         |
 | --------- | ---------- | -------------- | ----------------------------------------- |
+| v0.2      | 12/05/2026 | AI Agent       | Đồng bộ quyết định S3-compatible object storage từ HLD/LLD |
 | v0.1      | 11/05/2026 | AI Agent       | Tạo bản nháp Security & Permission Design |
 
 ---
@@ -131,7 +132,7 @@ Tài liệu này mô tả thiết kế bảo mật và phân quyền cho hệ th
 | OTP/token | Không log plaintext, TTL ngắn |
 | Số điện thoại/email | Mask khi không cần đầy đủ |
 | Payment data | Không lưu dữ liệu thẻ nhạy cảm; chỉ lưu mã giao dịch/provider metadata cần thiết |
-| KYC document | Object storage private, signed URL/permission, audit access |
+| KYC document | S3-compatible object storage private, production AWS S3 private bucket, local/dev MinIO; signed URL/permission, audit access |
 | QR token | Không đoán được, lưu hash hoặc token an toàn theo thiết kế DB |
 | Audit log | Không chứa secret/plaintext nhạy cảm |
 
@@ -170,5 +171,5 @@ Tài liệu này mô tả thiết kế bảo mật và phân quyền cho hệ th
 | SEC-OQ-01 | Web dùng Bearer token hay cookie session? | CSRF/token storage |
 | SEC-OQ-02 | Có bật MFA cho Admin/Operator ở v1 không? | Auth flow |
 | SEC-OQ-03 | Mask số điện thoại cụ thể theo rule nào? | UI/API/report |
-| SEC-OQ-04 | KYC document lưu provider nào? | Object storage security |
+| SEC-OQ-04 | ĐÃ CHỐT (12/05/2026): KYC document dùng S3-compatible object storage qua FileStorageProvider; production AWS S3 private bucket, local/dev MinIO. | Signed URL, access audit, scan policy và retention |
 | SEC-OQ-05 | AuditLog lưu bao lâu và ai được export? | Compliance/operation |

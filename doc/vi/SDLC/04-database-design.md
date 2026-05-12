@@ -9,7 +9,7 @@
 | Tên tài liệu | Database Design                  |
 | Mã tài liệu  | 04-database-design               |
 | Dự án        | Hệ thống đặt vé xe khách         |
-| Phiên bản    | v0.1                             |
+| Phiên bản    | v0.2                             |
 | Trạng thái   | Draft                            |
 | Người viết   | AI Agent                         |
 | Người duyệt  | Nguyễn Hồng Khanh                |
@@ -19,6 +19,7 @@
 
 | Phiên bản | Ngày       | Người cập nhật | Nội dung thay đổi                                   |
 | --------- | ---------- | -------------- | --------------------------------------------------- |
+| v0.2      | 12/05/2026 | AI Agent       | Đồng bộ quyết định LLD: SeatHold DB-authoritative hybrid và S3-compatible file storage |
 | v0.1      | 11/05/2026 | AI Agent       | Tạo bản nháp Database Design từ SRS/HLD             |
 
 ---
@@ -62,14 +63,14 @@ Tài liệu này mô tả thiết kế dữ liệu mức database cho hệ thố
 | Nhóm | Collection dự kiến | Chủ sở hữu module | Ghi chú |
 | ---- | ------------------ | ----------------- | ------- |
 | Identity | `users`, `admins`, `operators`, `employees`, `sessions`, `roles`, `permissions` | Identity & Access | Có account status và session revoke |
-| Operator KYC | `operator_profiles`, `kyc_documents`, `bank_accounts`, `operator_status_histories` | Operator | File KYC cần object storage TBD |
+| Operator KYC | `operator_profiles`, `kyc_documents`, `bank_accounts`, `operator_status_histories` | Operator | File KYC dùng S3-compatible storage qua metadata/object key |
 | Catalog | `provinces`, `wards`, `stop_points`, `vehicle_types`, `amenities` | Admin/Catalog | Dữ liệu chuẩn Platform |
 | Transport | `vehicles`, `seat_maps`, `seats`, `routes`, `route_stops`, `trips`, `trip_stops`, `trip_seats`, `fares`, `fare_rules` | Transport Resource | Fare model còn TBD |
 | Booking | `seat_holds`, `bookings`, `passenger_infos`, `tickets`, `ticket_qr_tokens`, `booking_status_histories` | Booking & Ticket | SeatHold cần TTL/lock |
 | Promotion | `promotions`, `promotion_rules`, `promotion_redemptions`, `promotion_usage_limits` | Promotion | Snapshot vào booking |
 | Payment | `payments`, `refunds`, `escrow_ledgers`, `commission_rules`, `payouts`, `reconciliation_records` | Payment | Ledger cần thiết kế kỹ trước tiền thật |
 | Operation | `employee_assignments`, `check_in_events`, `journey_logs`, `incident_reports` | Employee Operations | Offline/sync cần version hoặc conflict policy |
-| Support | `support_tickets`, `complaints`, `reviews`, `dispute_cases`, `attachments`, `operator_scorecards` | Support & Trust | Attachment storage TBD |
+| Support | `support_tickets`, `complaints`, `reviews`, `dispute_cases`, `attachments`, `operator_scorecards` | Support & Trust | Attachment dùng S3-compatible storage qua metadata/object key |
 | Notification | `notifications`, `notification_deliveries`, `notification_preferences` | Notification | Delivery retry theo kênh |
 | Audit | `audit_logs`, `policy_versions`, `policy_snapshots` | Audit | Có thể tách storage nếu cần |
 
@@ -122,7 +123,7 @@ erDiagram
 
 | Nghiệp vụ | Cơ chế bắt buộc | Ghi chú |
 | --------- | --------------- | ------- |
-| SeatHold | Atomic update hoặc Redis lock + DB state | Chưa chốt cơ chế cuối cùng |
+| SeatHold | DB-authoritative hybrid: conditional write / unique active invariant / TTL, có thể thêm lock service ngắn hạn | DB giữ nguồn đúng sai cuối; lock service không thay thế invariant dữ liệu |
 | Create booking | Kiểm SeatHold và tạo booking trong boundary nhất quán | Không tạo booking nếu hold hết hạn |
 | Payment callback | Idempotency theo payment id/provider transaction id | Không ghi tiền trùng |
 | Ticket issuance | Idempotent theo booking item / passenger / seat | Không tạo trùng ticket |
@@ -159,8 +160,8 @@ erDiagram
 
 | ID | Câu hỏi | Tác động |
 | -- | ------- | -------- |
-| DB-OQ-01 | SeatHold dùng Redis-only, MongoDB-only hay kết hợp? | Schema và transaction |
+| DB-OQ-01 | ĐÃ CHỐT (12/05/2026): SeatHold dùng DB-authoritative hybrid; DB giữ invariant cuối cùng, lock service nếu có chỉ hỗ trợ giảm contention. | Schema, index, transaction/conditional write và concurrency test |
 | DB-OQ-02 | Fare model gắn Route, Trip hay FareRule riêng? | Collection và index |
 | DB-OQ-03 | EscrowLedger double-entry hay ledger đơn? | Payment/payout correctness |
 | DB-OQ-04 | AuditLog lưu MongoDB hay storage riêng? | Retention, cost, query |
-| DB-OQ-05 | Object storage provider cho KYC/attachment/report là gì? | Attachment schema |
+| DB-OQ-05 | ĐÃ CHỐT (12/05/2026): object storage dùng S3-compatible qua FileStorageProvider; production AWS S3 private bucket, local/dev MinIO; DB chỉ lưu metadata/object key. | Attachment schema, signed URL, retention, scan policy |

@@ -10,7 +10,7 @@
 | Mã tài liệu  | 00-quy-chuan-cho-lap-trinh-vien                              |
 | Dự án        | Hệ thống đặt vé xe khách                                     |
 | Phiên bản    | v1.0                                                         |
-| Trạng thái   | Draft                                                        |
+| Trạng thái   | Approved                                                     |
 | Người viết   | AI Agent                                                     |
 | Người duyệt  | Nguyễn Hồng Khanh                                            |
 | Ngày tạo     | 04/05/2026                                                   |

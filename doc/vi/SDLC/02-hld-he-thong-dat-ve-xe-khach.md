@@ -9,8 +9,8 @@
 | Tên tài liệu      | High Level Design - Hệ thống đặt vé xe khách |
 | Mã tài liệu       | 02-hld-he-thong-dat-ve-xe-khach              |
 | Dự án             | Hệ thống đặt vé xe khách                     |
-| Phiên bản         | v1.11                                        |
-| Trạng thái        | Draft                                        |
+| Phiên bản         | v1.12                                        |
+| Trạng thái        | Approved                                     |
 | Người viết        | AI Agent                                     |
 | Người duyệt       | Nguyễn Hồng Khanh                            |
 | Ngày tạo          | 11/05/2026                                   |
@@ -20,9 +20,10 @@
 
 | Phiên bản | Ngày       | Người cập nhật              | Nội dung thay đổi                                                                                                    |
 | --------- | ---------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| v1.12     | 12/05/2026 | AI Agent                    | Đồng bộ quyết định từ LLD v1.1: DB-authoritative SeatHold, Employee offline giới hạn và S3-compatible file storage   |
 | v1.11     | 12/05/2026 | AI Agent                    | Bỏ khái niệm Tech Stack Baseline V1; HLD tham chiếu ADR-009 như khung đánh giá tech stack trong giai đoạn rebuild    |
-| v1.10     | 12/05/2026 | AI Agent                    | Di chuyển bảng tech stack đề xuất sang ADR-009; HLD chỉ giữ tham chiếu và ràng buộc triển khai mức cao                |
-| v1.9      | 12/05/2026 | AI Agent                    | Bổ sung bảng tech stack đề xuất để reviewer hiệu chỉnh; đồng bộ lại baseline object storage và trạng thái OQ hạ tầng  |
+| v1.10     | 12/05/2026 | AI Agent                    | Di chuyển bảng tech stack đề xuất sang ADR-009; HLD chỉ giữ tham chiếu và ràng buộc triển khai mức cao               |
+| v1.9      | 12/05/2026 | AI Agent                    | Bổ sung bảng tech stack đề xuất để reviewer hiệu chỉnh; đồng bộ lại baseline object storage và trạng thái OQ hạ tầng |
 | v1.8      | 12/05/2026 | AI Agent                    | Khắc phục lỗi review nội bộ: đồng bộ version, mobile User-only, S3-compatible storage baseline và HLD-OQ statuses    |
 | v1.7      | 12/05/2026 | AI Agent                    | Chốt object/file storage dùng S3-compatible adapter; production baseline AWS S3 private bucket, local/dev dùng MinIO |
 | v1.6      | 12/05/2026 | AI Agent                    | Đồng bộ mobile passenger app là User-only; Guest checkout / lookup giữ ở Web Marketplace                             |
@@ -35,7 +36,7 @@
 
 ### 1.3. Trạng thái sử dụng
 
-Tài liệu này vẫn ở trạng thái `Draft`. Nội dung mục 1-18 trong v1.11 đã được đồng bộ theo SRS v1.19 và `DOMAIN-MAP`. Tech stack target chưa được HLD chọn; ADR-009 chỉ giữ khung đánh giá / candidate inventory trong giai đoạn rebuild tài liệu. Các tài liệu LLD, Database Design, API Specification, Security Design, Test Plan và Task Breakdown vẫn phải được viết / đồng bộ trước khi bắt đầu code nghiệp vụ Backend V1.
+Tài liệu này vẫn ở trạng thái `Draft`. Nội dung mục 1-18 trong v1.12 đã được đồng bộ theo SRS v1.19, `DOMAIN-MAP` và LLD v1.1. Tech stack target chưa được HLD chọn; ADR-009 chỉ giữ khung đánh giá / candidate inventory trong giai đoạn rebuild tài liệu. Các tài liệu Database Design, API Specification, Security Design, Test Plan và Task Breakdown vẫn phải được viết / đồng bộ trước khi bắt đầu code nghiệp vụ Backend V1.
 
 ---
 
@@ -61,7 +62,7 @@ Tài liệu này vẫn ở trạng thái `Draft`. Nội dung mục 1-18 trong v1
 18. Open Questions / TBD
 19. Phụ lục
 
-Ghi chú: mục 1-18 là HLD v1.11 đã đồng bộ theo SRS v1.19 và `DOMAIN-MAP`. Mục 18 chỉ giữ các câu hỏi mở phát sinh ở tầng thiết kế HLD, không mở lại các OQ / MQ đã chốt trong SRS §21. Việc giữ hay mở lại tech stack hiện có phải theo ADR-009 và quyết định reviewer.
+Ghi chú: mục 1-18 là HLD v1.12 đã đồng bộ theo SRS v1.19, `DOMAIN-MAP` và LLD v1.1. Mục 18 chỉ giữ các câu hỏi mở phát sinh ở tầng thiết kế HLD, không mở lại các OQ / MQ đã chốt trong SRS §21. Việc giữ hay mở lại tech stack hiện có phải theo ADR-009 và quyết định reviewer.
 
 ---
 
@@ -126,42 +127,45 @@ Khi context kỹ thuật mâu thuẫn với SRS v1.19 hoặc quyết định đ�
 
 ### 4.2. Phạm vi thiết kế theo SRS v1.19
 
-| Phạm vi                                                                             | Trạng thái trong HLD v1.2 | Ghi chú thiết kế                                                                                                             |
-| ----------------------------------------------------------------------------------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Marketplace layer                                                                   | Trong phạm vi             | User / Guest search, trip detail, seat hold, booking, VNPay payment, e-ticket, ticket lookup, support, review, dispute entry |
-| Operator OS layer                                                                   | Trong phạm vi             | Operator profile, KYC, finance, vehicle, route, trip, fare, inventory, employee, manifest, check-in support, report          |
-| Platform admin layer                                                                | Trong phạm vi             | KYC approval, catalog, policy, commission, payout, payment/refund/escrow monitoring, dispute arbitration, audit, reporting   |
-| Mobile User                                                                         | Trong phạm vi             | Một mobile codebase, tách mode User; đặt vé, xem vé, notification, support                                                   |
-| Mobile Employee                                                                     | Trong phạm vi             | Một mobile codebase, tách mode Employee; nhiệm vụ, manifest, QR check-in, trip status, journey log, incident                 |
-| External Operator API / hybrid integration                                          | Ngoài phạm vi v1          | Chỉ thiết kế boundary để không khóa hướng mở rộng, chưa hỗ trợ trong baseline v1                                             |
-| Subsidy promotion, interline phức tạp, IoT, payroll, multi-currency, multi-language | Ngoài phạm vi v1          | Không đưa vào module nghiệp vụ v1 nếu không có review SRS mới                                                                |
+| Phạm vi                                                                             | Trạng thái trong HLD v1.12 | Ghi chú thiết kế                                                                                                             |
+| ----------------------------------------------------------------------------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Marketplace layer                                                                   | Trong phạm vi              | User / Guest search, trip detail, seat hold, booking, VNPay payment, e-ticket, ticket lookup, support, review, dispute entry |
+| Operator OS layer                                                                   | Trong phạm vi              | Operator profile, KYC, finance, vehicle, route, trip, fare, inventory, employee, manifest, check-in support, report          |
+| Platform admin layer                                                                | Trong phạm vi              | KYC approval, catalog, policy, commission, payout, payment/refund/escrow monitoring, dispute arbitration, audit, reporting   |
+| Mobile User                                                                         | Trong phạm vi              | Một mobile codebase, tách mode User; đặt vé, xem vé, notification, support                                                   |
+| Mobile Employee                                                                     | Trong phạm vi              | Một mobile codebase, tách mode Employee; nhiệm vụ, manifest, QR check-in, trip status, journey log, incident                 |
+| External Operator API / hybrid integration                                          | Ngoài phạm vi v1           | Chỉ thiết kế boundary để không khóa hướng mở rộng, chưa hỗ trợ trong baseline v1                                             |
+| Subsidy promotion, interline phức tạp, IoT, payroll, multi-currency, multi-language | Ngoài phạm vi v1           | Không đưa vào module nghiệp vụ v1 nếu không có review SRS mới                                                                |
 
 ### 4.3. Baseline quyết định đã chốt
 
-| Chủ đề             | Baseline HLD v1.2                                                                                                     | Truy vết     |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------- | ------------ |
-| Marketplace model  | Managed marketplace trung lập; Operator là tín hiệu dịch vụ chính, Platform bảo chứng giao dịch / hỗ trợ / tranh chấp | MQ-05, OQ-20 |
-| Payment provider   | VNPay Sandbox là provider đầu tiên; vẫn dùng adapter để mở rộng provider sau                                          | OQ-05        |
-| Seat hold          | Giữ ghế mặc định 10 phút cấp Platform, không per-Operator trong v1                                                    | OQ-06, BR-02 |
-| Checkout           | Marketplace v1 ưu tiên thanh toán trước; `PENDING_CONFIRMATION` giữ trong enum cho ngoại lệ / phase sau               | OQ-07        |
-| Guest checkout     | Guest được giữ ghế, tạo booking, thanh toán và tra cứu vé sau xác minh                                                | BR-21, UC-35 |
-| Fare               | `Fare` / `FareRule` là collection riêng; booking lưu fare snapshot; chưa hỗ trợ segment fare baseline v1              | OQ-08        |
-| OTP / notification | Email OTP là baseline v1; SMS OTP ngoài phạm vi v1; SMS / push giữ adapter cho notification tương lai                 | OQ-09        |
-| Refund policy      | Platform default policy + Operator override do Admin duyệt; booking luôn lưu policy snapshot                          | OQ-13        |
-| Audit              | Audit log v1 lưu MongoDB cùng cluster, append-only, không xóa cứng                                                    | OQ-14        |
-| Reporting          | MongoDB aggregation + async jobs cho báo cáo lớn; chưa tách data warehouse                                            | OQ-15        |
-| Escrow / payout    | Escrow payout T+3 sau chuyến hoàn thành, không ngưỡng tối thiểu, chuyển khoản ngân hàng, Admin xác nhận thủ công      | MQ-01, OQ-16 |
-| Commission         | Default 5% cho Operator mới; Admin có thể override per-Operator bằng rule có hiệu lực                                 | OQ-18        |
-| KYC                | KYC Operator v1 gồm pháp nhân, giấy phép vận tải, đại diện / ủy quyền, tài khoản ngân hàng nhận payout                | OQ-19        |
+| Chủ đề               | Baseline HLD v1.12                                                                                                                   | Truy vết             |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------- |
+| Marketplace model    | Managed marketplace trung lập; Operator là tín hiệu dịch vụ chính, Platform bảo chứng giao dịch / hỗ trợ / tranh chấp                | MQ-05, OQ-20         |
+| Payment provider     | VNPay Sandbox là provider đầu tiên; vẫn dùng adapter để mở rộng provider sau                                                         | OQ-05                |
+| Seat hold            | Giữ ghế mặc định 10 phút cấp Platform, không per-Operator trong v1                                                                   | OQ-06, BR-02         |
+| SeatHold consistency | DB-authoritative hybrid: DB giữ invariant cuối cùng cho active hold / booked seat, lock service chỉ là lớp phụ trợ nếu có            | LLD-OP-02            |
+| Checkout             | Marketplace v1 ưu tiên thanh toán trước; `PENDING_CONFIRMATION` giữ trong enum cho ngoại lệ / phase sau                              | OQ-07                |
+| Guest checkout       | Guest được giữ ghế, tạo booking, thanh toán và tra cứu vé sau xác minh                                                               | BR-21, UC-35         |
+| Fare                 | `Fare` / `FareRule` là collection riêng; booking lưu fare snapshot; chưa hỗ trợ segment fare baseline v1                             | OQ-08                |
+| OTP / notification   | Email OTP là baseline v1; SMS OTP ngoài phạm vi v1; SMS / push giữ adapter cho notification tương lai                                | OQ-09                |
+| Refund policy        | Platform default policy + Operator override do Admin duyệt; booking luôn lưu policy snapshot                                         | OQ-13                |
+| Audit                | Audit log v1 lưu MongoDB cùng cluster, append-only, không xóa cứng                                                                   | OQ-14                |
+| Reporting            | MongoDB aggregation + async jobs cho báo cáo lớn; chưa tách data warehouse                                                           | OQ-15                |
+| Escrow / payout      | Escrow payout T+3 sau chuyến hoàn thành, không ngưỡng tối thiểu, chuyển khoản ngân hàng, Admin xác nhận thủ công                     | MQ-01, OQ-16         |
+| Commission           | Default 5% cho Operator mới; Admin có thể override per-Operator bằng rule có hiệu lực                                                | OQ-18                |
+| KYC                  | KYC Operator v1 gồm pháp nhân, giấy phép vận tải, đại diện / ủy quyền, tài khoản ngân hàng nhận payout                               | OQ-19                |
+| Object storage       | S3-compatible object storage qua FileStorageProvider; production AWS S3 private bucket, local/dev MinIO; DB metadata/object key only | HLD-OQ-01, LLD-OP-04 |
+| Employee offline     | Mobile Employee dùng read cache manifest + queued operational actions có giới hạn; không full offline sync                           | HLD-OQ-04, LLD-OP-03 |
 
 ### 4.4. ASSUMPTION / TBD còn lại ở mức HLD
 
-| ID         | Loại       | Nội dung                                                                                                              | Ảnh hưởng                                                                                 |
-| ---------- | ---------- | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| HLD-AS-01  | ASSUMPTION | Backend v1 có một application backend trung tâm phục vụ các client.                                                   | Cho phép thiết kế capability boundary trước khi LLD chốt module / folder cụ thể           |
-| HLD-AS-02  | ASSUMPTION | Operational data store, cache / lock và queue phải theo quyết định ADR-009; hiện trạng repo chỉ là candidate nếu chưa được reviewer xác nhận. | Database Design phải chốt collection, index, TTL, idempotency và transaction / lock       |
-| HLD-TBD-01 | TBD        | Provider cụ thể cho SMS notification, push notification và object/file storage target chưa chốt trong rebuild.        | HLD chốt adapter boundary; API / Security / Deployment sẽ chốt chi tiết provider/kênh sau |
-| HLD-TBD-02 | TBD        | Monitoring, logging stack, secret manager và production deployment target chưa chốt.                                  | Deployment & Operation Standard chốt trước staging / production                           |
+| ID         | Loại       | Nội dung                                                                                                                                      | Ảnh hưởng                                                                                             |
+| ---------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| HLD-AS-01  | ASSUMPTION | Backend v1 có một application backend trung tâm phục vụ các client.                                                                           | Cho phép thiết kế capability boundary trước khi LLD chốt module / folder cụ thể                       |
+| HLD-AS-02  | ASSUMPTION | Operational data store, cache / lock và queue phải theo quyết định ADR-009; hiện trạng repo chỉ là candidate nếu chưa được reviewer xác nhận. | Database Design phải chốt collection, index, TTL, idempotency và transaction / lock                   |
+| HLD-TBD-01 | TBD        | Provider cụ thể cho SMS notification và push notification chưa chốt; object storage target đã chốt S3-compatible/AWS S3/MinIO baseline.       | API / Security / Deployment chốt chi tiết kênh, token lifecycle, signed URL, retention và scan policy |
+| HLD-TBD-02 | TBD        | Monitoring, logging stack, secret manager và production deployment target chưa chốt.                                                          | Deployment & Operation Standard chốt trước staging / production                                       |
 
 ---
 
@@ -267,33 +271,33 @@ flowchart TB
 
 ### 5.3. Nguyên tắc kiến trúc
 
-| ID          | Nguyên tắc                                                                                                                                                       | Truy vết chính                   |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
-| HLD-PRIN-01 | Platform là trung gian công nghệ và thanh toán; không sở hữu xe, không thuê tài xế, không trực tiếp vận hành chuyến.                                             | SRS §4.1, §4.5, MQ-05            |
-| HLD-PRIN-02 | Backend là nguồn kiểm tra cuối cùng cho xác thực, RBAC, tenant boundary, trạng thái ghế, booking, ticket, payment, refund, payout và audit.                      | SRS §11.4, §14, §15, §17         |
-| HLD-PRIN-03 | Dữ liệu thuộc Operator phải luôn truy vết được về `operatorId` hoặc tenant boundary tương đương; Operator / Employee KHÔNG ĐƯỢC thao tác dữ liệu Operator khác.  | DM-01, BR-08, BR-09              |
-| HLD-PRIN-04 | Ghế trên chuyến là tài nguyên giao dịch; giữ ghế mặc định 10 phút cấp Platform và phải chống bán trùng tại hold, booking, payment và ticket issuance.            | DM-02, BR-01..03, OQ-06          |
-| HLD-PRIN-05 | Booking / ticket / payment / refund / escrow / payout phải truy vết theo một chuỗi giao dịch duy nhất và có mã tham chiếu phục vụ đối soát.                      | DM-03, BR-17, NFR-DATA-03        |
-| HLD-PRIN-06 | Booking phải lưu snapshot tối thiểu về chuyến, Operator, route, stop point, seat, fare, promotion, chính sách hủy / hoàn, hành khách, contact và tổng tiền.      | DM-04, BR-24, BR-26              |
-| HLD-PRIN-07 | Marketplace checkout v1 là luồng thanh toán trước; `PENDING_CONFIRMATION` chỉ là trạng thái dự phòng cho ngoại lệ / phase sau, không mở mặc định cho hành khách. | BR-04, BR-27, OQ-07              |
-| HLD-PRIN-08 | Payment provider đầu tiên là VNPay Sandbox, nhưng vẫn đi qua adapter; callback / webhook phải xác minh, idempotent và hỗ trợ reconciliation.                     | OQ-05, BR-27..28, NFR-DATA-04    |
-| HLD-PRIN-09 | Tiền thanh toán thành công đi vào escrow; commission mặc định 5%; payout v1 xét T+3 sau chuyến hoàn thành, không ngưỡng tối thiểu, Admin xác nhận thủ công.      | MQ-01, OQ-16, OQ-18, BR-30..33   |
-| HLD-PRIN-10 | Refund / dispute dùng policy snapshot; Platform Admin là arbiter cuối cùng và mọi refund thủ công / đơn phương phải có quyền, lý do, audit và notification.      | OQ-13, MQ-03, BR-35, BR-49..51   |
-| HLD-PRIN-11 | Audit log cho thao tác nhạy cảm là append-only ở v1; không xóa cứng booking, ticket, payment, refund, payout hoặc audit log trong production.                    | OQ-14, BR-58..59, NFR-AUDIT-03   |
-| HLD-PRIN-12 | Reporting lớn không được làm chậm search, booking, payment hoặc check-in; ưu tiên aggregation và background job có checkpoint / retry.                           | OQ-15, BR-56, BR-62, NFR-PERF-05 |
-| HLD-PRIN-13 | Email OTP là baseline xác thực v1; SMS OTP ngoài phạm vi v1. Notification và file storage phải giữ adapter boundary cho provider chưa chốt.                      | OQ-09, NFR-COMP-03, NFR-COMP-05  |
-| HLD-PRIN-14 | Mọi capability phải trace được về FR / UC / BR liên quan; phần chưa đủ chi tiết sẽ được chốt ở LLD, DB Design, API Spec, Security Design và Test Plan.           | SRS §19.3, `03`..`08`            |
+| ID          | Nguyên tắc                                                                                                                                                         | Truy vết chính                             |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------ |
+| HLD-PRIN-01 | Platform là trung gian công nghệ và thanh toán; không sở hữu xe, không thuê tài xế, không trực tiếp vận hành chuyến.                                               | SRS §4.1, §4.5, MQ-05                      |
+| HLD-PRIN-02 | Backend là nguồn kiểm tra cuối cùng cho xác thực, RBAC, tenant boundary, trạng thái ghế, booking, ticket, payment, refund, payout và audit.                        | SRS §11.4, §14, §15, §17                   |
+| HLD-PRIN-03 | Dữ liệu thuộc Operator phải luôn truy vết được về `operatorId` hoặc tenant boundary tương đương; Operator / Employee KHÔNG ĐƯỢC thao tác dữ liệu Operator khác.    | DM-01, BR-08, BR-09                        |
+| HLD-PRIN-04 | Ghế trên chuyến là tài nguyên giao dịch; giữ ghế mặc định 10 phút cấp Platform và phải chống bán trùng tại hold, booking, payment và ticket issuance.              | DM-02, BR-01..03, OQ-06                    |
+| HLD-PRIN-05 | Booking / ticket / payment / refund / escrow / payout phải truy vết theo một chuỗi giao dịch duy nhất và có mã tham chiếu phục vụ đối soát.                        | DM-03, BR-17, NFR-DATA-03                  |
+| HLD-PRIN-06 | Booking phải lưu snapshot tối thiểu về chuyến, Operator, route, stop point, seat, fare, promotion, chính sách hủy / hoàn, hành khách, contact và tổng tiền.        | DM-04, BR-24, BR-26                        |
+| HLD-PRIN-07 | Marketplace checkout v1 là luồng thanh toán trước; `PENDING_CONFIRMATION` chỉ là trạng thái dự phòng cho ngoại lệ / phase sau, không mở mặc định cho hành khách.   | BR-04, BR-27, OQ-07                        |
+| HLD-PRIN-08 | Payment provider đầu tiên là VNPay Sandbox, nhưng vẫn đi qua adapter; callback / webhook phải xác minh, idempotent và hỗ trợ reconciliation.                       | OQ-05, BR-27..28, NFR-DATA-04              |
+| HLD-PRIN-09 | Tiền thanh toán thành công đi vào escrow; commission mặc định 5%; payout v1 xét T+3 sau chuyến hoàn thành, không ngưỡng tối thiểu, Admin xác nhận thủ công.        | MQ-01, OQ-16, OQ-18, BR-30..33             |
+| HLD-PRIN-10 | Refund / dispute dùng policy snapshot; Platform Admin là arbiter cuối cùng và mọi refund thủ công / đơn phương phải có quyền, lý do, audit và notification.        | OQ-13, MQ-03, BR-35, BR-49..51             |
+| HLD-PRIN-11 | Audit log cho thao tác nhạy cảm là append-only ở v1; không xóa cứng booking, ticket, payment, refund, payout hoặc audit log trong production.                      | OQ-14, BR-58..59, NFR-AUDIT-03             |
+| HLD-PRIN-12 | Reporting lớn không được làm chậm search, booking, payment hoặc check-in; ưu tiên aggregation và background job có checkpoint / retry.                             | OQ-15, BR-56, BR-62, NFR-PERF-05           |
+| HLD-PRIN-13 | Email OTP là baseline xác thực v1; SMS OTP ngoài phạm vi v1. Notification giữ adapter boundary; file storage dùng S3-compatible adapter với AWS S3/MinIO baseline. | OQ-09, HLD-OQ-01, NFR-COMP-03, NFR-COMP-05 |
+| HLD-PRIN-14 | Mọi capability phải trace được về FR / UC / BR liên quan; phần chưa đủ chi tiết sẽ được chốt ở LLD, DB Design, API Spec, Security Design và Test Plan.             | SRS §19.3, `03`..`08`                      |
 
 ### 5.4. Kết quả bàn giao từ mục 1-5 cho các mục sau
 
-| Đầu ra kiến trúc                                                              | Mục sau phải dùng |
-| ----------------------------------------------------------------------------- | ----------------- |
-| Capability boundary theo Marketplace / Operator OS / Platform Admin           | Mục 6, 7, 8       |
-| Chuỗi nhất quán ghế - booking - ticket - payment - escrow - payout            | Mục 7, 9, 10, 12  |
-| Baseline provider: VNPay Sandbox, email OTP, adapter cho SMS / push / storage | Mục 12, 13, 14    |
-| Tenant boundary, audit append-only, masking và thao tác nhạy cảm              | Mục 9, 11, 15     |
-| Reporting aggregation + async jobs                                            | Mục 12, 15        |
-| Các TBD còn lại về provider storage, monitoring, deployment target            | Mục 13, 14, 18    |
+| Đầu ra kiến trúc                                                                                | Mục sau phải dùng |
+| ----------------------------------------------------------------------------------------------- | ----------------- |
+| Capability boundary theo Marketplace / Operator OS / Platform Admin                             | Mục 6, 7, 8       |
+| Chuỗi nhất quán ghế - booking - ticket - payment - escrow - payout                              | Mục 7, 9, 10, 12  |
+| Baseline provider: VNPay Sandbox, email OTP, adapter cho SMS / push, S3-compatible file storage | Mục 12, 13, 14    |
+| Tenant boundary, audit append-only, masking và thao tác nhạy cảm                                | Mục 9, 11, 15     |
+| Reporting aggregation + async jobs                                                              | Mục 12, 15        |
+| Các TBD còn lại về SMS / push provider, monitoring, deployment target                           | Mục 13, 14, 18    |
 
 ---
 
@@ -337,10 +341,10 @@ Client là kênh thao tác và hiển thị, không phải nơi sở hữu rule 
 
 Mobile v1 dùng một codebase nhưng tách mode theo actor. Việc tách mode phải áp dụng ở routing, session, permission, cache key, notification topic và storage cục bộ.
 
-| Mode         | Trách nhiệm chính                                                                     | Dữ liệu cần ưu tiên đồng bộ                                                  | Ràng buộc đặc biệt                                                                                     |
-| ------------ | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| User         | Tìm chuyến, đặt vé, thanh toán, xem vé, nhận notification, support / complaint.       | Booking đang chờ thanh toán, ticket hợp lệ, notification bắt buộc.           | Không lưu token / QR raw secret ở nơi không an toàn; Guest checkout / lookup giữ ở Web Marketplace.    |
-| Employee     | Xem nhiệm vụ, manifest, QR check-in, trạng thái hành khách, trạng thái chuyến, sự cố. | Nhiệm vụ được phân công, manifest theo chuyến, trạng thái check-in mới nhất. | Khi mất mạng, thao tác ghi chỉ được queue cục bộ nếu LLD chốt cơ chế idempotency và reconcile an toàn. |
+| Mode     | Trách nhiệm chính                                                                     | Dữ liệu cần ưu tiên đồng bộ                                                  | Ràng buộc đặc biệt                                                                                                                    |
+| -------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| User     | Tìm chuyến, đặt vé, thanh toán, xem vé, nhận notification, support / complaint.       | Booking đang chờ thanh toán, ticket hợp lệ, notification bắt buộc.           | Không lưu token / QR raw secret ở nơi không an toàn; Guest checkout / lookup giữ ở Web Marketplace.                                   |
+| Employee | Xem nhiệm vụ, manifest, QR check-in, trạng thái hành khách, trạng thái chuyến, sự cố. | Nhiệm vụ được phân công, manifest theo chuyến, trạng thái check-in mới nhất. | Khi mất mạng, hỗ trợ read cache manifest và queue giới hạn check-in / no-show / journey log / incident; server reconcile khi có mạng. |
 
 ### 6.5. Client state, realtime và lỗi
 
@@ -391,17 +395,17 @@ flowchart LR
 
 ### 7.3. Transaction và consistency boundary
 
-| Boundary nghiệp vụ     | Điểm quyết định backend                                                                | Cơ chế HLD bắt buộc                                                                                |
-| ---------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| SeatHold               | User / Guest giữ một hoặc nhiều ghế trên cùng Trip.                                    | Atomic lock / transaction tương đương, TTL 10 phút, không tạo hold một phần nếu danh sách ghế lỗi. |
-| Create booking         | Tạo booking từ SeatHold còn hiệu lực.                                                  | Recheck hold, trip, fare, policy, promotion, contact; lưu snapshot bắt buộc.                       |
-| Create payment         | Tạo payment cho booking `PENDING_PAYMENT`.                                             | Kiểm booking chưa hết hạn / chưa paid / chưa hủy; amount khớp snapshot; tạo mã payment duy nhất.   |
-| Payment callback       | VNPay callback / webhook trả kết quả.                                                  | Verify chữ ký / số tiền / transaction id, xử lý idempotent, đưa `RECONCILING` khi lệch.            |
-| Ticket issuance        | Phát hành ticket sau payment success hoặc luồng xác nhận hợp lệ.                       | Recheck booking / seat, tạo QR token không đoán được, cập nhật seat / booking / ticket atomically. |
-| Refund                 | Hủy / refund theo policy snapshot hoặc quyết định Admin.                               | Check policy, quyền, trạng thái ticket, ledger, audit và notification bắt buộc.                    |
-| Escrow / payout        | Ghi nhận tiền giữ hộ, commission, payout candidate T+3 và Admin xác nhận chuyển khoản. | Ledger có reference, không cập nhật payout thành `PAID` nếu chưa có xác nhận thủ công.             |
-| Trip change after sale | Operator / Admin đổi giờ, xe, điểm đón / trả hoặc hủy chuyến đã bán vé.                | Require reason, impact analysis, notification, audit; chặn sửa âm thầm.                            |
-| Employee check-in      | Employee xác thực QR / mã vé và cập nhật trạng thái hành khách.                        | Server-side verification, assignment scope, chống check-in lại, operation log.                     |
+| Boundary nghiệp vụ     | Điểm quyết định backend                                                                | Cơ chế HLD bắt buộc                                                                                                                                        |
+| ---------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SeatHold               | User / Guest giữ một hoặc nhiều ghế trên cùng Trip.                                    | DB-authoritative hybrid: DB giữ invariant active hold / booked seat; lock service nếu có chỉ hỗ trợ giảm contention; TTL 10 phút, không tạo hold một phần. |
+| Create booking         | Tạo booking từ SeatHold còn hiệu lực.                                                  | Recheck hold, trip, fare, policy, promotion, contact; lưu snapshot bắt buộc.                                                                               |
+| Create payment         | Tạo payment cho booking `PENDING_PAYMENT`.                                             | Kiểm booking chưa hết hạn / chưa paid / chưa hủy; amount khớp snapshot; tạo mã payment duy nhất.                                                           |
+| Payment callback       | VNPay callback / webhook trả kết quả.                                                  | Verify chữ ký / số tiền / transaction id, xử lý idempotent, đưa `RECONCILING` khi lệch.                                                                    |
+| Ticket issuance        | Phát hành ticket sau payment success hoặc luồng xác nhận hợp lệ.                       | Recheck booking / seat, tạo QR token không đoán được, cập nhật seat / booking / ticket atomically.                                                         |
+| Refund                 | Hủy / refund theo policy snapshot hoặc quyết định Admin.                               | Check policy, quyền, trạng thái ticket, ledger, audit và notification bắt buộc.                                                                            |
+| Escrow / payout        | Ghi nhận tiền giữ hộ, commission, payout candidate T+3 và Admin xác nhận chuyển khoản. | Ledger có reference, không cập nhật payout thành `PAID` nếu chưa có xác nhận thủ công.                                                                     |
+| Trip change after sale | Operator / Admin đổi giờ, xe, điểm đón / trả hoặc hủy chuyến đã bán vé.                | Require reason, impact analysis, notification, audit; chặn sửa âm thầm.                                                                                    |
+| Employee check-in      | Employee xác thực QR / mã vé và cập nhật trạng thái hành khách.                        | Server-side verification, assignment scope, chống check-in lại, operation log.                                                                             |
 
 ### 7.4. Cross-cutting concern
 
@@ -420,15 +424,15 @@ flowchart LR
 
 ### 7.5. Adapter boundary
 
-| Adapter             | Provider / trạng thái HLD                                                              | Interface tối thiểu cần có                                                                      |
-| ------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| PaymentProvider     | VNPay Sandbox là provider đầu tiên                                                     | Create payment, verify callback, map status, query / reconcile transaction, refund hook nếu có. |
-| EmailProvider       | Email OTP / email notification là baseline v1                                          | Send OTP, send transactional email, template variables, delivery status.                        |
-| SmsProvider         | Provider chưa chốt, SMS OTP ngoài phạm vi v1                                           | Send message, delivery status, retry classification.                                            |
-| PushProvider        | Provider chưa chốt                                                                     | Register device token, send push, revoke token, delivery status.                                |
-| RoutingProvider     | OSRM adapter theo context hiện tại                                                     | Distance / duration / route helper, timeout, fallback khi service lỗi.                          |
-| FileStorageProvider | File storage adapter bắt buộc; S3-compatible / MinIO / AWS S3 là candidate cần xác nhận qua ADR-009 | Upload, download signed URL, delete / archive policy, virus/type/size validation hook.          |
-| BankPayoutChannel   | V1 chuyển khoản ngân hàng và Admin xác nhận thủ công                                   | Record transfer instruction, attach proof/reference, manual confirmation state.                 |
+| Adapter             | Provider / trạng thái HLD                                                       | Interface tối thiểu cần có                                                                      |
+| ------------------- | ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| PaymentProvider     | VNPay Sandbox là provider đầu tiên                                              | Create payment, verify callback, map status, query / reconcile transaction, refund hook nếu có. |
+| EmailProvider       | Email OTP / email notification là baseline v1                                   | Send OTP, send transactional email, template variables, delivery status.                        |
+| SmsProvider         | Provider chưa chốt, SMS OTP ngoài phạm vi v1                                    | Send message, delivery status, retry classification.                                            |
+| PushProvider        | Provider chưa chốt                                                              | Register device token, send push, revoke token, delivery status.                                |
+| RoutingProvider     | OSRM adapter theo context hiện tại                                              | Distance / duration / route helper, timeout, fallback khi service lỗi.                          |
+| FileStorageProvider | S3-compatible object storage; production AWS S3 private bucket, local/dev MinIO | Upload, download signed URL, delete / archive policy, virus/type/size validation hook.          |
+| BankPayoutChannel   | V1 chuyển khoản ngân hàng và Admin xác nhận thủ công                            | Record transfer instruction, attach proof/reference, manual confirmation state.                 |
 
 ---
 
@@ -508,37 +512,37 @@ Boundary dưới đây lấy `DOMAIN-MAP` làm bản đồ mục tiêu. HLD khô
 
 ### 9.2. Bảng data ownership
 
-| Nhóm dữ liệu                  | Owner capability                           | Capability đọc / ghi phụ                               | Ghi chú thiết kế                                                                  |
-| ----------------------------- | ------------------------------------------ | ------------------------------------------------------ | --------------------------------------------------------------------------------- |
-| User / Admin / Session        | IAM                                        | Audit, Notification                                    | Không log token, OTP, password; revoke khi khóa tài khoản / đổi quyền.            |
-| Operator / KYC / BankAccount  | Operator Profile & KYC                     | Admin, Payment/Payout, Reporting, Audit                | Operator phải được duyệt trước khi mở bán; đổi bank account là thao tác nhạy cảm. |
-| Catalog chuẩn                 | Catalog / Policy                           | Marketplace, Operator OS, Trip, Search                 | Province, Ward, StopPoint, VehicleType, Amenity do Platform quản lý / duyệt.      |
-| Vehicle / SeatMap / Route     | Transport Resource                         | Trip, Booking, Employee, Reporting, Audit              | Thay đổi sau khi có vé bán cần impact check và audit.                             |
-| Trip / TripSeat / Fare        | Trip / Fare / Inventory                    | Marketplace, Booking, Employee, Reporting              | TripSeat là tài nguyên giao dịch; Fare/FareRule là collection riêng.              |
-| SeatHold                      | Trip / Fare / Inventory + Booking boundary | Marketplace, Booking                                   | TTL 10 phút; trạng thái ACTIVE / CONSUMED / RELEASED / EXPIRED.                   |
-| Booking / PassengerInfo       | Booking & Ticket                           | Payment, Support, Employee, Reporting, Audit           | Booking lưu snapshot bắt buộc; Guest gắn contact và guest session / verification. |
-| Ticket / QR token             | Booking & Ticket                           | Employee, Support, Reporting, Audit                    | QR token không đoán được, xác thực server-side, có thể revoke theo policy.        |
-| Promotion / Redemption        | Promotion                                  | Booking, Marketplace, Reporting                        | Redemption và promotion snapshot phải lưu vào booking.                            |
-| Payment / Refund              | Payment / Refund / Escrow                  | Booking, Support, Reporting, Audit, Notification       | VNPay callback / refund phải idempotent; lệch trạng thái vào reconciliation.      |
-| EscrowLedger / CommissionRule | Payment / Commission                       | Payout, Operator Finance, Admin, Reporting, Audit      | Commission default 5%, override per-Operator theo rule hiệu lực.                  |
-| Payout                        | Payout                                     | Operator Finance, Admin, Reporting, Audit              | T+3 sau trip completed, không minimum threshold, bank transfer, Admin confirm.    |
-| EmployeeAssignment / Manifest | Employee Operations                        | Trip, Booking/Ticket, Operator, Notification, Audit    | Employee chỉ theo assignment scope; PII mặc định mask.                            |
-| JourneyLog / IncidentReport   | Employee Operations                        | Operator, Admin, Support, Reporting, Audit             | Attachment dùng FileStorageProvider; provider target theo ADR-009 / HLD-OQ-01.   |
-| Support / Complaint / Dispute | Support / Trust / Dispute                  | Booking, Payment, Operator, Admin, Notification, Audit | Guest chỉ truy cập case thuộc booking / ticket đã xác minh.                       |
-| Review / Scorecard            | Support / Trust / Dispute                  | Marketplace, Operator, Admin, Reporting                | Guest không gửi review v1; scorecard chỉ từ dữ liệu hợp lệ.                       |
-| Notification / Delivery       | Notification                               | Mọi capability phát event                              | Delivery status theo kênh; preference không tắt notification bắt buộc.            |
-| AuditLog                      | Audit                                      | Mọi capability ghi, Admin đọc                          | Append-only, query theo actor, module, target, time, result.                      |
-| Report / Export               | Reporting                                  | Operator, Admin, Notification, FileStorage             | Report lớn chạy async; export file cần storage policy.                            |
+| Nhóm dữ liệu                  | Owner capability                           | Capability đọc / ghi phụ                               | Ghi chú thiết kế                                                                                                   |
+| ----------------------------- | ------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| User / Admin / Session        | IAM                                        | Audit, Notification                                    | Không log token, OTP, password; revoke khi khóa tài khoản / đổi quyền.                                             |
+| Operator / KYC / BankAccount  | Operator Profile & KYC                     | Admin, Payment/Payout, Reporting, Audit                | Operator phải được duyệt trước khi mở bán; đổi bank account là thao tác nhạy cảm.                                  |
+| Catalog chuẩn                 | Catalog / Policy                           | Marketplace, Operator OS, Trip, Search                 | Province, Ward, StopPoint, VehicleType, Amenity do Platform quản lý / duyệt.                                       |
+| Vehicle / SeatMap / Route     | Transport Resource                         | Trip, Booking, Employee, Reporting, Audit              | Thay đổi sau khi có vé bán cần impact check và audit.                                                              |
+| Trip / TripSeat / Fare        | Trip / Fare / Inventory                    | Marketplace, Booking, Employee, Reporting              | TripSeat là tài nguyên giao dịch; Fare/FareRule là collection riêng.                                               |
+| SeatHold                      | Trip / Fare / Inventory + Booking boundary | Marketplace, Booking                                   | TTL 10 phút; trạng thái ACTIVE / CONSUMED / RELEASED / EXPIRED.                                                    |
+| Booking / PassengerInfo       | Booking & Ticket                           | Payment, Support, Employee, Reporting, Audit           | Booking lưu snapshot bắt buộc; Guest gắn contact và guest session / verification.                                  |
+| Ticket / QR token             | Booking & Ticket                           | Employee, Support, Reporting, Audit                    | QR token không đoán được, xác thực server-side, có thể revoke theo policy.                                         |
+| Promotion / Redemption        | Promotion                                  | Booking, Marketplace, Reporting                        | Redemption và promotion snapshot phải lưu vào booking.                                                             |
+| Payment / Refund              | Payment / Refund / Escrow                  | Booking, Support, Reporting, Audit, Notification       | VNPay callback / refund phải idempotent; lệch trạng thái vào reconciliation.                                       |
+| EscrowLedger / CommissionRule | Payment / Commission                       | Payout, Operator Finance, Admin, Reporting, Audit      | Commission default 5%, override per-Operator theo rule hiệu lực.                                                   |
+| Payout                        | Payout                                     | Operator Finance, Admin, Reporting, Audit              | T+3 sau trip completed, không minimum threshold, bank transfer, Admin confirm.                                     |
+| EmployeeAssignment / Manifest | Employee Operations                        | Trip, Booking/Ticket, Operator, Notification, Audit    | Employee chỉ theo assignment scope; PII mặc định mask.                                                             |
+| JourneyLog / IncidentReport   | Employee Operations                        | Operator, Admin, Support, Reporting, Audit             | Attachment dùng FileStorageProvider trên S3-compatible storage; production AWS S3 private bucket, local/dev MinIO. |
+| Support / Complaint / Dispute | Support / Trust / Dispute                  | Booking, Payment, Operator, Admin, Notification, Audit | Guest chỉ truy cập case thuộc booking / ticket đã xác minh.                                                        |
+| Review / Scorecard            | Support / Trust / Dispute                  | Marketplace, Operator, Admin, Reporting                | Guest không gửi review v1; scorecard chỉ từ dữ liệu hợp lệ.                                                        |
+| Notification / Delivery       | Notification                               | Mọi capability phát event                              | Delivery status theo kênh; preference không tắt notification bắt buộc.                                             |
+| AuditLog                      | Audit                                      | Mọi capability ghi, Admin đọc                          | Append-only, query theo actor, module, target, time, result.                                                       |
+| Report / Export               | Reporting                                  | Operator, Admin, Notification, FileStorage             | Report lớn chạy async; export file cần storage policy.                                                             |
 
 ### 9.3. Nhóm consistency dữ liệu
 
-| Nhóm consistency           | Dữ liệu thuộc nhóm                                                                  | Yêu cầu HLD                                                                                     |
-| -------------------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Strong consistency         | TripSeat, SeatHold, Booking create, Payment success, Ticket issue                   | Atomic update / transaction / unique constraint / lock tương đương; DB Design phải chốt cơ chế. |
-| Idempotent eventual update | Payment callback, refund callback, notification delivery, payout job, report export | Có idempotency key, retry policy, job state và reconciliation path.                             |
-| Snapshot immutable         | Booking snapshot, fare snapshot, policy snapshot, commission snapshot               | Không sửa ngược; correction phải qua adjustment / state history có audit.                       |
-| Derived / read model       | Search result, Operator scorecard, report dashboard, export file                    | Có thể async / cache; không được làm chậm transaction core.                                     |
-| Append-only trail          | AuditLog, state history, financial ledger, operation log                            | Không xóa cứng; archive / retention chốt ở DB/Operation.                                        |
+| Nhóm consistency           | Dữ liệu thuộc nhóm                                                                  | Yêu cầu HLD                                                                                                                          |
+| -------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Strong consistency         | TripSeat, SeatHold, Booking create, Payment success, Ticket issue                   | SeatHold dùng DB-authoritative hybrid; DB Design phải cụ thể hóa conditional write / unique invariant / TTL / optional lock service. |
+| Idempotent eventual update | Payment callback, refund callback, notification delivery, payout job, report export | Có idempotency key, retry policy, job state và reconciliation path.                                                                  |
+| Snapshot immutable         | Booking snapshot, fare snapshot, policy snapshot, commission snapshot               | Không sửa ngược; correction phải qua adjustment / state history có audit.                                                            |
+| Derived / read model       | Search result, Operator scorecard, report dashboard, export file                    | Có thể async / cache; không được làm chậm transaction core.                                                                          |
+| Append-only trail          | AuditLog, state history, financial ledger, operation log                            | Không xóa cứng; archive / retention chốt ở DB/Operation.                                                                             |
 
 ### 9.4. Snapshot và lịch sử trạng thái
 
@@ -845,20 +849,20 @@ Job nền phải dùng state tối thiểu theo SRS: `PENDING`, `RUNNING`, `SUCC
 - Adapter phải map provider status sang state nội bộ đã chốt trong SRS.
 - Callback / webhook phải xác minh nguồn, chữ ký hoặc cơ chế tương đương, có idempotency và lưu dữ liệu phục vụ đối soát.
 - Provider lỗi không được làm mất dữ liệu booking, ticket, payment, refund hoặc audit log.
-- Provider chưa chốt phải để ở trạng thái HLD-OQ / TBD, không giả định trong API / DB.
+- Provider chưa chốt phải để ở trạng thái HLD-OQ / TBD, không giả định trong API / DB. Object/file storage là ngoại lệ đã chốt target S3-compatible qua FileStorageProvider.
 
 ### 13.2. Bảng tích hợp ngoài
 
-| Tích hợp                       | Trạng thái quyết định                | Boundary thiết kế trong HLD                                                                                                           | Downstream cần chốt                                  |
-| ------------------------------ | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| Payment gateway                | VNPay Sandbox là provider đầu tiên   | `PaymentProvider`: create payment, verify callback, map status, reconcile.                                                            | API callback, secret, signature, sandbox config.     |
-| Email OTP / email notification | Baseline v1                          | `EmailProvider`: OTP, transactional email, template, delivery status.                                                                 | Provider cụ thể, template, retry policy, rate limit. |
-| SMS notification               | Provider chưa chốt; SMS OTP ngoài v1 | `SmsProvider`: message send, delivery status, retry classification.                                                                   | Có dùng SMS transactional ở V1 launch không.         |
-| Push notification              | Provider chưa chốt                   | `PushProvider`: device token registry, send push, revoke token, delivery.                                                             | Provider, token lifecycle, mobile permission flow.   |
-| Object / file storage          | Provider target chưa chốt trong rebuild | `FileStorageProvider`: KYC, attachment, incident evidence, report export; S3-compatible / MinIO / AWS S3 chỉ là candidate cần xác nhận qua ADR-009. | Signed URL, retention, virus/type/size policy.       |
-| Routing / distance             | OSRM adapter theo context hiện tại   | `RoutingProvider`: distance, duration, route helper, timeout / fallback.                                                              | Data source, refresh, fallback khi OSRM lỗi.         |
-| Bank payout channel            | V1 chuyển khoản ngân hàng thủ công   | `BankPayoutChannel`: payout instruction, proof/reference, Admin confirmation.                                                         | Quy trình file/proof, phân quyền finance, audit.     |
-| Monitoring / logging / alert   | Chưa chốt stack                      | Observability adapter / instrumentation contract.                                                                                     | Stack, metric, alert rule, retention.                |
+| Tích hợp                       | Trạng thái quyết định                | Boundary thiết kế trong HLD                                                                                                                               | Downstream cần chốt                                  |
+| ------------------------------ | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| Payment gateway                | VNPay Sandbox là provider đầu tiên   | `PaymentProvider`: create payment, verify callback, map status, reconcile.                                                                                | API callback, secret, signature, sandbox config.     |
+| Email OTP / email notification | Baseline v1                          | `EmailProvider`: OTP, transactional email, template, delivery status.                                                                                     | Provider cụ thể, template, retry policy, rate limit. |
+| SMS notification               | Provider chưa chốt; SMS OTP ngoài v1 | `SmsProvider`: message send, delivery status, retry classification.                                                                                       | Có dùng SMS transactional ở V1 launch không.         |
+| Push notification              | Provider chưa chốt                   | `PushProvider`: device token registry, send push, revoke token, delivery.                                                                                 | Provider, token lifecycle, mobile permission flow.   |
+| Object / file storage          | S3-compatible target đã chốt         | `FileStorageProvider`: KYC, attachment, incident evidence, report export; production AWS S3 private bucket, local/dev MinIO; DB metadata/object key only. | Signed URL TTL, retention, virus/type/size policy.   |
+| Routing / distance             | OSRM adapter theo context hiện tại   | `RoutingProvider`: distance, duration, route helper, timeout / fallback.                                                                                  | Data source, refresh, fallback khi OSRM lỗi.         |
+| Bank payout channel            | V1 chuyển khoản ngân hàng thủ công   | `BankPayoutChannel`: payout instruction, proof/reference, Admin confirmation.                                                                             | Quy trình file/proof, phân quyền finance, audit.     |
+| Monitoring / logging / alert   | Chưa chốt stack                      | Observability adapter / instrumentation contract.                                                                                                         | Stack, metric, alert rule, retention.                |
 
 ### 13.3. Integration failure handling
 
@@ -885,22 +889,22 @@ Job nền phải dùng state tối thiểu theo SRS: `PENDING`, `RUNNING`, `SUCC
 
 ### 14.2. Nguồn xử lý quyết định tech stack
 
-HLD không chọn tech stack target trong giai đoạn rebuild tài liệu. ADR-009 trong `10-architecture-decision-record.md` là khung đánh giá / candidate inventory để người duyệt quyết định giữ tech stack hiện có hay mở lại lựa chọn. Các thành phần triển khai dưới đây mô tả capability cần có; framework, database, queue, object storage, observability và deployment target chỉ được coi là đã chốt khi có quyết định `Accepted` hoặc SRS đã chốt rõ.
+HLD không chọn toàn bộ tech stack target trong giai đoạn rebuild tài liệu. ADR-009 trong `10-architecture-decision-record.md` là khung đánh giá / candidate inventory để người duyệt quyết định giữ tech stack hiện có hay mở lại lựa chọn. Riêng object/file storage đã chốt target S3-compatible qua FileStorageProvider theo HLD-OQ-01 / LLD-OP-04. Các thành phần còn lại như framework, database engine, queue engine, observability và deployment target chỉ được coi là đã chốt khi có quyết định `Accepted` hoặc SRS/HLD/LLD đã chốt rõ.
 
 ### 14.3. Thành phần triển khai
 
-| Thành phần                         | Vai trò                                                                                     | Ghi chú triển khai                                                                 |
-| ---------------------------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Web frontend                       | Marketplace, Operator OS, Platform Admin.                                                   | Build theo environment config; không chứa secret provider.                         |
-| Mobile app                         | User mode và Employee mode; Guest checkout / lookup giữ ở Web Marketplace.                  | Distribution và OTA/update policy chốt ở Deployment doc.                           |
-| Backend API                        | HTTP API, realtime gateway, auth, application use cases.                                    | Có thể scale ngang nếu session / lock / job được thiết kế đúng.                    |
-| Worker / scheduler                 | SeatHold expiry, payment callback job, notification, reconciliation, payout, report export. | Có lock / retry / state để tránh chạy trùng.                                       |
+| Thành phần                         | Vai trò                                                                                     | Ghi chú triển khai                                                                                             |
+| ---------------------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Web frontend                       | Marketplace, Operator OS, Platform Admin.                                                   | Build theo environment config; không chứa secret provider.                                                     |
+| Mobile app                         | User mode và Employee mode; Guest checkout / lookup giữ ở Web Marketplace.                  | Distribution và OTA/update policy chốt ở Deployment doc.                                                       |
+| Backend API                        | HTTP API, realtime gateway, auth, application use cases.                                    | Có thể scale ngang nếu session / lock / job được thiết kế đúng.                                                |
+| Worker / scheduler                 | SeatHold expiry, payment callback job, notification, reconciliation, payout, report export. | Có lock / retry / state để tránh chạy trùng.                                                                   |
 | Operational database               | Lưu dữ liệu nghiệp vụ, state history, audit append-only, ledger.                            | SRS hiện có quyết định liên quan MongoDB cho audit/reporting; ADR-009 cần xác nhận giữ hay mở lại khi rebuild. |
-| Cache / lock / queue backend       | SeatHold TTL, lock, cache search ngắn hạn, queue job.                                       | Công nghệ cụ thể phải chốt qua ADR/LLD/Infra; không suy diễn từ hiện trạng repo.    |
-| File storage                       | KYC, attachment, incident evidence, report export.                                          | Provider / implementation target chưa chốt; xem ADR-009 và HLD-OQ-01.             |
-| OSRM / routing service             | Distance / duration / route helper.                                                         | Adapter boundary để thay provider sau.                                             |
-| External provider                  | VNPay Sandbox, email, SMS/push tương lai, bank payout manual.                               | Secret và callback URL khác nhau theo environment.                                 |
-| Monitoring / logging / alert stack | Log, metric, tracing nếu có, alert lỗi payment/refund/payout/check-in.                      | Stack chưa chốt, xem HLD-OQ-03.                                                    |
+| Cache / lock / queue backend       | SeatHold TTL, lock, cache search ngắn hạn, queue job.                                       | Công nghệ cụ thể phải chốt qua ADR/LLD/Infra; không suy diễn từ hiện trạng repo.                               |
+| File storage                       | KYC, attachment, incident evidence, report export.                                          | S3-compatible object storage; production AWS S3 private bucket, local/dev MinIO.                               |
+| OSRM / routing service             | Distance / duration / route helper.                                                         | Adapter boundary để thay provider sau.                                                                         |
+| External provider                  | VNPay Sandbox, email, SMS/push tương lai, bank payout manual.                               | Secret và callback URL khác nhau theo environment.                                                             |
+| Monitoring / logging / alert stack | Log, metric, tracing nếu có, alert lỗi payment/refund/payout/check-in.                      | Stack chưa chốt, xem HLD-OQ-03.                                                                                |
 
 ### 14.4. Cấu hình và secret
 
@@ -940,50 +944,51 @@ Trước production, Deployment & Operation Standard phải chốt: HTTPS, domai
 
 ## 16. Quyết định thiết kế
 
-| ID         | Quyết định HLD                                                                                                            | Trạng thái / nguồn                      |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
-| HLD-DEC-01 | V1 dùng modular application core theo capability; không yêu cầu microservice ở baseline.                                  | Chốt ở HLD dựa trên SRS + `DOMAIN-MAP`. |
-| HLD-DEC-02 | Thiết kế module theo target state của `DOMAIN-MAP`, không lấy folder legacy làm boundary nghiệp vụ.                       | Chốt ở HLD.                             |
-| HLD-DEC-03 | Web có ba surface chính: Marketplace public, Operator OS và Platform Admin; mobile một codebase tách User/Employee mode.  | `OQ-10`, SRS §7, §12.                   |
-| HLD-DEC-04 | VNPay Sandbox là payment provider đầu tiên, nhưng domain chỉ phụ thuộc `PaymentProvider` adapter.                         | `OQ-05`.                                |
-| HLD-DEC-05 | Email OTP là baseline xác thực User v1; SMS OTP ngoài phạm vi v1; SMS/push giữ adapter cho notification tương lai.        | `OQ-09`.                                |
-| HLD-DEC-06 | SeatHold TTL mặc định 10 phút ở cấp Platform, không cấu hình riêng per Operator trong v1.                                 | `OQ-06`, `BR-02`.                       |
-| HLD-DEC-07 | Checkout Marketplace v1 là pay-first; `PENDING_CONFIRMATION` giữ trong enum cho ngoại lệ / phase sau.                     | `OQ-07`.                                |
-| HLD-DEC-08 | Fare/FareRule là data concept riêng; booking lưu fare snapshot; segment fare ngoài baseline v1.                           | `OQ-08`.                                |
-| HLD-DEC-09 | Refund policy dùng Platform default + Operator override do Admin duyệt; booking lưu policy snapshot.                      | `OQ-13`.                                |
-| HLD-DEC-10 | AuditLog v1 lưu MongoDB cùng cluster, append-only, không xóa cứng production.                                             | `OQ-14`, `NFR-AUDIT-*`.                 |
-| HLD-DEC-11 | Reporting v1 dùng MongoDB aggregation + async jobs cho báo cáo lớn, chưa tách data warehouse.                             | `OQ-15`.                                |
-| HLD-DEC-12 | Escrow payout T+3 sau chuyến hoàn thành, không ngưỡng tối thiểu, bank transfer, Admin xác nhận thủ công.                  | `OQ-16`, `MQ-01`.                       |
-| HLD-DEC-13 | Commission mặc định 5% cho Operator mới, Admin có thể override bằng rule có hiệu lực.                                     | `OQ-18`, `MQ-04`.                       |
-| HLD-DEC-14 | File storage cần adapter boundary; object storage provider, SMS/push provider, monitoring stack và deployment target chưa chốt production. | HLD-OQ-01..03, ADR-009.                 |
-| HLD-DEC-15 | Offline write cho Employee chưa mặc định an toàn; chỉ bật khi LLD chốt idempotency, local queue và reconciliation.        | HLD-OQ-04, `FR-EMP-12`, `BF-07`.        |
+| ID         | Quyết định HLD                                                                                                                                                                 | Trạng thái / nguồn                          |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
+| HLD-DEC-01 | V1 dùng modular application core theo capability; không yêu cầu microservice ở baseline.                                                                                       | Chốt ở HLD dựa trên SRS + `DOMAIN-MAP`.     |
+| HLD-DEC-02 | Thiết kế module theo target state của `DOMAIN-MAP`, không lấy folder legacy làm boundary nghiệp vụ.                                                                            | Chốt ở HLD.                                 |
+| HLD-DEC-03 | Web có ba surface chính: Marketplace public, Operator OS và Platform Admin; mobile một codebase tách User/Employee mode.                                                       | `OQ-10`, SRS §7, §12.                       |
+| HLD-DEC-04 | VNPay Sandbox là payment provider đầu tiên, nhưng domain chỉ phụ thuộc `PaymentProvider` adapter.                                                                              | `OQ-05`.                                    |
+| HLD-DEC-05 | Email OTP là baseline xác thực User v1; SMS OTP ngoài phạm vi v1; SMS/push giữ adapter cho notification tương lai.                                                             | `OQ-09`.                                    |
+| HLD-DEC-06 | SeatHold TTL mặc định 10 phút ở cấp Platform, không cấu hình riêng per Operator trong v1.                                                                                      | `OQ-06`, `BR-02`.                           |
+| HLD-DEC-07 | Checkout Marketplace v1 là pay-first; `PENDING_CONFIRMATION` giữ trong enum cho ngoại lệ / phase sau.                                                                          | `OQ-07`.                                    |
+| HLD-DEC-08 | Fare/FareRule là data concept riêng; booking lưu fare snapshot; segment fare ngoài baseline v1.                                                                                | `OQ-08`.                                    |
+| HLD-DEC-09 | Refund policy dùng Platform default + Operator override do Admin duyệt; booking lưu policy snapshot.                                                                           | `OQ-13`.                                    |
+| HLD-DEC-10 | AuditLog v1 lưu MongoDB cùng cluster, append-only, không xóa cứng production.                                                                                                  | `OQ-14`, `NFR-AUDIT-*`.                     |
+| HLD-DEC-11 | Reporting v1 dùng MongoDB aggregation + async jobs cho báo cáo lớn, chưa tách data warehouse.                                                                                  | `OQ-15`.                                    |
+| HLD-DEC-12 | Escrow payout T+3 sau chuyến hoàn thành, không ngưỡng tối thiểu, bank transfer, Admin xác nhận thủ công.                                                                       | `OQ-16`, `MQ-01`.                           |
+| HLD-DEC-13 | Commission mặc định 5% cho Operator mới, Admin có thể override bằng rule có hiệu lực.                                                                                          | `OQ-18`, `MQ-04`.                           |
+| HLD-DEC-14 | File storage dùng S3-compatible adapter; production AWS S3 private bucket, local/dev MinIO; SMS/push provider, monitoring stack và deployment target vẫn chưa chốt production. | HLD-OQ-01..03, LLD-OP-04, ADR-009.          |
+| HLD-DEC-15 | Employee offline hỗ trợ read cache manifest + queued operational actions có giới hạn cho check-in / no-show / journey log / incident; không full offline sync.                 | HLD-OQ-04, LLD-OP-03, `FR-EMP-12`, `BF-07`. |
+| HLD-DEC-16 | SeatHold consistency dùng DB-authoritative hybrid; DB giữ invariant active hold / booked seat, lock service nếu có chỉ là lớp phụ trợ giảm contention.                         | LLD-OP-02, `BR-01`, `NFR-DATA-01`.          |
 
 ---
 
 ## 17. Rủi ro kiến trúc và giảm thiểu
 
-| ID          | Rủi ro                                                                                           | Mức độ     | Giảm thiểu ở HLD                                                                                | Downstream cần kiểm      |
-| ----------- | ------------------------------------------------------------------------------------------------ | ---------- | ----------------------------------------------------------------------------------------------- | ------------------------ |
-| HLD-RISK-01 | Bán trùng ghế khi nhiều User / Guest giữ ghế hoặc payment đồng thời.                             | Rất cao    | SeatHold atomic, TTL 10 phút, recheck trước payment / ticket, state history.                    | DB + concurrency test    |
-| HLD-RISK-02 | VNPay callback trễ, trùng, giả mạo hoặc lệch số tiền.                                            | Rất cao    | Verify callback, idempotency, `RECONCILING`, reconciliation job, không issue ticket khi lệch.   | API + security + test    |
-| HLD-RISK-03 | Guest lookup lộ booking / ticket hoặc cho thao tác nhạy cảm sai người.                           | Rất cao    | Match code + contact, verification, rate limit, PII tối thiểu, audit sensitive action.          | Security + API test      |
-| HLD-RISK-04 | Operator / Employee truy cập dữ liệu Operator khác.                                              | Rất cao    | Tenant guard, repository filter, assignment scope, audit/export control.                        | Security matrix          |
-| HLD-RISK-05 | Operator chưa KYC đạt vẫn mở bán public.                                                         | Rất cao    | Backend enforce Operator approved status trước Trip `OPEN_FOR_SALE`.                            | API/DB state test        |
-| HLD-RISK-06 | Sửa chuyến đã bán vé làm sai snapshot, ghế hoặc quyền lợi hành khách.                            | Cao        | Impact analysis, reason, notification bắt buộc, audit, không sửa âm thầm.                       | LLD + flow test          |
-| HLD-RISK-07 | Đổi xe không map được ghế cũ sang seat map mới.                                                  | Cao        | Chặn đổi xe nếu không map được; yêu cầu đổi ghế / refund / dispute.                             | DB + UI flow             |
-| HLD-RISK-08 | Inventory đa kênh không đồng bộ với ghế bán ngoài Platform.                                      | Cao        | Cho khóa ghế thủ công / blocked seat, audit thay đổi inventory.                                 | Operator OS test         |
-| HLD-RISK-09 | Refund thủ công hoặc refund đơn phương bị lạm dụng.                                              | Rất cao    | RBAC Admin, re-auth theo policy, reason, audit, notification, policy snapshot.                  | Security + audit test    |
-| HLD-RISK-10 | Escrow, commission hoặc payout tính sai.                                                         | Rất cao    | Ledger reference, commission snapshot, payout T+3, Admin manual confirmation, reconciliation.   | DB ledger + finance test |
-| HLD-RISK-11 | Đổi tài khoản nhận tiền Operator gây chuyển tiền sai.                                            | Rất cao    | Sensitive action, verification, warning gần kỳ payout, bank account snapshot, audit.            | Security + finance flow  |
-| HLD-RISK-12 | Employee xem quá nhiều PII hoặc export manifest không kiểm soát.                                 | Cao        | Mask mặc định, open-full với quyền/lý do, export permission, operation log.                     | Security + UI test       |
-| HLD-RISK-13 | QR ticket bị đoán, sao chép hoặc check-in lại.                                                   | Cao        | QR token không đoán được, server-side verification, status check, replay prevention.            | Security + mobile test   |
-| HLD-RISK-14 | Notification lỗi hoặc gửi trùng thông báo bắt buộc.                                              | Cao        | NotificationDelivery state, idempotency theo event, retry có backoff, dữ liệu vẫn tra cứu được. | Job + notification test  |
-| HLD-RISK-15 | Job nền chạy trùng gây lệch tiền, vé hoặc report.                                                | Cao        | Job lock, checkpoint, idempotency, `MANUAL_REVIEW` khi vượt ngưỡng an toàn.                     | Worker test              |
-| HLD-RISK-16 | Reporting làm chậm search / booking / payment / check-in.                                        | Trung bình | Async aggregation/export, threshold query, read model/cache nếu cần.                            | Performance test         |
-| HLD-RISK-17 | SMS / push / object storage provider / monitoring / deployment chưa chốt target trong rebuild. | Trung bình | Adapter boundary, HLD-OQ rõ, không hard-code vendor không cần thiết trong domain.               | Infra decision           |
-| HLD-RISK-18 | Employee mất mạng trong lúc check-in / cập nhật chuyến.                                          | Trung bình | Nếu chưa có offline write an toàn thì chặn ghi; nếu bật phải có local queue + reconcile.        | Mobile LLD + test        |
-| HLD-RISK-19 | Audit / backup không đủ khi có tranh chấp hoặc sự cố tài chính.                                  | Rất cao    | Audit append-only, backup priority cho booking/ticket/payment/refund/escrow/payout/KYC/dispute. | DB + operation           |
-| HLD-RISK-20 | Rủi ro pháp lý về vận tải, dữ liệu cá nhân, hóa đơn / thuế.                                      | Cao        | HLD ghi nhận cần review pháp chế trước production; không coi SRS/HLD là tư vấn pháp lý.         | Production readiness     |
+| ID          | Rủi ro                                                                        | Mức độ     | Giảm thiểu ở HLD                                                                                | Downstream cần kiểm      |
+| ----------- | ----------------------------------------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------- | ------------------------ |
+| HLD-RISK-01 | Bán trùng ghế khi nhiều User / Guest giữ ghế hoặc payment đồng thời.          | Rất cao    | SeatHold atomic, TTL 10 phút, recheck trước payment / ticket, state history.                    | DB + concurrency test    |
+| HLD-RISK-02 | VNPay callback trễ, trùng, giả mạo hoặc lệch số tiền.                         | Rất cao    | Verify callback, idempotency, `RECONCILING`, reconciliation job, không issue ticket khi lệch.   | API + security + test    |
+| HLD-RISK-03 | Guest lookup lộ booking / ticket hoặc cho thao tác nhạy cảm sai người.        | Rất cao    | Match code + contact, verification, rate limit, PII tối thiểu, audit sensitive action.          | Security + API test      |
+| HLD-RISK-04 | Operator / Employee truy cập dữ liệu Operator khác.                           | Rất cao    | Tenant guard, repository filter, assignment scope, audit/export control.                        | Security matrix          |
+| HLD-RISK-05 | Operator chưa KYC đạt vẫn mở bán public.                                      | Rất cao    | Backend enforce Operator approved status trước Trip `OPEN_FOR_SALE`.                            | API/DB state test        |
+| HLD-RISK-06 | Sửa chuyến đã bán vé làm sai snapshot, ghế hoặc quyền lợi hành khách.         | Cao        | Impact analysis, reason, notification bắt buộc, audit, không sửa âm thầm.                       | LLD + flow test          |
+| HLD-RISK-07 | Đổi xe không map được ghế cũ sang seat map mới.                               | Cao        | Chặn đổi xe nếu không map được; yêu cầu đổi ghế / refund / dispute.                             | DB + UI flow             |
+| HLD-RISK-08 | Inventory đa kênh không đồng bộ với ghế bán ngoài Platform.                   | Cao        | Cho khóa ghế thủ công / blocked seat, audit thay đổi inventory.                                 | Operator OS test         |
+| HLD-RISK-09 | Refund thủ công hoặc refund đơn phương bị lạm dụng.                           | Rất cao    | RBAC Admin, re-auth theo policy, reason, audit, notification, policy snapshot.                  | Security + audit test    |
+| HLD-RISK-10 | Escrow, commission hoặc payout tính sai.                                      | Rất cao    | Ledger reference, commission snapshot, payout T+3, Admin manual confirmation, reconciliation.   | DB ledger + finance test |
+| HLD-RISK-11 | Đổi tài khoản nhận tiền Operator gây chuyển tiền sai.                         | Rất cao    | Sensitive action, verification, warning gần kỳ payout, bank account snapshot, audit.            | Security + finance flow  |
+| HLD-RISK-12 | Employee xem quá nhiều PII hoặc export manifest không kiểm soát.              | Cao        | Mask mặc định, open-full với quyền/lý do, export permission, operation log.                     | Security + UI test       |
+| HLD-RISK-13 | QR ticket bị đoán, sao chép hoặc check-in lại.                                | Cao        | QR token không đoán được, server-side verification, status check, replay prevention.            | Security + mobile test   |
+| HLD-RISK-14 | Notification lỗi hoặc gửi trùng thông báo bắt buộc.                           | Cao        | NotificationDelivery state, idempotency theo event, retry có backoff, dữ liệu vẫn tra cứu được. | Job + notification test  |
+| HLD-RISK-15 | Job nền chạy trùng gây lệch tiền, vé hoặc report.                             | Cao        | Job lock, checkpoint, idempotency, `MANUAL_REVIEW` khi vượt ngưỡng an toàn.                     | Worker test              |
+| HLD-RISK-16 | Reporting làm chậm search / booking / payment / check-in.                     | Trung bình | Async aggregation/export, threshold query, read model/cache nếu cần.                            | Performance test         |
+| HLD-RISK-17 | SMS / push provider, monitoring và deployment chưa chốt target trong rebuild. | Trung bình | Adapter boundary, HLD-OQ rõ, không hard-code vendor không cần thiết trong domain.               | Infra decision           |
+| HLD-RISK-18 | Employee mất mạng trong lúc check-in / cập nhật chuyến.                       | Trung bình | Read cache manifest + queued actions có giới hạn; server authoritative reconcile khi có mạng.   | Mobile LLD + test        |
+| HLD-RISK-19 | Audit / backup không đủ khi có tranh chấp hoặc sự cố tài chính.               | Rất cao    | Audit append-only, backup priority cho booking/ticket/payment/refund/escrow/payout/KYC/dispute. | DB + operation           |
+| HLD-RISK-20 | Rủi ro pháp lý về vận tải, dữ liệu cá nhân, hóa đơn / thuế.                   | Cao        | HLD ghi nhận cần review pháp chế trước production; không coi SRS/HLD là tư vấn pháp lý.         | Production readiness     |
 
 ---
 
@@ -995,12 +1000,12 @@ Các OQ / MQ trong SRS §21 đã chốt và không được mở lại trong HLD
 
 ### 18.2. Open Questions của HLD
 
-| ID        | Câu hỏi / vấn đề cần chốt                                                                                                                                          | Ảnh hưởng                                                                                  | Chủ sở hữu đề xuất | Trạng thái |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ | ------------------ | ---------- |
-| HLD-OQ-01 | Chốt object/file storage target trong rebuild: giữ S3-compatible / MinIO / AWS S3 candidate hay mở lại provider; DB chỉ lưu metadata/object key.                    | Ảnh hưởng DB file metadata, signed URL API, retention, security scan, backup và cost.      | Owner + Infra      | Open       |
-| HLD-OQ-02 | Đã chốt phạm vi: V1 giữ adapter cho SMS / push; chưa chốt provider cụ thể và SMS OTP vẫn ngoài phạm vi v1.                                                          | Ảnh hưởng Notification API, mobile token registry, template, retry và consent/preference.  | Owner + Product    | Closed     |
-| HLD-OQ-03 | Chốt production deployment target, secret manager, monitoring/logging/alert stack và incident runbook.                                                              | Ảnh hưởng Deployment Standard, observability, backup/restore và production readiness.      | Owner + DevOps     | Open       |
-| HLD-OQ-04 | Chốt mức hỗ trợ offline ở mức “read cache + queued operational actions có giới hạn”, không chỉ read-only cache, nhưng cũng không full offline sync.                | Ảnh hưởng Mobile LLD, idempotency, conflict resolution, test mất mạng và operation policy. | Owner + Mobile/BE  | Open       |
+| ID        | Câu hỏi / vấn đề cần chốt                                                                                                                                             | Ảnh hưởng                                                                                 | Chủ sở hữu đề xuất | Trạng thái        |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------ | ----------------- |
+| HLD-OQ-01 | Đã chốt: object/file storage dùng S3-compatible qua FileStorageProvider; production AWS S3 private bucket, local/dev MinIO; DB chỉ lưu metadata/object key.           | DB file metadata, signed URL API, retention, security scan, backup và cost.               | Owner + Infra      | Closed 12/05/2026 |
+| HLD-OQ-02 | Đã chốt phạm vi: V1 giữ adapter cho SMS / push; chưa chốt provider cụ thể và SMS OTP vẫn ngoài phạm vi v1.                                                            | Ảnh hưởng Notification API, mobile token registry, template, retry và consent/preference. | Owner + Product    | Closed            |
+| HLD-OQ-03 | Chốt production deployment target, secret manager, monitoring/logging/alert stack và incident runbook.                                                                | Ảnh hưởng Deployment Standard, observability, backup/restore và production readiness.     | Owner + DevOps     | Open              |
+| HLD-OQ-04 | Đã chốt: Employee offline dùng read cache manifest + queued operational actions có giới hạn cho check-in / no-show / journey log / incident; không full offline sync. | Mobile LLD, idempotency, conflict resolution, test mất mạng và operation policy.          | Owner + Mobile/BE  | Closed 12/05/2026 |
 
 ### 18.3. TBD kỹ thuật cần chuyển xuống tài liệu sau
 

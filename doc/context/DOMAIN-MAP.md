@@ -58,7 +58,7 @@ Notes:
 | Dịch vụ thông báo SMS | `external/notification/sms/` | Adapter boundary only; SMS OTP is outside v1 baseline |
 | Push notification | `external/notification/push/` | Adapter boundary only; push provider is not fixed in SRS v1 |
 | Dịch vụ định tuyến | `external/routing/osrm/` | Existing folder `modules/osrm/` will be moved here |
-| Object storage | `external/storage/` | HLD-OQ-01 closed: use S3-compatible storage through adapter; production baseline AWS S3 private bucket, local/dev MinIO; required for KYC, attachment and report export contracts |
+| Object storage | `external/storage/` | HLD-OQ-01 / LLD-OP-04 closed: use S3-compatible storage through adapter; production baseline AWS S3 private bucket, local/dev MinIO; DB stores metadata/object key only |
 | Bank payout channel | `external/payout/` | `OQ-16`; v1 uses direct bank transfer with Admin manual confirmation |
 
 ## 5. Current code vs. target (refactor radar)

@@ -9,7 +9,7 @@
 | Tên tài liệu | Architecture Decision Record - ADR |
 | Mã tài liệu  | 10-architecture-decision-record  |
 | Dự án        | Hệ thống đặt vé xe khách         |
-| Phiên bản    | v0.3                             |
+| Phiên bản    | v0.4                             |
 | Trạng thái   | Draft                            |
 | Người viết   | AI Agent                         |
 | Người duyệt  | Nguyễn Hồng Khanh                |
@@ -19,6 +19,7 @@
 
 | Phiên bản | Ngày       | Người cập nhật | Nội dung thay đổi                         |
 | --------- | ---------- | -------------- | ----------------------------------------- |
+| v0.4      | 12/05/2026 | AI Agent       | Đồng bộ quyết định LLD/HLD: SeatHold DB-authoritative hybrid, S3-compatible storage và offline Employee giới hạn |
 | v0.3      | 12/05/2026 | AI Agent       | Chuyển ADR-009 thành khung đánh giá tech stack cho rebuild; hạ ADR-002..004 về Deferred |
 | v0.2      | 12/05/2026 | AI Agent       | Bổ sung ADR-009 cho bảng tech stack đề xuất |
 | v0.1      | 11/05/2026 | AI Agent       | Tạo bản nháp ADR                          |
@@ -105,8 +106,8 @@ AI Agent không tự chuyển ADR sang `Accepted` nếu chưa có người duy�
 | ------ | -------- |
 | Trạng thái | Deferred |
 | Bối cảnh | Repo hiện có Redis + Bull; SRS DP-04 yêu cầu Redis hoặc lock service tương đương cho seat locking, chống double booking và chống spam thanh toán. |
-| Quyết định | Chưa chốt target cache / queue / lock. Redis + Bull là hiện trạng / candidate, không phải baseline đã chọn. |
-| Hệ quả | LLD và DB Design phải chốt rõ SeatHold lock strategy, queue engine, retry, dead-letter, timeout và monitoring trước khi code luồng booking/payment. |
+| Quyết định | SeatHold lock strategy đã chốt ở LLD v1.1 theo hướng DB-authoritative hybrid. Cache / queue engine target vẫn chưa chốt; Redis + Bull là hiện trạng / candidate, không phải baseline đã chọn. |
+| Hệ quả | DB Design phải cụ thể hóa conditional write / unique active invariant / TTL / optional lock service cho SeatHold; queue engine, retry, dead-letter, timeout và monitoring vẫn cần chốt trước khi code worker. |
 | Nguồn | SRS DP-04, `TECH-STACK.md`, ADR-OQ-05 |
 
 ### ADR-005. Payment flow dùng escrow trước payout Operator
@@ -125,8 +126,8 @@ AI Agent không tự chuyển ADR sang `Accepted` nếu chưa có người duy�
 | ------ | -------- |
 | Trạng thái | Proposed |
 | Bối cảnh | Provider cụ thể chưa được chốt trong SRS. |
-| Quyết định | Dùng adapter boundary cho payment, email, SMS, push, object storage. |
-| Hệ quả | Giảm vendor lock-in; cần contract adapter rõ ở LLD/API. |
+| Quyết định | Dùng adapter boundary cho payment, email, SMS, push và object storage. Object storage target đã chốt là S3-compatible qua FileStorageProvider, production baseline AWS S3 private bucket và local/dev MinIO. |
+| Hệ quả | Giảm vendor lock-in; cần contract adapter rõ ở LLD/API. Với object storage, DB chỉ lưu metadata/object key, signed URL / retention / scan policy chốt ở DB/API/Security/Operation. |
 | Nguồn | HLD-DEC-04, HLD-DEC-05, HLD-DEC-14 |
 
 ### ADR-007. Mobile dùng một codebase Expo cho User và Employee
@@ -176,20 +177,20 @@ AI Agent không tự chuyển ADR sang `Accepted` nếu chưa có người duy�
 | Monorepo | npm workspaces, TypeScript shared config trong `TECH-STACK.md` | Chưa tái xác nhận target | Giữ npm workspaces hay đổi package manager; pin Node.js, npm và `packageManager`. |
 | Backend framework | Repo hiện có NestJS + TypeScript; SRS DP-01 đang ghi Backend NestJS | Chưa tái xác nhận target | Giữ NestJS hay mở lại lựa chọn; nếu giữ, chốt version policy, module convention và test strategy. |
 | Backend data access | Repo hiện có Mongoose + MongoDB; SRS DP-01 / OQ-14 / OQ-15 đang ghi MongoDB cho audit/reporting | Cần reviewer xác nhận có giữ quyết định SRS hay mở lại | DB Design phải chốt schema, index, transaction / atomic update, migration, retention và reporting strategy. |
-| Cache / lock / queue | Repo hiện có Redis + Bull; SRS DP-04 yêu cầu Redis hoặc lock service tương đương | Chưa tái xác nhận target | Chốt SeatHold lock dùng Redis, MongoDB atomic update, service khác hoặc kết hợp; chốt queue engine và retry model. |
+| Cache / lock / queue | Repo hiện có Redis + Bull; SRS DP-04 yêu cầu Redis hoặc lock service tương đương | SeatHold strategy đã chốt DB-authoritative hybrid; cache / queue engine target chưa tái xác nhận | DB Design cụ thể hóa conditional write / unique active invariant / TTL / optional lock service; chốt queue engine và retry model. |
 | Realtime | Repo hiện có Socket.IO | Chưa tái xác nhận target | Chốt realtime transport, event scope, auth handshake và fallback khi mất kết nối. |
 | Auth / session | Repo hiện có Passport/JWT; SRS chốt email OTP cho User | Chưa chốt chi tiết | Chốt Bearer token hay cookie, TTL, refresh, revoke, re-auth, Admin/Operator MFA và secure storage. |
 | Validation / DTO | Repo hiện có class-validator, class-transformer và shared packages | Chưa tái xác nhận target | Chốt contract source of truth: API Spec, generated client, shared DTO hay schema-first. |
 | API documentation | Repo hiện có `@nestjs/swagger` | Chưa tái xác nhận target | Chốt vai trò Swagger: generated reference, không thay thế API Spec đã review. |
 | Payment | SRS đã chốt VNPay Sandbox là provider đầu tiên qua adapter | Đã có quyết định nghiệp vụ; implementation còn TBD | Callback / webhook, signature, idempotency, reconciliation và secret handling. |
 | Notification | SRS chốt email OTP; SMS/push chỉ giữ adapter cho tương lai | Chưa chốt provider chi tiết | Provider email, template, retry, consent/preference, mobile token registry nếu bật push. |
-| Object storage | HLD đang ghi S3-compatible adapter cho file; repo chưa có target implementation rõ | Cần reviewer xác nhận lại trong rebuild | Có giữ S3-compatible/MinIO/AWS S3 hay mở lại provider; chốt metadata, signed URL, retention, access audit, type/size scan. |
+| Object storage | HLD/LLD đã chốt S3-compatible adapter cho file; production baseline AWS S3 private bucket, local/dev MinIO | Đã chốt target provider class; implementation detail còn ở DB/API/Security/Operation | Chốt metadata schema, signed URL TTL, retention, access audit, type/size scan và backup/cost policy. |
 | Routing | Repo / context đang có OSRM service | Chưa tái xác nhận target | Chốt OSRM hay provider khác, timeout, fallback, data refresh và outage behavior. |
 | Logging / observability | Repo hiện có Winston; monitoring stack chưa chốt | Chưa chốt target | Chốt log format, correlation id, redaction, metrics, tracing, alert và retention. |
 | Rate limiting / HTTP hardening | Repo hiện có `@nestjs/throttler`, Helmet | Chưa tái xác nhận target | Chốt rule cho login, OTP, search, hold, payment, lookup và upload. |
 | Background jobs | Repo hiện có Bull / scheduler | Chưa tái xác nhận target | Chốt job record, lock, retry, checkpoint, dead-letter và manual rerun. |
 | Frontend web | Repo hiện có Next.js, React, Ant Design, Tailwind, React Query | Chưa tái xác nhận target | Chốt có giữ stack hiện tại không sau UI/UX Flow và API contract. |
-| Mobile | SRS OQ-10 đã chốt một codebase Expo cho User / Employee; repo hiện có Expo / React Native | Cần reviewer xác nhận có giữ quyết định SRS hay mở lại | Offline/sync Employee, secure storage, notification permission và release/update policy. |
+| Mobile | SRS OQ-10 đã chốt một codebase Expo cho User / Employee; repo hiện có Expo / React Native | Offline Employee đã chốt read cache + queued operational actions có giới hạn; mobile stack target vẫn theo ADR-OQ-05 | Secure storage, notification permission và release/update policy. |
 | Shared packages | Repo có `shared-types` và `api-client` | Chưa tái xác nhận target | Chốt ownership enum/DTO/error code và cơ chế generate/sync giữa FE/BE/Mobile. |
 | Local services | Docker Compose có MongoDB, Redis, OSRM, Mongo Express, Redis Commander | Chưa tái xác nhận target | Chốt service cần giữ cho local dev, image tag, seed data và parity với staging. |
 | Deployment target | Chưa có target production | OPEN QUESTION | Chốt VPS/Docker host/cloud container/platform, secret manager, monitoring/alert stack trước staging/production. |
@@ -204,4 +205,4 @@ AI Agent không tự chuyển ADR sang `Accepted` nếu chưa có người duy�
 | ADR-OQ-02 | Có cần tách ADR theo từng file riêng khi số lượng tăng không? | Quản lý tài liệu |
 | ADR-OQ-03 | Node/npm/Docker image có cần pin cứng bằng ADR không? | Deployment |
 | ADR-OQ-04 | Production deployment target, secret manager, monitoring/logging/alert stack chốt theo ADR nào? | Deployment / Operation |
-| ADR-OQ-05 | Giữ SRS DP-01..03 / `TECH-STACK.md` hiện tại làm target implementation, hay mở lại lựa chọn tech stack sau khi HLD/LLD/DB/API/Security đủ rõ? | Điều kiện vào code Backend V1 |
+| ADR-OQ-05 | ĐÃ CHỐT (12/05/2026): mở lại lựa chọn tech stack sau khi HLD/LLD/DB/API/Security đủ rõ; hiện trạng repo không tự động là target implementation. | Điều kiện vào code Backend V1 |
