@@ -4,7 +4,7 @@ Entry point for AI agents working in `doc/`. Read this first, then `@`-load only
 
 ## 1. ROLE
 
-Project: bus ticket booking system (`Ve_Xe_Nhanh_NestJS_NextJs_ReactNative`).
+Project: managed marketplace for bus ticket booking (`Ve_Xe_Nhanh_NestJS_NextJs_ReactNative`). Three-sided marketplace: Passengers ↔ Platform ↔ Operators. Platform delivers three service layers: Marketplace layer (passenger-facing), Operator OS layer (operator and employee tools) and Platform admin layer (platform governance). Platform does not own vehicles, employ drivers or operate trips directly.
 
 Allowed:
 
@@ -65,9 +65,10 @@ If a document exists only in one language, it may be read as context for the oth
 ### A. Lookup or business question
 
 1. `@vi/agent/00-quy-chuan-cho-ai-agent` for Vietnamese work, or `@en/agent/00-standard-for-ai-agent` for English work.
-2. `@context/GLOSSARY` if available.
-3. `@context/DOMAIN-MAP` if available.
-4. Relevant SDLC file under `@vi/SDLC/` unless the user requests English.
+2. `@context/GLOSSARY` if available — for consistent terminology.
+3. `@context/DOMAIN-MAP` if available — to locate which module / SDLC section is relevant.
+4. `@context/PROJECT-STATE` if available — to know the latest decisions and document statuses.
+5. Relevant SDLC file under `@vi/SDLC/` unless the user requests English.
 
 ### B. Edit an existing SDLC document
 
@@ -79,19 +80,25 @@ If a document exists only in one language, it may be read as context for the oth
 ### C. Author a new design document (HLD, LLD, DB, API, UI, Security)
 
 1. `@vi/agent/00-quy-chuan-cho-ai-agent` for Vietnamese work, or `@en/agent/00-standard-for-ai-agent` for English work (sections B1, B3).
-2. `@vi/SDLC/01-srs-he-thong-dat-ve-xe-khach` for Vietnamese work, or the English SRS counterpart when requested.
-3. `@context/DOMAIN-MAP` if available.
-4. `@context/PROJECT-STRUCTURE` and relevant `@context/STRUCTURE-*`
-5. `@context/TECH-STACK` for technical constraints
-6. Create the new file under the requested SDLC language directory, defaulting to `@vi/SDLC/` for Vietnamese work.
+2. `@context/GLOSSARY` if available — for consistent terminology across documents.
+3. `@vi/SDLC/01-srs-he-thong-dat-ve-xe-khach` for Vietnamese work, or the English SRS counterpart when requested.
+4. `@context/DOMAIN-MAP` if available — for module ↔ folder ↔ SDLC section mapping.
+5. `@context/PROJECT-STRUCTURE` and relevant `@context/STRUCTURE-*`
+6. `@context/TECH-STACK` for technical constraints.
+7. `@context/PROJECT-STATE` if available — for recent decisions, blockers and open questions raised during design.
+8. Create the new file under the requested SDLC language directory, defaulting to `@vi/SDLC/` for Vietnamese work.
+9. Update `@context/PROJECT-STATE` after creating / saving the document if it exists.
 
 ### D. Reverse-engineer SRS from source code
 
 1. `@vi/agent/00-quy-chuan-cho-ai-agent` for Vietnamese work, or `@en/agent/00-standard-for-ai-agent` for English work.
-2. `@context/DOMAIN-MAP` for module ↔ folder mapping if available.
-3. `@context/PROJECT-STRUCTURE` (or `@context/STRUCTURE-BACKEND` when split)
-4. Source code in scope (read minimum needed)
-5. Write FR/BR into `@vi/SDLC/01-srs-he-thong-dat-ve-xe-khach` unless the user requests English output.
+2. `@context/GLOSSARY` if available — for consistent terminology when naming entities and actors.
+3. `@context/DOMAIN-MAP` for module ↔ folder mapping if available.
+4. `@context/PROJECT-STRUCTURE` (or `@context/STRUCTURE-BACKEND` when split).
+5. `@context/PROJECT-STATE` if available — to know which modules are in scope, in progress or refactor-pending.
+6. Source code in scope (read minimum needed).
+7. Write FR/BR into `@vi/SDLC/01-srs-he-thong-dat-ve-xe-khach` unless the user requests English output.
+8. Update `@context/PROJECT-STATE` after writing if it exists.
 
 ## 6. HARD CONSTRAINTS
 
