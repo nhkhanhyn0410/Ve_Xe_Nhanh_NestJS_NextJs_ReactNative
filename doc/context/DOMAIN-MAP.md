@@ -43,8 +43,8 @@ Notes:
 
 | Actor    | Primary client                                      | Notes                                                                  |
 | -------- | --------------------------------------------------- | ---------------------------------------------------------------------- |
-| User     | `apps/frontend` route group `(public)` + `apps/mobile` | Search, booking, ticket, profile, review, complaint.                  |
-| Guest    | `apps/frontend` route group `(public)` + `apps/mobile` | Search, hold seat, book, pay, lookup ticket; no long-term history.    |
+| User     | `apps/frontend` route group `(public)` + `apps/mobile` | Search, booking, ticket, profile, review, complaint. Mobile passenger app requires registered / logged-in User account. |
+| Guest    | `apps/frontend` route group `(public)` only             | Web-only guest checkout / lookup: search, hold seat, book, pay, lookup ticket; no long-term history. |
 | Operator | `apps/frontend` route group `(operator)` + `(operator-auth)` | Operator OS layer entry.                                          |
 | Employee | `apps/mobile` (employee mode) and / or `apps/frontend` operator portal sub-section | Check-in, manifest, status update, journey log, incident.   |
 | Admin    | `apps/frontend` route group `(admin)`               | Platform admin layer entry; no mobile app for v1.                      |
@@ -58,7 +58,7 @@ Notes:
 | Dịch vụ thông báo SMS | `external/notification/sms/` | Adapter boundary only; SMS OTP is outside v1 baseline |
 | Push notification | `external/notification/push/` | Adapter boundary only; push provider is not fixed in SRS v1 |
 | Dịch vụ định tuyến | `external/routing/osrm/` | Existing folder `modules/osrm/` will be moved here |
-| Object storage | `external/storage/` | Provider still to be selected in HLD / infra; required for KYC, attachment and report export contracts |
+| Object storage | `external/storage/` | HLD-OQ-01 closed: use S3-compatible storage through adapter; production baseline AWS S3 private bucket, local/dev MinIO; required for KYC, attachment and report export contracts |
 | Bank payout channel | `external/payout/` | `OQ-16`; v1 uses direct bank transfer with Admin manual confirmation |
 
 ## 5. Current code vs. target (refactor radar)

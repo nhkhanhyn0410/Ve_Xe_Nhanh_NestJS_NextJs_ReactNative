@@ -12,7 +12,7 @@ Last updated: 12/05/2026.
 | 00-AI  | Quy chuẩn SDLC cho AI agent (Vietnamese)  | `vi/agent/00-quy-chuan-cho-ai-agent.md`               | v1.0    | Draft    | Nguyễn Hồng Khanh        |
 | 00b-EN | SDLC Standards for AI agent (English)     | `en/agent/00-standard-for-ai-agent.md`                | v1.0    | Draft    | Nguyễn Hồng Khanh        |
 | 01     | SRS - Software Requirements Specification | `vi/SDLC/01-srs-he-thong-dat-ve-xe-khach.md`          | v1.19   | Approved | Nguyễn Hồng Khanh + team |
-| 02     | HLD - High Level Design                   | `vi/SDLC/02-hld-he-thong-dat-ve-xe-khach.md`          | v0.1    | Draft    | AI Agent                 |
+| 02     | HLD - High Level Design                   | `vi/SDLC/02-hld-he-thong-dat-ve-xe-khach.md`          | v1.7    | Draft    | AI Agent                 |
 | 03     | LLD - Low Level Design                    | `vi/SDLC/03-lld-he-thong-dat-ve-xe-khach.md`          | v0.1    | Draft    | AI Agent                 |
 | 04     | Database Design                           | `vi/SDLC/04-database-design.md`                       | v0.1    | Draft    | AI Agent                 |
 | 05     | API Specification                         | `vi/SDLC/05-api-specification.md`                     | v0.1    | Draft    | AI Agent                 |
@@ -63,11 +63,14 @@ All 25 questions raised during SRS authoring are now closed. See SRS §21 for fu
 
 ## 4. Open Questions raised after SRS Approval
 
-Open Questions discovered during HLD / LLD / DB / API / Security / Test work go here. Empty at SRS v1.19.
+SRS v1.19 has no remaining open SRS-level questions. Questions below were raised after SRS approval during HLD / LLD / DB / API / Security / Test work.
 
-| ID  | Question | Raised by | Raised on | Impact | Status |
-| --- | -------- | --------- | --------- | ------ | ------ |
-| —   | —        | —         | —         | —      | —      |
+| ID        | Question | Raised by | Raised on | Impact | Status |
+| --------- | -------- | --------- | --------- | ------ | ------ |
+| HLD-OQ-01 | ĐÃ CHỐT: object/file storage dùng S3-compatible adapter; production baseline AWS S3 private bucket, local/dev dùng MinIO. Binary không lưu trong MongoDB; DB chỉ lưu metadata/object key. | AI Agent | 12/05/2026 | Ảnh hưởng DB file metadata, signed URL API, IAM, retention, security scan, backup và cost. | Closed 12/05/2026 |
+| HLD-OQ-02 | Chọn provider SMS / push và xác định SMS / push transactional có bắt buộc cho V1 launch hay chỉ giữ adapter. | AI Agent | 12/05/2026 | Ảnh hưởng Notification API, mobile token registry, template, retry và consent/preference. | Open |
+| HLD-OQ-03 | Chốt production deployment target, secret manager, monitoring/logging/alert stack và incident runbook baseline. | AI Agent | 12/05/2026 | Ảnh hưởng Deployment Standard, observability, backup/restore và production readiness. | Open |
+| HLD-OQ-04 | Chốt mức hỗ trợ offline/sync cho Employee: chỉ read cache manifest, hay cho queue thao tác check-in/journey/incident. | AI Agent | 12/05/2026 | Ảnh hưởng Mobile LLD, idempotency, conflict resolution, test mất mạng và operation policy. | Open |
 
 ## 5. Blockers
 
@@ -75,7 +78,7 @@ Concrete blockers preventing a document from reaching `Review` or `Approved`.
 
 | Document | Blocker | Owner | Since |
 | -------- | ------- | ----- | ----- |
-| 02-HLD | v0.1 còn nhiều OQ / giả định cũ trước SRS v1.19: VNPay Sandbox, SeatHold 10 phút, Guest checkout, fare, refund, audit, reporting đã được SRS chốt nhưng HLD chưa đồng bộ. | AI Agent | 12/05/2026 |
+| 02-HLD | v1.7 đã đồng bộ mục 1-18 theo SRS v1.19 và DOMAIN-MAP; HLD-OQ-01 đã chốt S3-compatible object storage; còn cần người duyệt xác nhận và xử lý / chấp nhận HLD-OQ-02..04 trước khi các tài liệu DB/API/Security/Deployment chốt chi tiết. | AI Agent | 12/05/2026 |
 | 04-Database Design | Chưa đủ collection / index / TTL / idempotency / ledger / audit-retention để triển khai dữ liệu V1. | AI Agent | 12/05/2026 |
 | 05-API Specification | Chưa đủ contract request/response/error/webhook/realtime cho FE/BE/Mobile tích hợp V1. | AI Agent | 12/05/2026 |
 | 07-Security & Permission Design | Chưa đủ rule chi tiết cho RBAC, tenant boundary, Guest lookup, masking, audit và thao tác nhạy cảm. | AI Agent | 12/05/2026 |
@@ -88,13 +91,20 @@ Concrete blockers preventing a document from reaching `Review` or `Approved`.
 | Issue | Action proposed | Status |
 | ----- | --------------- | ------ |
 | `vi/agent/01a.md` is empty and unnamed | Delete file or replace with a named agent-context document when needed. | Pending |
-| SDLC docs 02..11 are v0.1 skeletons created before SRS v1.19 was finalized | Rewrite / review in dependency order: 02-HLD → 04-DB → 05-API → 07-Security → 08-Test → 11-Task Breakdown. | Pending |
+| SDLC docs 03..11 are v0.1 skeletons; 02-HLD v1.7 has synced §1..§18 but remains Draft pending reviewer confirmation and HLD-OQ-02..04 handling | Continue rewrite / review in dependency order: 04-DB → 05-API → 07-Security → 08-Test → 09-Deployment → 11-Task Breakdown. | Pending |
 | `vi/agent/` is intended to hold AI-tailored abridged SDLC; only standard exists | When a coding agent needs abridged SRS / HLD, ask user to author them. | Pending |
 
 ## 7. Recent change log (latest first)
 
 | Date       | Change                                                                                                   | Author           |
 | ---------- | -------------------------------------------------------------------------------------------------------- | ---------------- |
+| 12/05/2026 | Closed HLD-OQ-01 in HLD v1.7: object/file storage uses S3-compatible adapter, AWS S3 production baseline and MinIO for local/dev. | AI Agent |
+| 12/05/2026 | Updated HLD to v1.6 and DOMAIN-MAP §3: mobile passenger app is User-only; Guest checkout / lookup remains Web Marketplace only. | AI Agent |
+| 12/05/2026 | Updated HLD to v1.5: split Web Operator auth and Web Employee auth in §6.2 to clarify actor/session boundary. | AI Agent |
+| 12/05/2026 | Rewrote HLD §6..§18 into v1.4 based on SRS v1.19 and DOMAIN-MAP; recorded HLD-OQ-01..04 for storage, SMS/push, deployment/observability and Employee offline/sync. | AI Agent |
+| 12/05/2026 | Reviewed HLD table of contents into v1.3; kept §1..§5 baseline and retained necessary HLD sections for §6..§19. | AI Agent |
+| 12/05/2026 | Synced HLD §1..§5 into v1.2: metadata, input priority, scope baseline, SRS decision baseline and architecture handoff. | AI Agent |
+| 12/05/2026 | Rewrote HLD §5 architecture overview against SRS v1.19 decisions; HLD remains Draft pending remaining stale sections. | AI Agent |
 | 12/05/2026 | Synced context files with SRS v1.19: corrected AI-agent path, blockers, stale SRS v1.15 references and next-document priorities. | AI Agent |
 | 12/05/2026 | SRS v1.19 completed through §20, with §21 Decisions Log and §22 appendix kept as supporting sections. | AI Agent + Khanh |
 | 12/05/2026 | SRS v1.18 wrote §16 main business flows. | AI Agent + Khanh |
