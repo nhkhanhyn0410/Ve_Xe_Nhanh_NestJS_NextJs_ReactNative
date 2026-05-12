@@ -9,7 +9,7 @@
 | Tên tài liệu | Software Requirements Specification - Hệ thống đặt vé xe khách |
 | Mã tài liệu  | 01-srs-he-thong-dat-ve-xe-khach                                |
 | Dự án        | Hệ thống đặt vé xe khách                                       |
-| Phiên bản    | v1.18                                                          |
+| Phiên bản    | v1.19                                                          |
 | Trạng thái   | Draft                                                          |
 | Người viết   | Nguyễn Hồng Khanh, Nguyễn Xuân Trường, Lê Võ Thanh Uy          |
 | Người duyệt  | Nguyễn Hồng Khanh                                              |
@@ -38,6 +38,7 @@
 | v1.16     | 12/05/2026 | AI Agent, Nguyễn Hồng Khanh | Hoàn thiện §14 Business Rules theo 64 rule có truy vết sang FR / NFR / UC; viết lại §15 Phân quyền chức năng theo actor `User`, `Guest`, `Operator`, `Employee`, `Admin`, `System`, bổ sung nguyên tắc RBAC / tenant boundary, ma trận quyền theo nhóm chức năng, phân quyền chi tiết Employee theo role và nhóm thao tác nhạy cảm cần xác thực / audit.                                                                                                                                                                                                                                  |
 | v1.17     | 12/05/2026 | AI Agent, Nguyễn Hồng Khanh | Xử lý các điểm rà soát 15 mục đầu: sửa tham chiếu file quy chuẩn lập trình viên, làm sạch phạm vi tài liệu, đồng bộ SeatHold 10 phút và VNPay Sandbox, cập nhật `FR-MKT-10`, `FR-NSR-06`, `FR-DSP-03..04`, sơ đồ use case và bảng UC-09 cho Guest support / complaint, sửa lỗi chính tả `UC-01`.                                                                                                                                                                                                                                                                                          |
 | v1.18     | 12/05/2026 | AI Agent, Nguyễn Hồng Khanh | Viết mới toàn bộ §16 Luồng nghiệp vụ chính: bổ sung danh mục luồng end-to-end, luồng thiết lập nhà xe trước mở bán, đặt vé User / Guest, payment lỗi / đối soát, tra cứu vé Guest, hủy / hoàn tiền, thay đổi chuyến, check-in / vận hành chuyến, support / complaint / dispute, escrow / payout T+3 và luồng notification / audit / job nền.                                                                                                                                                                                                                                              |
+| v1.19     | 12/05/2026 | AI Agent, Nguyễn Hồng Khanh | Viết lại §17..§20 để tiến tới hoàn thiện SRS: chuẩn hóa state model nghiệp vụ, catalog thông báo bắt buộc / không bắt buộc, tiêu chí nghiệm thu có truy vết và risk register theo managed marketplace, Guest checkout, VNPay Sandbox, escrow / payout T+3, dispute, audit và job nền; cập nhật tham chiếu §21 liên quan state model / payout.                                                                                                                                                                           |
 
 ---
 
@@ -2662,174 +2663,337 @@ Luồng cắt ngang này áp dụng cho tất cả BF-01..BF-09.
 
 ## 17. Trạng thái dữ liệu quan trọng
 
-Lưu ý: các state enum dưới đây là **target** theo SRS. Các điểm còn cần chốt hoặc lệch với hiện trạng triển khai được ghi nhận tại §21 Open Questions / TBD.
+Mục này mô tả state model nghiệp vụ tối thiểu dùng để truy vết giữa SRS, HLD, Database Design, API Specification và Test Plan. Tên trạng thái bên dưới là tên logic của SRS; tài liệu thiết kế có thể bổ sung mapping kỹ thuật nhưng không được làm thay đổi ý nghĩa nghiệp vụ nếu chưa review lại SRS.
 
-### 17.1. Trạng thái chuyến xe (Trip)
+### 17.1. Nguyên tắc quản lý trạng thái
 
-| Trạng thái    | Mô tả                       |
-| ------------- | --------------------------- |
-| DRAFT         | Chuyến mới tạo, chưa mở bán |
-| OPEN_FOR_SALE | Chuyến đang mở bán          |
-| SOLD_OUT      | Chuyến đã hết ghế           |
-| LOCKED        | Chuyến bị khóa bán tạm thời |
-| BOARDING      | Đang đón khách              |
-| DEPARTED      | Đã khởi hành                |
-| IN_PROGRESS   | Đang chạy                   |
-| COMPLETED     | Đã hoàn thành               |
-| CANCELLED     | Đã hủy                      |
-| INCIDENT      | Có sự cố                    |
+- Trạng thái chỉ được thay đổi bởi backend sau khi kiểm tra quyền, tenant boundary, điều kiện nghiệp vụ và dữ liệu liên quan.
+- Mọi trạng thái liên quan đến ghế, booking, ticket, payment, refund, payout, dispute, policy hoặc dữ liệu cá nhân phải có lịch sử thay đổi hoặc audit / operation log phù hợp.
+- Payment callback, refund callback, notification retry và job đối soát phải xử lý idempotent; cùng một sự kiện không được tạo trùng tiền, trùng ticket hoặc trùng notification bắt buộc.
+- Các trạng thái terminal như `COMPLETED`, `CANCELLED`, `REFUNDED`, `PAID`, `CLOSED` chỉ được đảo ngược bằng luồng ngoại lệ có quyền, lý do và audit log nếu nghiệp vụ cho phép.
+- Booking, ticket, payment, refund, escrow, payout và audit log không được xóa cứng trong production; nếu cần ẩn / archive phải theo policy lưu trữ.
 
-### 17.2. Trạng thái ghế trên chuyến (Seat)
+### 17.2. Tổng quan nhóm trạng thái
 
-| Trạng thái | Mô tả                      |
-| ---------- | -------------------------- |
-| AVAILABLE  | Còn trống                  |
-| HOLDING    | Đang được giữ tạm thời     |
-| BOOKED     | Đã đặt thành công          |
-| CHECKED_IN | Hành khách đã lên xe       |
-| BLOCKED    | Bị khóa bởi nhà xe / admin |
+| Nhóm trạng thái             | Thực thể chính                         | Luồng nghiệp vụ liên quan                    | Ghi chú kiểm soát                                      |
+| --------------------------- | -------------------------------------- | -------------------------------------------- | ------------------------------------------------------ |
+| Bán vé và giữ ghế           | `Trip`, `TripSeat`, `SeatHold`         | `UC-02..06`, `BF-01..03`                     | Chống bán trùng ghế, TTL 10 phút, khóa ghế đa kênh.    |
+| Booking và ticket           | `Booking`, `Ticket`                    | `UC-05..08`, `UC-20`, `BF-02..07`            | Snapshot bắt buộc, QR server-side, hủy / no-show.      |
+| Thanh toán và tài chính     | `Payment`, `Refund`, `Payout`          | `UC-06`, `UC-08`, `UC-25..26`, `BF-03..09`   | Idempotency, escrow, commission, payout T+3.           |
+| Hỗ trợ và tranh chấp        | `SupportTicket`, `Complaint`, `DisputeCase` | `UC-09`, `UC-27`, `BF-08`                    | Lưu minh chứng, hạn phản hồi, quyết định Admin.        |
+| Vận hành và thông báo       | `NotificationDelivery`, `BackgroundJob` | `UC-21..22`, `UC-30..32`, `BF-06..10`        | Retry, job lock, operation log, audit log.             |
+| Onboarding và phân quyền    | `OperatorProfile`, `KycDocument`, `EmployeeAssignment` | `UC-10`, `UC-16`, `UC-18`, `UC-23` | Chỉ Operator đã duyệt mới được mở bán công khai.       |
 
-### 17.3. Trạng thái booking
+### 17.3. Trạng thái chuyến xe (`Trip`)
 
-| Trạng thái           | Mô tả                        |
-| -------------------- | ---------------------------- |
-| PENDING_PAYMENT      | Chờ thanh toán               |
-| PENDING_CONFIRMATION | Chờ nhà xe xác nhận          |
-| PAID                 | Đã thanh toán                |
-| CONFIRMED            | Đã xác nhận                  |
-| PARTIALLY_CANCELLED  | Hủy một phần                 |
-| CANCELLED            | Đã hủy toàn bộ               |
-| EXPIRED              | Hết hạn thanh toán / giữ ghế |
-| REFUND_PENDING       | Chờ hoàn tiền                |
-| REFUNDED             | Đã hoàn tiền                 |
-| REFUND_FAILED        | Hoàn tiền thất bại           |
+| Trạng thái    | Ý nghĩa nghiệp vụ                                    | Điều kiện vào trạng thái                                          | Ghi chú chuyển trạng thái                                           |
+| ------------- | ---------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------- |
+| DRAFT         | Chuyến mới tạo, chưa đủ điều kiện hoặc chưa mở bán.  | Operator tạo trip mới hoặc lưu nháp.                              | Không hiển thị trong Marketplace search.                            |
+| OPEN_FOR_SALE | Chuyến đang mở bán công khai.                        | Trip có route, xe / seat map, fare, điểm đón / trả hợp lệ.         | Cho phép tìm kiếm, giữ ghế, tạo booking.                            |
+| SOLD_OUT      | Chuyến đã hết ghế bán online.                        | Tất cả ghế bán được đã `BOOKED`, `HOLDING` hoặc `BLOCKED`.         | Có thể quay lại `OPEN_FOR_SALE` nếu ghế được giải phóng hợp lệ.      |
+| LOCKED        | Chuyến bị khóa bán tạm thời.                         | Operator hoặc Admin khóa bán do vận hành, kiểm tra hoặc rủi ro.    | Không cho tạo booking / payment mới.                                |
+| BOARDING      | Chuyến đang đón khách.                               | Employee bắt đầu quy trình đón khách theo phân công.               | Manifest và check-in được ưu tiên.                                  |
+| DEPARTED      | Chuyến đã rời điểm đón / bến xuất phát.              | Employee cập nhật trạng thái khởi hành.                            | Không bán thêm vé online.                                           |
+| IN_PROGRESS   | Chuyến đang chạy.                                    | Chuyến đã khởi hành và chưa hoàn thành.                            | Có thể ghi nhật trình / sự cố.                                      |
+| COMPLETED     | Chuyến đã hoàn thành.                                | Employee / Operator cập nhật hoàn thành hoặc job xác nhận hợp lệ.  | Dùng làm mốc xét review, no-show và payout T+3.                     |
+| CANCELLED     | Chuyến đã hủy.                                       | Operator / Admin hủy chuyến có lý do.                              | Dừng bán, chặn payment mới, kích hoạt thông báo / refund / dispute. |
+| INCIDENT      | Chuyến có sự cố cần theo dõi.                        | Employee / Operator / Admin ghi nhận sự cố ảnh hưởng vận hành.     | Không nhất thiết là terminal; có thể xử lý tiếp theo policy.         |
 
-### 17.4. Trạng thái ticket
+### 17.4. Trạng thái ghế trên chuyến (`TripSeat`)
 
-| Trạng thái | Mô tả                       |
-| ---------- | --------------------------- |
-| VALID      | Vé hợp lệ                   |
-| CANCELLED  | Vé đã hủy                   |
-| CHECKED_IN | Vé đã check-in              |
-| NO_SHOW    | Hành khách không lên xe     |
-| USED       | Vé đã sử dụng / xong chuyến |
-| REFUNDED   | Vé đã hoàn tiền             |
+| Trạng thái | Ý nghĩa nghiệp vụ                                      | Điều kiện vào trạng thái                                       | Ghi chú kiểm soát                                      |
+| ---------- | ------------------------------------------------------ | -------------------------------------------------------------- | ------------------------------------------------------ |
+| AVAILABLE  | Ghế còn trống và có thể chọn.                          | Chuyến đang mở bán, ghế không bị khóa, chưa hold / booking.    | Chỉ hiển thị khi còn trong thời gian bán online.       |
+| HOLDING    | Ghế đang được giữ tạm thời bởi User / Guest session.   | SeatHold được tạo thành công bằng thao tác atomic.             | TTL mặc định 10 phút ở cấp Platform.                   |
+| BOOKED     | Ghế đã gắn với booking / ticket hợp lệ.                | Payment thành công hoặc booking được xác nhận hợp lệ.          | Không được giữ / bán lại nếu ticket còn hiệu lực.      |
+| CHECKED_IN | Hành khách của ghế đã được check-in.                   | Employee xác thực QR / mã vé server-side và xác nhận lên xe.   | Chặn hủy thường theo `BR-06`.                          |
+| BLOCKED    | Ghế bị khóa bởi Operator / Admin hoặc bán ngoài kênh.  | Operator khóa ghế thủ công, đồng bộ đa kênh hoặc Admin can thiệp. | Không cho User / Guest chọn trong Marketplace.      |
 
-### 17.5. Trạng thái payment
+### 17.5. Kết quả SeatHold
 
-| Trạng thái  | Mô tả            |
-| ----------- | ---------------- |
-| INITIATED   | Đã tạo giao dịch |
-| PROCESSING  | Đang xử lý       |
-| SUCCESS     | Thành công       |
-| FAILED      | Thất bại         |
-| EXPIRED     | Hết hạn          |
-| CANCELLED   | Đã hủy           |
-| RECONCILING | Đang đối soát    |
+| Kết quả SeatHold | Ý nghĩa nghiệp vụ                                  | Tác động đến ghế / booking                         | Truy vết |
+| ---------------- | -------------------------------------------------- | --------------------------------------------------- | -------- |
+| ACTIVE           | SeatHold còn hiệu lực trong TTL.                   | Ghế hiển thị là `HOLDING` với session tương ứng.    | `UC-04`, `BR-02` |
+| CONSUMED         | SeatHold đã được dùng để tạo booking hợp lệ.       | Booking chuyển sang `PENDING_PAYMENT`.              | `UC-05`, `BR-24` |
+| RELEASED         | User / Guest đổi ghế, hủy chọn hoặc hệ thống giải phóng hợp lệ. | Ghế quay về `AVAILABLE` nếu không bị khóa / bán. | `UC-04`, `BR-03` |
+| EXPIRED          | TTL hết hạn trước khi booking / payment hợp lệ.    | Ghế được giải phóng, booking cũ không được thanh toán tiếp. | `UC-04..06`, `BR-03` |
 
-### 17.6. Trạng thái refund
+### 17.6. Trạng thái booking (`Booking`)
 
-| Trạng thái | Mô tả                |
-| ---------- | -------------------- |
-| REQUESTED  | Đã yêu cầu hoàn tiền |
-| APPROVED   | Đã duyệt             |
-| PROCESSING | Đang hoàn tiền       |
-| SUCCESS    | Hoàn tiền thành công |
-| FAILED     | Hoàn tiền thất bại   |
-| REJECTED   | Bị từ chối           |
+| Trạng thái           | Ý nghĩa nghiệp vụ                                           | Điều kiện vào trạng thái                                      | Ghi chú kiểm soát                                  |
+| -------------------- | ----------------------------------------------------------- | ------------------------------------------------------------- | -------------------------------------------------- |
+| PENDING_PAYMENT      | Booking đã tạo và đang chờ thanh toán.                      | User / Guest tạo booking từ SeatHold hợp lệ.                  | Trạng thái mặc định của checkout v1.               |
+| PENDING_CONFIRMATION | Booking chờ xác nhận thủ công / thanh toán sau.             | Chỉ dùng khi luồng vận hành ngoại lệ được bật rõ ràng.         | Không mở mặc định cho passenger checkout v1.       |
+| PAID                 | Payment đã thành công, đang hoàn tất hậu xử lý.             | Callback / webhook payment hợp lệ và idempotent.              | Phải ghi escrow ledger.                            |
+| CONFIRMED            | Booking đã được xác nhận và ticket đã phát hành.            | Hệ thống phát hành ticket hợp lệ cho booking.                 | User / Guest có thể xem vé điện tử.                |
+| PARTIALLY_CANCELLED  | Một phần ticket trong booking đã bị hủy.                    | Hủy một hoặc một số ticket theo policy.                       | Ticket còn lại vẫn hiệu lực nếu không bị ảnh hưởng. |
+| CANCELLED            | Booking đã hủy toàn bộ.                                     | Tất cả ticket bị hủy hoặc booking bị hủy trước khi thanh toán. | Chặn payment mới.                                  |
+| EXPIRED              | Booking hết hạn thanh toán / giữ ghế.                       | TTL hoặc deadline thanh toán hết hiệu lực.                    | Ghế phải được giải phóng nếu chưa bán.             |
+| REFUND_PENDING       | Booking có refund request đang chờ xử lý.                   | Hủy hợp lệ hoặc Admin / dispute tạo yêu cầu refund.           | Có thể cần đối soát provider.                      |
+| REFUNDED             | Booking đã hoàn tiền đầy đủ theo phần cần hoàn.             | Refund thành công và ledger cập nhật.                         | Không tự mở lại booking.                           |
+| REFUND_FAILED        | Hoàn tiền thất bại hoặc cần xử lý thủ công.                 | Provider lỗi, callback lệch hoặc Admin đánh dấu thất bại.     | Chuyển UC-26 / UC-32 để đối soát.                  |
 
-### 17.7. Trạng thái dispute case
+### 17.7. Trạng thái ticket (`Ticket`)
 
-| Trạng thái                | Mô tả                                                   |
-| ------------------------- | ------------------------------------------------------- |
-| OPEN                      | DisputeCase mới được tạo và chờ phân loại               |
-| WAITING_USER_EVIDENCE     | Đang chờ User bổ sung minh chứng                        |
-| WAITING_OPERATOR_RESPONSE | Đang chờ Operator phản hồi hoặc bổ sung minh chứng      |
-| UNDER_REVIEW              | Admin đang xem xét dữ liệu và minh chứng                |
-| ESCALATED                 | DisputeCase bị leo thang do quá hạn hoặc rủi ro cao     |
-| RESOLVED_REFUND           | Đã xử lý với quyết định hoàn tiền                       |
-| RESOLVED_NO_REFUND        | Đã xử lý với quyết định không hoàn tiền                 |
-| CLOSED                    | Đã đóng sau khi thông báo kết quả cho các bên liên quan |
+| Trạng thái | Ý nghĩa nghiệp vụ                                  | Điều kiện vào trạng thái                                  | Ghi chú kiểm soát                                      |
+| ---------- | -------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------ |
+| VALID      | Vé hợp lệ và có thể dùng để lên xe.                | Booking `CONFIRMED`, ticket phát hành thành công.         | Có mã vé / QR token không đoán được.                   |
+| CANCELLED  | Vé đã hủy trước khi dùng.                          | User / Guest / Admin hủy theo policy hoặc ngoại lệ.       | Có thể tạo refund nếu đủ điều kiện.                    |
+| CHECKED_IN | Vé đã được check-in.                               | Employee xác thực server-side và xác nhận khách lên xe.   | Không được check-in lần nữa.                           |
+| NO_SHOW    | Hành khách không lên xe.                           | Employee / Operator ghi nhận sau cửa sổ đón khách.        | Ảnh hưởng báo cáo, no-show và chính sách hoàn nếu có.  |
+| USED       | Vé đã hoàn tất hành trình.                         | Chuyến hoàn thành và vé đã check-in / được xác nhận dùng. | Dùng cho lịch sử vé và review hợp lệ.                  |
+| REFUNDED   | Vé đã hoàn tiền theo policy / quyết định Admin.    | Refund thành công cho ticket tương ứng.                   | Không còn hiệu lực để check-in.                        |
+
+### 17.8. Trạng thái payment (`Payment`)
+
+| Trạng thái  | Ý nghĩa nghiệp vụ                                 | Điều kiện vào trạng thái                                  | Ghi chú kiểm soát                                  |
+| ----------- | ------------------------------------------------- | --------------------------------------------------------- | -------------------------------------------------- |
+| INITIATED   | Hệ thống đã tạo payment nội bộ.                   | Booking đủ điều kiện thanh toán.                         | Phải có mã payment duy nhất.                       |
+| PROCESSING  | User / Guest đang ở kênh thanh toán hoặc chờ callback. | Đã gửi yêu cầu sang provider.                         | Chưa phát hành ticket.                             |
+| SUCCESS     | Payment thành công.                               | Callback / webhook hợp lệ, số tiền khớp snapshot.        | Ghi escrow và phát hành ticket.                    |
+| FAILED      | Payment thất bại.                                 | Provider trả lỗi hoặc User / Guest thanh toán không thành công. | Có thể thanh toán lại nếu booking còn hiệu lực. |
+| EXPIRED     | Payment hết hạn.                                  | Deadline thanh toán kết thúc.                            | Không được dùng payment cũ để xác nhận vé.         |
+| CANCELLED   | Payment bị hủy.                                   | User / Guest hủy hoặc hệ thống hủy do booking không hợp lệ. | Không ghi nhận tiền.                            |
+| RECONCILING | Payment cần đối soát.                             | Callback trễ, trùng, lệch số tiền hoặc lệch trạng thái.  | Chỉ Admin / job đối soát được xử lý tiếp.          |
+
+### 17.9. Trạng thái refund (`Refund`)
+
+| Trạng thái | Ý nghĩa nghiệp vụ                                   | Điều kiện vào trạng thái                              | Ghi chú kiểm soát                                  |
+| ---------- | --------------------------------------------------- | ----------------------------------------------------- | -------------------------------------------------- |
+| REQUESTED  | Đã tạo yêu cầu hoàn tiền.                           | User / Guest hủy hợp lệ hoặc Admin tạo refund request. | Cần gắn booking / ticket / payment liên quan.      |
+| APPROVED   | Refund đã được duyệt.                               | Policy / Admin / dispute đủ căn cứ hoàn tiền.         | Có thể chuyển sang provider hoặc xử lý thủ công.   |
+| PROCESSING | Đang hoàn tiền.                                     | Đã gửi yêu cầu refund hoặc đang chờ xác nhận thủ công. | Cần theo dõi callback / reconciliation.            |
+| SUCCESS    | Hoàn tiền thành công.                               | Provider hoặc Admin xác nhận hoàn tiền thành công.    | Ledger và booking / ticket phải cập nhật tương ứng. |
+| FAILED     | Hoàn tiền thất bại.                                 | Provider lỗi, chuyển khoản lỗi hoặc dữ liệu lệch.     | Chuyển xử lý thủ công / đối soát.                  |
+| REJECTED   | Yêu cầu hoàn tiền bị từ chối.                       | Không đủ điều kiện theo policy hoặc quyết định Admin. | Phải ghi lý do và thông báo hành khách.            |
+
+### 17.10. Trạng thái payout (`Payout`)
+
+| Trạng thái        | Ý nghĩa nghiệp vụ                                      | Điều kiện vào trạng thái                                     | Ghi chú kiểm soát                                      |
+| ----------------- | ------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------ |
+| PENDING_REVIEW    | Khoản payout đang chờ Admin rà soát.                   | Hệ thống tạo payout candidate sau T+3 từ lúc chuyến hoàn thành. | V1 không đặt ngưỡng tối thiểu.                      |
+| ON_HOLD           | Payout bị giữ lại.                                     | Có refund, dispute, ledger lệch hoặc tài khoản nhận tiền cần xác minh. | Không được đánh dấu đã trả.                    |
+| READY_TO_TRANSFER | Payout đủ điều kiện chuyển khoản.                      | Admin rà soát ledger, commission, refund và tài khoản nhận tiền. | Chờ thao tác chuyển khoản ngân hàng.             |
+| TRANSFERRING      | Đang thực hiện chuyển khoản / xác nhận chuyển khoản.   | Admin bắt đầu xử lý chi trả.                                 | Cần lưu người thao tác và thời điểm.                  |
+| PAID              | Payout đã được xác nhận thành công.                    | Admin xác nhận thủ công đã chuyển khoản thành công.           | Cập nhật lịch sử tài chính Operator.                  |
+| FAILED            | Payout thất bại.                                       | Chuyển khoản lỗi hoặc dữ liệu đối soát không khớp.            | Chuyển đối soát / xử lý thủ công.                     |
+| CANCELLED         | Payout bị hủy trước khi chi trả.                       | Admin hủy do sai dữ liệu, duplicate hoặc policy thay đổi hợp lệ. | Phải ghi lý do và audit log.                       |
+
+### 17.11. Trạng thái support ticket / complaint
+
+| Trạng thái            | Ý nghĩa nghiệp vụ                                  | Điều kiện vào trạng thái                                  | Ghi chú kiểm soát                                  |
+| --------------------- | -------------------------------------------------- | --------------------------------------------------------- | -------------------------------------------------- |
+| OPEN                  | Ticket / complaint mới được tạo.                   | User tạo hoặc Guest đã xác minh tạo yêu cầu hỗ trợ.       | Phải gắn mã tham chiếu nếu liên quan booking / ticket. |
+| TRIAGED               | Đã phân loại và xác định bên xử lý chính.          | Admin / hệ thống phân loại theo loại vấn đề.              | Có thể giao Operator hoặc Admin xử lý.             |
+| WAITING_USER          | Đang chờ User / Guest bổ sung thông tin.           | Cần minh chứng, contact hoặc xác minh bổ sung.            | Guest chỉ thấy dữ liệu thuộc booking đã xác minh.  |
+| WAITING_OPERATOR      | Đang chờ Operator phản hồi.                        | Vấn đề liên quan chuyến / booking thuộc Operator.         | Enforce tenant boundary.                           |
+| IN_PROGRESS           | Đang xử lý.                                        | Có bên phụ trách và đủ thông tin tối thiểu.               | Lưu lịch sử trao đổi / attachment.                 |
+| ESCALATED_TO_DISPUTE  | Đã leo thang thành DisputeCase.                    | Có tranh chấp tiền, sai chuyến, bằng chứng mâu thuẫn hoặc rủi ro cao. | Theo `UC-27`.                              |
+| RESOLVED              | Đã có phương án xử lý.                             | Bên xử lý đưa kết quả hỗ trợ / complaint.                 | Gửi notification cho bên liên quan.                |
+| CLOSED                | Hồ sơ đã đóng.                                     | Kết quả đã thông báo và hết thời hạn phản hồi / khiếu nại lại theo policy. | Không xóa lịch sử.                   |
+
+### 17.12. Trạng thái dispute case (`DisputeCase`)
+
+| Trạng thái                | Ý nghĩa nghiệp vụ                                      | Điều kiện vào trạng thái                                  | Ghi chú kiểm soát                                  |
+| ------------------------- | ------------------------------------------------------ | --------------------------------------------------------- | -------------------------------------------------- |
+| OPEN                      | DisputeCase mới được tạo và chờ phân loại.             | Admin / hệ thống tạo từ support, complaint, booking, ticket hoặc payment. | Có mã tham chiếu nghiệp vụ.              |
+| WAITING_USER_EVIDENCE     | Đang chờ User / Guest bổ sung minh chứng.              | Admin yêu cầu hành khách cung cấp thông tin / attachment.  | Guest phải xác minh theo `UC-35`.                  |
+| WAITING_OPERATOR_RESPONSE | Đang chờ Operator phản hồi hoặc bổ sung minh chứng.    | Admin yêu cầu Operator cung cấp dữ liệu vận hành.          | Operator chỉ thấy case thuộc tenant.               |
+| UNDER_REVIEW              | Admin đang xem xét dữ liệu và minh chứng.              | Đã có dữ liệu đủ để đánh giá hoặc hết hạn phản hồi.        | Có thể ra quyết định refund / không refund.        |
+| ESCALATED                 | DisputeCase bị leo thang do quá hạn hoặc rủi ro cao.   | Một bên không phản hồi, có gian lận, an toàn hoặc rủi ro pháp lý. | Cần ưu tiên xử lý.                         |
+| RESOLVED_REFUND           | Đã xử lý với quyết định hoàn tiền.                     | Admin quyết định refund theo policy / bằng chứng.          | Cần cập nhật refund / ledger.                      |
+| RESOLVED_NO_REFUND        | Đã xử lý với quyết định không hoàn tiền.               | Admin từ chối refund và ghi rõ căn cứ.                     | Thông báo hành khách và Operator.                  |
+| CLOSED                    | Đã đóng sau khi thông báo kết quả cho các bên liên quan. | Kết quả đã gửi và không còn hành động mở.                | Không xóa lịch sử / attachment.                    |
+
+### 17.13. Trạng thái notification delivery
+
+| Trạng thái | Ý nghĩa nghiệp vụ                                 | Điều kiện vào trạng thái                                  | Ghi chú kiểm soát                                  |
+| ---------- | ------------------------------------------------- | --------------------------------------------------------- | -------------------------------------------------- |
+| PENDING    | Notification đã tạo và chờ gửi.                   | Sự kiện nghiệp vụ phát sinh.                              | Chưa được coi là đã thông báo thành công.          |
+| SENT       | Đã gửi thành công qua kênh tương ứng.             | Provider hoặc kênh nội bộ xác nhận gửi.                   | Lưu thời điểm và kênh gửi.                         |
+| FAILED     | Gửi thất bại.                                     | Provider lỗi, dữ liệu thiếu hoặc template lỗi.            | Có thể retry hoặc chuyển xử lý cấu hình.           |
+| RETRYING   | Đang chờ retry.                                   | Gửi lỗi nhưng còn trong policy retry.                     | Phải dùng idempotency để không gửi trùng.          |
+| SKIPPED    | Bỏ qua gửi vì preference hoặc điều kiện không phù hợp. | Notification không bắt buộc bị actor tắt hoặc không có kênh hợp lệ. | Không áp dụng cho thông báo bắt buộc. |
+
+### 17.14. Trạng thái job nền / đối soát
+
+| Trạng thái     | Ý nghĩa nghiệp vụ                                 | Điều kiện vào trạng thái                                  | Ghi chú kiểm soát                                  |
+| -------------- | ------------------------------------------------- | --------------------------------------------------------- | -------------------------------------------------- |
+| PENDING        | Job đã được tạo và chờ chạy.                      | Sự kiện hoặc lịch chạy job phát sinh.                     | Có phạm vi xử lý rõ ràng.                          |
+| RUNNING        | Job đang chạy.                                    | Worker nhận job và tạo job lock.                          | Không chạy trùng cùng phạm vi.                     |
+| SUCCEEDED      | Job hoàn tất thành công.                          | Tất cả bản ghi trong phạm vi được xử lý hợp lệ.            | Lưu thống kê kết quả.                              |
+| PARTIAL        | Job chạy một phần.                                | Một số bản ghi thành công, một số lỗi / cần retry.         | Phải có checkpoint.                                |
+| FAILED         | Job thất bại.                                     | Lỗi hệ thống, provider không phản hồi hoặc dữ liệu không hợp lệ. | Lưu lỗi đủ để chạy lại.                      |
+| RETRYING       | Job đang chờ chạy lại.                            | Lỗi tạm thời còn trong giới hạn retry.                    | Idempotent bắt buộc.                               |
+| MANUAL_REVIEW  | Job dừng để Admin kiểm tra thủ công.              | Lệch tiền, nguy cơ xử lý trùng, vượt ngưỡng an toàn.       | Không tự cập nhật tiền / vé khi chưa có quyết định. |
 
 ---
 
 ## 18. Thông báo hệ thống
 
-| Sự kiện                 | Người nhận                | Kênh gợi ý           | Nội dung chính                                        |
-| ----------------------- | ------------------------- | -------------------- | ----------------------------------------------------- |
-| Đăng ký thành công      | Người dùng                | Email / SMS / In-app | Xác nhận tài khoản đã tạo                             |
-| Đặt vé chờ thanh toán   | Người dùng                | In-app / Email       | Mã đơn, thời hạn thanh toán                           |
-| Thanh toán thành công   | Người dùng                | Email / SMS / In-app | Vé điện tử, QR code, thông tin chuyến                 |
-| Thanh toán thất bại     | Người dùng                | In-app               | Lý do thất bại, hướng dẫn thử lại                     |
-| Nhắc giờ khởi hành      | Người dùng                | Push / SMS           | Giờ đi, điểm đón, biển số nếu có                      |
-| Chuyến thay đổi giờ     | Người dùng, Employee      | SMS / Push / In-app  | Giờ mới, hướng dẫn xác nhận                           |
-| Chuyến bị hủy           | Người dùng, Employee      | SMS / Push / Email   | Lý do, phương án hoàn tiền / đổi chuyến               |
-| Có đơn vé mới           | Nhà xe                    | In-app / Email       | Thông tin chuyến, số vé, doanh thu                    |
-| Employee được phân công | Employee                  | Push / In-app        | Chuyến, giờ đi, xe                                    |
-| Hủy vé thành công       | Người dùng, Nhà xe        | In-app / Email       | Vé đã hủy, số tiền hoàn dự kiến                       |
-| Hoàn tiền thành công    | Người dùng                | Email / SMS / In-app | Số tiền, mã giao dịch hoàn                            |
-| Có khiếu nại mới        | Nhà xe / Admin            | In-app / Email       | Loại khiếu nại, booking liên quan                     |
-| Dispute đổi trạng thái  | Người dùng, Nhà xe, Admin | In-app / Email       | Trạng thái mới, yêu cầu bổ sung hoặc quyết định xử lý |
-| Nhà xe được phê duyệt   | Nhà xe                    | Email / In-app       | Trạng thái hoạt động mới                              |
+Mục này xác định catalog thông báo nghiệp vụ ở mức SRS. Provider cụ thể cho email / push / SMS chưa chốt ở SRS, ngoại trừ quyết định v1 dùng email OTP cho xác minh User tại `OQ-09`. Kênh gửi chi tiết, template, retry policy và localization sẽ được đặc tả trong UI/UX Flow, API Specification và thiết kế Notification Service.
+
+### 18.1. Nguyên tắc thông báo
+
+- Thông báo bắt buộc về bảo mật, booking, ticket, payment, refund, đổi / hủy chuyến và dispute không được tắt hoàn toàn.
+- Notification preference chỉ áp dụng cho thông báo không bắt buộc; nếu actor tắt kênh không bắt buộc, hệ thống phải lưu trạng thái `SKIPPED`.
+- Với Guest, hệ thống chỉ gửi qua contact đã lưu trong booking và không được gửi dữ liệu ngoài booking / ticket đã xác minh.
+- Nội dung notification không được chứa mật khẩu, OTP sau khi đã dùng, token, QR raw secret, dữ liệu thanh toán nhạy cảm hoặc dữ liệu ngoài quyền người nhận.
+- Notification phải có mã idempotency theo sự kiện nghiệp vụ để retry an toàn và tránh gửi trùng thông báo bắt buộc.
+- Nếu notification gửi lỗi, dữ liệu nghiệp vụ như booking, ticket, refund hoặc dispute vẫn phải tra cứu được trong hệ thống theo quyền.
+
+### 18.2. Catalog thông báo nghiệp vụ
+
+| ID     | Sự kiện / ngữ cảnh                       | Người nhận chính                         | Bắt buộc | Kênh baseline v1                      | Nội dung tối thiểu / truy vết |
+| ------ | ---------------------------------------- | ---------------------------------------- | -------- | ------------------------------------- | ----------------------------- |
+| NTF-01 | Đăng ký / đăng nhập / xác minh User      | User                                     | Có       | Email                                 | Mã OTP hoặc liên kết xác minh theo `FR-IAM-*`, `OQ-09`. |
+| NTF-02 | Thao tác bảo mật / thay đổi phiên        | Actor liên quan                          | Có       | Email / In-app                        | Đăng nhập rủi ro, revoke session, đổi mật khẩu, khóa tài khoản. |
+| NTF-03 | Booking được tạo và chờ thanh toán       | User hoặc Guest                          | Có       | In-app / Email                        | Mã booking, thời hạn thanh toán, tổng tiền, trạng thái `PENDING_PAYMENT`. |
+| NTF-04 | SeatHold / booking gần hết hạn           | User hoặc Guest                          | Không    | In-app                                | Nhắc hoàn tất thanh toán trước khi ghế được giải phóng. |
+| NTF-05 | Thanh toán thành công và phát hành vé    | User hoặc Guest                          | Có       | Email / In-app                        | Mã vé, thông tin chuyến, ghế, điểm đón / trả, cách xem QR. |
+| NTF-06 | Thanh toán thất bại / hết hạn            | User hoặc Guest                          | Có       | In-app / Email                        | Trạng thái payment, hướng dẫn thanh toán lại nếu booking còn hiệu lực. |
+| NTF-07 | Payment / refund / payout cần đối soát   | Admin                                    | Có       | In-app / Email                        | Mã booking / payment / refund / payout, lý do cần xử lý. |
+| NTF-08 | Hủy vé / yêu cầu hoàn tiền được ghi nhận | User hoặc Guest, Operator nếu ảnh hưởng doanh thu | Có | In-app / Email                        | Vé bị hủy, số tiền hoàn dự kiến, trạng thái refund. |
+| NTF-09 | Refund thành công / thất bại / bị từ chối | User hoặc Guest, Operator nếu liên quan  | Có       | Email / In-app                        | Số tiền, mã refund, trạng thái, lý do nếu bị từ chối. |
+| NTF-10 | Chuyến đổi giờ / xe / điểm đón / trả     | Hành khách bị ảnh hưởng, Employee liên quan | Có    | Email / In-app / Push nếu bật         | Thông tin thay đổi, hướng dẫn xác nhận / hỗ trợ. |
+| NTF-11 | Chuyến bị hủy                            | Hành khách bị ảnh hưởng, Operator, Employee | Có    | Email / In-app / Push nếu bật         | Lý do, phương án đổi chuyến / hoàn tiền / hỗ trợ. |
+| NTF-12 | Nhắc giờ khởi hành                       | User hoặc Guest                          | Không    | In-app / Push / Email                 | Giờ đi, điểm đón, mã vé, lưu ý lên xe. |
+| NTF-13 | Booking / ticket mới thuộc Operator      | Operator                                 | Có       | In-app / Email                        | Chuyến, số vé, ghế, doanh thu ghi nhận theo tenant. |
+| NTF-14 | Employee được phân công hoặc chuyến thay đổi | Employee                              | Có       | In-app / Push nếu bật                 | Chuyến, giờ chạy, xe, nhiệm vụ, thay đổi liên quan. |
+| NTF-15 | KYC Operator đổi trạng thái              | Operator                                 | Có       | Email / In-app                        | Được duyệt, bị từ chối, cần bổ sung hoặc bị khóa. |
+| NTF-16 | Payout đổi trạng thái                    | Operator, Admin                          | Có       | In-app / Email                        | Kỳ payout, số tiền, trạng thái, lý do hold / failed nếu có. |
+| NTF-17 | Support ticket / complaint được tạo hoặc phản hồi | User, Guest, Operator, Admin theo case | Có    | In-app / Email                        | Mã hồ sơ, trạng thái xử lý, yêu cầu bổ sung nếu có. |
+| NTF-18 | DisputeCase đổi trạng thái / có quyết định | User hoặc Guest, Operator, Admin       | Có       | Email / In-app                        | Trạng thái dispute, hạn phản hồi, quyết định refund / không refund. |
+| NTF-19 | Review được gửi / bị kiểm duyệt          | User, Operator, Admin nếu cần            | Không    | In-app                                | Trạng thái review, lý do ẩn / giữ nếu có. |
+| NTF-20 | Promotion khả dụng hoặc sắp hết hạn      | User, Operator theo phạm vi              | Không    | In-app / Email nếu bật                | Mã promotion, điều kiện chính, thời gian hiệu lực. |
+| NTF-21 | Bảo trì hệ thống                         | User, Guest, Operator, Employee, Admin   | Có       | In-app / Email                        | Thời gian dự kiến, phạm vi ảnh hưởng, hướng dẫn thao tác. |
+| NTF-22 | Job nền thất bại vượt ngưỡng an toàn     | Admin                                    | Có       | In-app / Email                        | Tên job, phạm vi, lỗi, yêu cầu kiểm tra thủ công. |
+
+### 18.3. Yêu cầu tối thiểu cho thiết kế thông báo
+
+| Nhóm yêu cầu             | Nội dung bắt buộc                                                                                      | Truy vết |
+| ------------------------ | ------------------------------------------------------------------------------------------------------ | -------- |
+| Template                 | Mỗi notification type phải có template, biến dữ liệu được phép dùng và quy tắc che dữ liệu nhạy cảm.   | `FR-NSR-01..03`, `BR-53` |
+| Preference               | User, Operator và Employee cấu hình được thông báo không bắt buộc; thông báo bắt buộc không tắt hoàn toàn. | `FR-NSR-14`, `UC-34`, `BR-52` |
+| Guest delivery           | Guest chỉ nhận notification qua contact booking và chỉ xem lại dữ liệu sau xác minh.                  | `UC-35`, `BR-21`, `BR-53` |
+| Retry / idempotency      | Gửi lỗi phải được retry có kiểm soát; retry không gửi trùng cùng sự kiện bắt buộc.                    | `UC-31..32`, `BR-54`, `BR-62` |
+| Observability            | Admin xem được lỗi gửi, trạng thái retry và notification quan trọng liên quan payment / refund / trip. | `FR-ADM-15`, `UC-26`, `UC-32` |
 
 ---
 
 ## 19. Tiêu chí nghiệm thu
 
-### 19.1. Nhóm người dùng
+Mục này xác định tiêu chí nghiệm thu cấp SRS cho v1. Test Plan chi tiết sẽ tách test case, test data, mức ưu tiên, môi trường kiểm thử và kết quả mong đợi trong `08-test-plan-acceptance-criteria.md`.
 
-- Người dùng tìm kiếm được chuyến theo điểm đi, điểm đến, ngày đi.
-- Người dùng xem được chi tiết chuyến / điểm đón trả / sơ đồ ghế / giá vé.
-- Người dùng chọn ghế và hệ thống không cho bán trùng ghế.
-- Người dùng đặt vé và thanh toán thành công.
-- Hệ thống phát hành vé điện tử có QR / mã vé.
-- Người dùng xem được lịch sử vé.
-- Người dùng hủy vé theo chính sách và nhận trạng thái hoàn tiền.
-- Người dùng / Guest tra cứu vé theo thông tin được phép và bị yêu cầu xác minh khi thao tác nhạy cảm.
-- Người dùng cấu hình được notification preference cho thông báo không bắt buộc.
+### 19.1. Nguyên tắc nghiệm thu
 
-### 19.2. Nhóm nhà xe
+- Mỗi tiêu chí nghiệm thu phải truy vết được ít nhất một FR / UC / BR / BF tương ứng.
+- Tiêu chí liên quan tiền, vé, ghế, dữ liệu cá nhân, quyền truy cập, audit và payout là nhóm bắt buộc kiểm thử trước production.
+- Một luồng chỉ được nghiệm thu khi kiểm thử cả happy path và tối thiểu các ngoại lệ chính đã mô tả trong UC.
+- Test môi trường tích hợp payment v1 dùng VNPay Sandbox; không kiểm thử tiền thật ở phạm vi SRS.
+- Guest flow phải được kiểm thử riêng, không được suy diễn từ User flow.
 
-- Nhà xe tạo được xe / sơ đồ ghế / tuyến / điểm đón trả / chuyến xe.
-- Nhà xe cấu hình được giá vé và mở bán chuyến.
-- Nhà xe xem được danh sách booking / ticket thuộc nhà xe.
-- Nhà xe phân công được Employee cho chuyến.
-- Nhà xe tạo / tạm dừng / kết thúc promotion trong phạm vi được Platform cho phép.
-- Nhà xe xem được báo cáo doanh thu và tỷ lệ lấp đầy.
+### 19.2. Tiêu chí nghiệm thu theo nhóm nghiệp vụ
 
-### 19.3. Nhóm Employee
+| ID    | Nhóm | Tiêu chí nghiệm thu | Truy vết |
+| ----- | ---- | ------------------- | -------- |
+| AC-01 | Identity | User đăng ký / đăng nhập / đặt lại mật khẩu bằng cơ chế dành cho hành khách; Admin, Operator, Employee dùng đúng cổng đăng nhập riêng. | `FR-IAM-01..04`, `UC-01` |
+| AC-02 | Identity | Hệ thống revoke session khi tài khoản bị khóa, quyền bị thu hồi hoặc mật khẩu bị cấp lại. | `FR-IAM-13..16`, `BR-57` |
+| AC-03 | Marketplace search | User và Guest tìm được chuyến theo điểm đi, điểm đến, ngày đi, số khách; kết quả chỉ gồm chuyến mở bán, còn ghế và chưa hết thời gian bán online. | `FR-MKT-01..04`, `UC-02`, `BR-22` |
+| AC-04 | Trip detail | User và Guest xem được chi tiết chuyến, profile Operator, giá, seat map, điểm đón / trả và điều kiện hủy trước khi đặt. | `FR-MKT-05..06`, `UC-03`, `BR-23` |
+| AC-05 | Seat hold | User và Guest chọn ghế thành công khi ghế khả dụng; hệ thống giữ ghế 10 phút và không cho người khác giữ / mua cùng ghế trong thời gian hold. | `FR-MKT-07`, `FR-BTP-01..03`, `UC-04`, `BR-01..03` |
+| AC-06 | Seat hold expiry | Khi SeatHold hết hạn mà chưa có booking / payment hợp lệ, ghế được giải phóng và booking cũ không thanh toán tiếp được. | `UC-04..06`, `BR-03` |
+| AC-07 | Booking | User và Guest tạo được booking `PENDING_PAYMENT` từ SeatHold hợp lệ; booking lưu snapshot chuyến, fare, policy, promotion, contact và tổng tiền. | `FR-MKT-08..10`, `FR-BTP-05..06`, `UC-05`, `BR-21`, `BR-24..26` |
+| AC-08 | Promotion | Promotion chỉ áp dụng khi đúng phạm vi, thời gian, lượt dùng, actor và điều kiện booking; snapshot / redemption được lưu. | `FR-PROM-05..06`, `UC-05`, `UC-33`, `BR-15`, `BR-47` |
+| AC-09 | Payment | Booking đủ điều kiện tạo payment qua VNPay Sandbox; callback thành công cập nhật booking / payment / ghế, ghi escrow và phát hành ticket. | `FR-BTP-07..10`, `UC-06..07`, `BF-02`, `BR-27..30` |
+| AC-10 | Payment exception | Callback trễ / trùng / lệch số tiền không tạo trùng ticket hoặc trùng tiền; giao dịch được đưa vào đối soát. | `FR-BTP-08..09`, `UC-06`, `UC-32`, `BF-03`, `BR-54`, `BR-62` |
+| AC-11 | Ticket | Ticket điện tử có mã vé, QR token không đoán được, thông tin chuyến, ghế, hành khách, điểm đón / trả và trạng thái ticket. | `FR-BTP-11`, `UC-07`, `BR-29` |
+| AC-12 | Guest lookup | Guest tra cứu được booking / ticket bằng mã và contact hợp lệ; thao tác nhạy cảm yêu cầu xác minh bổ sung. | `FR-MKT-12`, `UC-35`, `BR-21`, `BR-60..61` |
+| AC-13 | Cancel / refund | User hoặc Guest đã xác minh hủy vé theo policy snapshot; hệ thống tính số tiền hoàn, cập nhật ticket / booking và tạo refund request khi đủ điều kiện. | `FR-BTP-12..13`, `UC-08`, `BF-05`, `BR-06..07` |
+| AC-14 | Manual refund | Admin xử lý refund thủ công / refund đơn phương với quyền phù hợp, lý do, xác thực lại nếu cần, audit log và notification bắt buộc. | `FR-BTP-14`, `FR-ADM-11`, `UC-27`, `BR-35`, `BR-51` |
+| AC-15 | Support / complaint | User tạo và theo dõi support ticket; Guest đã xác minh tạo và theo dõi support / complaint gắn với booking / ticket đã xác minh. | `FR-NSR-06..09`, `UC-09`, `UC-35`, `BR-49` |
+| AC-16 | Review | Chỉ User có ticket hợp lệ trên chuyến đã hoàn thành được gửi review; Guest không gửi review trong v1. | `FR-NSR-10..11`, `UC-09`, `BR-18`, `BR-55` |
+| AC-17 | Operator onboarding | Operator gửi KYC đầy đủ; Admin duyệt, từ chối, yêu cầu bổ sung hoặc khóa Operator; Operator chưa duyệt không mở bán công khai. | `FR-OPR-01..06`, `FR-ADM-03`, `UC-10`, `UC-23`, `BR-36` |
+| AC-18 | Operator resources | Operator quản lý được Vehicle, VehicleType, SeatMap, Route, StopPoint đề xuất, Trip, Fare và Inventory trong tenant của mình. | `FR-OPS-01..13`, `UC-12..14`, `BR-38..42` |
+| AC-19 | Trip change | Operator sửa thông tin quan trọng của chuyến đã bán vé phải nhập lý do, ghi log và gửi notification cho hành khách bị ảnh hưởng. | `FR-OPS-11..12`, `UC-14`, `BF-06`, `BR-10..12` |
+| AC-20 | Operator booking | Operator xem / lọc / xuất booking và ticket thuộc nhà xe; không truy cập dữ liệu Operator khác. | `FR-OPS-14..15`, `FR-OPR-11`, `UC-15`, `BR-08` |
+| AC-21 | Employee assignment | Operator tạo, khóa, phân role và phân công Employee; Employee chỉ thấy nhiệm vụ thuộc phạm vi được giao. | `FR-IAM-05..06`, `FR-EMP-01..04`, `UC-16`, `UC-18`, `BR-43` |
+| AC-22 | Manifest | Employee xem manifest theo chuyến được phân công; số điện thoại và dữ liệu cá nhân được mask theo policy. | `FR-EMP-05..06`, `UC-19`, `BR-19` |
+| AC-23 | Check-in | Employee check-in bằng QR / mã vé server-side; vé sai chuyến, đã hủy, đã hoàn hoặc đã check-in bị từ chối. | `FR-EMP-07..08`, `UC-20`, `BR-29`, `BR-44` |
+| AC-24 | Operation log | Employee cập nhật trạng thái chuyến, nhật trình, báo cáo sự cố; hệ thống đồng bộ cho Operator / Admin và ghi operation log. | `FR-EMP-09..13`, `UC-21..22`, `BF-07`, `BR-45` |
+| AC-25 | Catalog / policy | Admin quản lý catalog chuẩn, policy hủy / hoàn, seat hold, commission, payout policy và cảnh báo khung giá. | `FR-ADM-04..09`, `UC-24..25`, `BR-31..34`, `BR-38` |
+| AC-26 | Finance monitoring | Admin giám sát payment, refund, escrow, commission, payout; Operator xem tài chính thuộc nhà xe. | `FR-BTP-15..17`, `FR-OPR-07..09`, `FR-ADM-10`, `UC-11`, `UC-26` |
+| AC-27 | Payout | Hệ thống tạo payout candidate T+3 sau khi chuyến hoàn thành; Admin xác nhận thủ công trước khi đánh dấu payout `PAID`. | `FR-ADM-08`, `BF-09`, `BR-32..33` |
+| AC-28 | Dispute | Dispute đi theo state machine, lưu minh chứng, hạn phản hồi, quyết định Admin và notification cho các bên. | `FR-DSP-*`, `UC-27`, `BR-50..51` |
+| AC-29 | Content moderation | Admin kiểm duyệt review, nội dung công khai và dữ liệu ảnh hưởng scorecard; nội dung vi phạm bị ẩn / giữ theo policy. | `FR-ADM-13`, `UC-28`, `BR-55` |
+| AC-30 | Reporting | Operator và Admin xem / xuất báo cáo theo quyền; báo cáo lớn chạy bất đồng bộ và không làm chậm booking / payment / check-in. | `FR-NSR-12..13`, `FR-ADM-17`, `UC-17`, `UC-29`, `NFR-PERF-05` |
+| AC-31 | Audit | Admin truy xuất audit log theo actor, module, thời gian, đối tượng, kết quả; log dữ liệu nhạy cảm được che theo quyền. | `FR-ADM-16`, `UC-30`, `BR-58..59` |
+| AC-32 | Notification | Notification bắt buộc được tạo, gửi / retry, lưu trạng thái; preference chỉ áp dụng cho notification không bắt buộc. | `FR-NSR-01..05`, `FR-NSR-14`, `UC-31`, `UC-34`, `BR-52..54` |
+| AC-33 | Job nền | Payment, refund, payout, notification và reconciliation job có lock, checkpoint, retry và trạng thái xử lý. | `UC-32`, `NFR-AVAIL-03`, `NFR-MAINT-06`, `BR-62` |
+| AC-34 | Privacy / security | Backend enforce RBAC, tenant boundary, rate limit, mask dữ liệu cá nhân và không lộ token / OTP / dữ liệu thanh toán nhạy cảm. | `NFR-SEC-*`, `NFR-PRIV-*`, `BR-57`, `BR-60..61` |
+| AC-35 | Backup / audit readiness | Booking, ticket, payment, refund, escrow, payout, KYC, dispute và audit log được ưu tiên backup / restore trước production. | `NFR-AUDIT-01..06`, `BR-59` |
 
-- Employee xem được lịch chuyến được phân công.
-- Employee xem được danh sách hành khách theo chuyến.
-- Employee quét QR / mã vé để check-in hành khách.
-- Employee cập nhật được trạng thái chuyến theo quyền.
-- Employee gửi được báo cáo sự cố.
+### 19.3. Điều kiện đủ để chuyển sang tài liệu thiết kế tiếp theo
 
-### 19.4. Nhóm admin
-
-- Admin quản lý được người dùng / nhà xe / Employee ở mức giám sát.
-- Admin phê duyệt / khóa / mở khóa nhà xe.
-- Admin cấu hình được danh mục và chính sách hệ thống.
-- Admin xem và xử lý được thanh toán / hoàn tiền.
-- Admin quản lý được promotion cấp Platform và quyền tạo promotion của Operator.
-- Admin quản lý được khiếu nại và dispute case theo state machine.
-- Admin xem được báo cáo toàn hệ thống.
-- Admin truy xuất được audit log thao tác nhạy cảm.
+| Điều kiện | Tiêu chí hoàn tất | Ghi chú |
+| --------- | ----------------- | ------- |
+| SRS scope | Các mục 1..20 không còn nội dung cũ mâu thuẫn với Guest checkout, VNPay Sandbox, SeatHold 10 phút, escrow / payout T+3 và managed marketplace. | §21 Decisions Log vẫn là nguồn chốt quyết định. |
+| Traceability | FR, UC, BR, BF và AC có thể truy vết lẫn nhau ở mức đủ để viết HLD, DB Design, API Spec và Test Plan. | Không yêu cầu tạo traceability matrix riêng trong SRS. |
+| Open decision | Không còn Open Question chưa chốt trong phạm vi SRS v1; quyết định mới nếu phát sinh ở HLD / LLD phải ghi nhận riêng. | §21 hiện là Decisions Log, không phải backlog câu hỏi mở. |
+| Risk readiness | Các rủi ro mức cao / rất cao đã có biện pháp giảm thiểu tối thiểu trước khi vào thiết kế. | Xem §20. |
+| Versioning | Metadata và lịch sử thay đổi phản ánh các chỉnh sửa lớn. | Tài liệu giữ trạng thái `Draft` cho đến khi người duyệt phê duyệt. |
 
 ---
 
 ## 20. Rủi ro và biện pháp giảm thiểu
 
-| Rủi ro                                     | Tác động   | Biện pháp giảm thiểu                                                                |
-| ------------------------------------------ | ---------- | ----------------------------------------------------------------------------------- |
-| Bán trùng ghế khi nhiều người đặt cùng lúc | Rất cao    | Dùng transaction / lock / idempotency, kiểm tra trạng thái ghế thời gian thực       |
-| Callback thanh toán bị trễ hoặc mất        | Cao        | Cơ chế đối soát, retry qua Bull queue, truy vấn lại cổng thanh toán                 |
-| Nhà xe nhập sai thông tin chuyến           | Cao        | Quy trình xác nhận, cảnh báo khi thay đổi chuyến đã bán vé, audit log               |
-| Employee không có mạng khi check-in        | Trung bình | Hỗ trợ cache / offline có kiểm soát, đồng bộ sau khi có mạng                        |
-| Lộ dữ liệu cá nhân hành khách              | Rất cao    | RBAC, mask dữ liệu, mã hóa, audit log, giới hạn quyền truy cập                      |
-| Khiếu nại hoàn tiền phức tạp               | Trung bình | Chính sách rõ ràng, lưu lịch sử giao dịch, ticket support đầy đủ                    |
-| Hệ thống quá tải dịp lễ                    | Cao        | Cache tìm kiếm bằng Redis, queue Bull, autoscaling, throttler, tối ưu MongoDB index |
-| Dữ liệu báo cáo chậm                       | Trung bình | Tách reporting, xử lý bất đồng bộ, dùng read model nếu cần                          |
+Mục này ghi nhận các rủi ro cấp SRS cần được theo dõi khi chuyển sang HLD, LLD, Database Design, API Specification, Security Design và Test Plan. Đây không phải bug list; mỗi rủi ro cần được biến thành thiết kế kiểm soát hoặc test case ở tài liệu sau.
+
+### 20.1. Thang đánh giá
+
+| Mức | Ý nghĩa |
+| --- | ------- |
+| Rất cao | Có thể gây mất tiền, bán trùng vé, lộ dữ liệu cá nhân, sai quyền truy cập hoặc không thể vận hành production. |
+| Cao | Có thể làm hỏng luồng chính, gây gián đoạn dịch vụ, tăng khiếu nại hoặc cần xử lý thủ công nhiều. |
+| Trung bình | Có thể ảnh hưởng trải nghiệm, hiệu suất hoặc vận hành nhưng có thể kiểm soát bằng quy trình / retry. |
+| Thấp | Ảnh hưởng nhỏ, có thể xử lý sau nếu không đụng luồng tiền / vé / quyền / dữ liệu cá nhân. |
+
+### 20.2. Risk register
+
+| ID     | Rủi ro | Mức | Tác động chính | Biện pháp giảm thiểu / kiểm soát | Truy vết |
+| ------ | ------ | --- | -------------- | -------------------------------- | -------- |
+| RSK-01 | Bán trùng ghế khi nhiều người giữ ghế / thanh toán cùng lúc. | Rất cao | Mất niềm tin, phải refund / xử lý thủ công, tranh chấp với Operator. | Atomic seat lock, SeatHold TTL, kiểm tra lại trước payment / ticket, test tải đồng thời. | `CO-01`, `BR-01..03`, `AC-05..06` |
+| RSK-02 | Callback payment trễ, trùng hoặc lệch số tiền. | Rất cao | Ghi nhận sai tiền, phát hành sai vé, lệch escrow. | Idempotency key, signature verification, reconciliation job, trạng thái `RECONCILING`. | `BR-27..30`, `AC-09..10` |
+| RSK-03 | Guest checkout làm lộ dữ liệu booking / ticket nếu tra cứu yếu. | Rất cao | Lộ dữ liệu cá nhân, vé bị xem trái phép, thao tác hủy sai. | Đối chiếu mã booking / mã vé với contact, xác minh bổ sung cho thao tác nhạy cảm, rate limit. | `BR-21`, `BR-60..61`, `AC-12` |
+| RSK-04 | Operator chưa KYC đạt vẫn mở bán công khai. | Rất cao | Rủi ro pháp lý, gian lận, không đủ căn cứ payout. | Enforce trạng thái KYC ở backend trước mở bán; Admin audit khi duyệt / khóa. | `AS-02`, `BR-36`, `AC-17` |
+| RSK-05 | Operator nhập sai giờ chạy, xe, seat map, điểm đón / trả hoặc giá vé. | Cao | Sai thông tin vé, khách lỡ chuyến, refund / dispute tăng. | Validate dữ liệu trip, cảnh báo thay đổi chuyến đã bán vé, yêu cầu lý do và notification bắt buộc. | `BR-10..12`, `BR-39..40`, `AC-18..19` |
+| RSK-06 | Đổi xe sau khi bán vé không map được ghế cũ sang seat map mới. | Cao | Khách mất ghế đã mua, cần đổi ghế / hoàn tiền. | Chặn đổi xe nếu không map được; bắt buộc quy trình đổi ghế / refund / dispute. | `BR-20`, `BF-06`, `AC-19` |
+| RSK-07 | Inventory đa kênh không đồng bộ với ghế bán ngoài Platform. | Cao | Overbooking, tranh chấp giữa vé online và vé quầy. | Cho Operator khóa ghế thủ công / đồng bộ ghế bán ngoài; audit thay đổi inventory. | `AS-19`, `BR-42`, `AC-18` |
+| RSK-08 | Refund thủ công / refund đơn phương bị lạm dụng hoặc thiếu căn cứ. | Rất cao | Mất tiền, tranh chấp với Operator, khó kiểm toán. | Quyền Admin, xác thực lại, lý do bắt buộc, audit log, notification cho bên liên quan. | `BR-35`, `BR-51`, `AC-14`, `AC-28` |
+| RSK-09 | Escrow, commission hoặc payout tính sai. | Rất cao | Sai doanh thu Platform / Operator, sai nghĩa vụ thanh toán. | Ledger có mã tham chiếu, commission snapshot, payout T+3, Admin xác nhận thủ công, reconciliation. | `BR-17`, `BR-30..34`, `AC-26..27` |
+| RSK-10 | Thay đổi tài khoản nhận tiền Operator không được kiểm soát. | Rất cao | Chuyển tiền nhầm / gian lận payout. | Xác minh bổ sung, audit log, cảnh báo thay đổi gần kỳ payout, Admin rà soát payout. | `BR-37`, `BR-57`, `AC-26..27` |
+| RSK-11 | Employee xem quá nhiều dữ liệu cá nhân hành khách. | Cao | Vi phạm quyền riêng tư, lộ số điện thoại / lịch sử chuyến. | Mask số điện thoại mặc định, chỉ mở đầy đủ theo quyền và lý do vận hành, log truy cập / export. | `BR-19`, `BR-60`, `AC-22`, `AC-34` |
+| RSK-12 | QR ticket bị đoán, sao chép hoặc check-in nhiều lần. | Cao | Vé giả, check-in sai người, tranh chấp tại bến. | QR token không đoán được, xác thực server-side, chặn vé đã hủy / hoàn / check-in. | `BR-29`, `AC-11`, `AC-23` |
+| RSK-13 | Employee mất mạng khi check-in / cập nhật chuyến. | Trung bình | Check-in chậm, manifest không cập nhật, khó xử lý tại hiện trường. | Thiết kế retry / đồng bộ khi có mạng; nếu chưa có offline mode thì chặn thao tác cần server-side. | `NFR-UX-06`, `BF-07`, `AC-23..24` |
+| RSK-14 | Notification gửi lỗi hoặc gửi trùng. | Cao | Khách không nhận vé / thông báo hủy chuyến, khiếu nại tăng. | NotificationDelivery state, retry idempotent, dữ liệu vẫn tra cứu được trong hệ thống. | `BR-52..54`, `AC-32` |
+| RSK-15 | Job nền chạy trùng hoặc retry không an toàn. | Cao | Gửi trùng thông báo, xử lý trùng refund / payout, lệch báo cáo. | Job lock, checkpoint, idempotency, trạng thái `MANUAL_REVIEW` khi vượt ngưỡng. | `BR-62`, `AC-33` |
+| RSK-16 | Hệ thống quá tải dịp lễ / Tết. | Cao | Search chậm, giữ ghế lỗi, payment timeout, UX kém. | Cache / index search, queue cho callback / notification, rate limit, test tải peak. | `CO-19`, `NFR-PERF-*`, `NFR-SCALE-*` |
+| RSK-17 | Báo cáo lớn làm chậm luồng đặt vé / thanh toán. | Trung bình | Ảnh hưởng giao dịch chính và vận hành Admin / Operator. | Reporting job bất đồng bộ, MongoDB aggregation có kiểm soát, export theo job. | `OQ-15`, `NFR-PERF-05`, `AC-30` |
+| RSK-18 | Dữ liệu audit / backup không đủ để điều tra tranh chấp. | Rất cao | Không chứng minh được thao tác tiền / vé / policy / KYC. | Append-only audit log, backup / restore định kỳ, không xóa cứng dữ liệu tài chính / KYC / dispute. | `BR-58..59`, `NFR-AUDIT-*`, `AC-31`, `AC-35` |
+| RSK-19 | Chính sách hủy / hoàn / commission thay đổi nhưng áp nhầm vào booking cũ. | Cao | Sai quyền lợi khách hàng, sai payout Operator. | Policy versioning, snapshot vào booking, chặn áp ngược, test regression policy. | `BR-07`, `BR-24`, `BR-31`, `AC-07`, `AC-13` |
+| RSK-20 | Provider chưa chốt cho SMS / push / object storage làm chậm thiết kế chi tiết. | Trung bình | Chậm API / hạ tầng file KYC, attachment dispute, notification đa kênh. | Dùng adapter contract ở thiết kế, giữ provider cụ thể là quyết định HLD / infra sau. | `DP-06`, `DP-12`, `BR-63` |
+| RSK-21 | Rủi ro pháp lý về vận tải, dữ liệu cá nhân, hóa đơn / thuế. | Cao | Không đủ điều kiện production hoặc phải sửa policy sau triển khai. | Rà soát pháp chế trước production; SRS chỉ là yêu cầu phần mềm, không thay thế tư vấn pháp lý. | `CO-20`, `NFR-AUDIT-06` |
+
+### 20.3. Điều kiện kiểm soát trước production
+
+| Nhóm kiểm soát | Điều kiện tối thiểu |
+| -------------- | ------------------- |
+| Ghế / booking / payment | Có test đồng thời cho giữ ghế, tạo booking, payment success / failed / duplicate callback và phát hành ticket. |
+| Bảo mật / phân quyền | Có test backend cho RBAC, tenant boundary, Guest lookup, rate limit và thao tác nhạy cảm. |
+| Tài chính | Có reconciliation test cho payment, refund, escrow, commission và payout T+3 với xác nhận thủ công. |
+| Vận hành | Có test thay đổi chuyến đã bán vé, hủy chuyến, check-in, no-show, nhật trình và báo cáo sự cố. |
+| Thông báo | Có test retry / idempotency cho notification bắt buộc và kiểm tra preference cho notification không bắt buộc. |
+| Dữ liệu / audit | Có backup / restore rehearsal và test audit log cho refund, payout, khóa Operator, đổi policy, sửa chuyến đã bán vé. |
 
 ---
 
@@ -2839,9 +3003,9 @@ Toàn bộ Open Questions (`OQ-*`) và Marketplace Questions (`MQ-*`) phát sinh
 
 | ID        | Quyết định / nội dung chốt                                                                                                                                                                                                                                                                                                      | Ghi chú / hệ quả                                                                           |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| ~~OQ-01~~ | **CHỐT (05/05/2026):** dùng tập 10 trạng thái Trip của SRS. Code phải mở rộng từ 5 → 10 trạng thái theo §17.1.                                                                                                                                                                                                                  | Đã chốt                                                                                    |
-| ~~OQ-02~~ | **CHỐT (05/05/2026):** dùng tập 10 trạng thái Booking của SRS. Code phải bổ sung `PAID`, `PARTIALLY_CANCELLED`, `REFUND_FAILED`, `PENDING_PAYMENT`, `PENDING_CONFIRMATION` theo §17.3.                                                                                                                                          | Đã chốt                                                                                    |
-| ~~OQ-03~~ | **CHỐT (05/05/2026):** Payment status chuẩn hóa tên `SUCCESS`. Code phải đổi `COMPLETED` → `SUCCESS` và bổ sung `INITIATED`, `EXPIRED`, `CANCELLED`, `RECONCILING` theo §17.5.                                                                                                                                                  | Đã chốt                                                                                    |
+| ~~OQ-01~~ | **CHỐT (05/05/2026):** dùng tập 10 trạng thái Trip của SRS. Code phải mở rộng từ 5 → 10 trạng thái theo §17.3.                                                                                                                                                                                                                  | Đã chốt                                                                                    |
+| ~~OQ-02~~ | **CHỐT (05/05/2026):** dùng tập 10 trạng thái Booking của SRS. Code phải bổ sung `PAID`, `PARTIALLY_CANCELLED`, `REFUND_FAILED`, `PENDING_PAYMENT`, `PENDING_CONFIRMATION` theo §17.6.                                                                                                                                          | Đã chốt                                                                                    |
+| ~~OQ-03~~ | **CHỐT (05/05/2026):** Payment status chuẩn hóa tên `SUCCESS`. Code phải đổi `COMPLETED` → `SUCCESS` và bổ sung `INITIATED`, `EXPIRED`, `CANCELLED`, `RECONCILING` theo §17.8.                                                                                                                                                  | Đã chốt                                                                                    |
 | ~~OQ-04~~ | **CHỐT (05/05/2026):** dùng `Employee` với hệ role `TICKET_STAFF`, `DRIVER`, `SUPPORT_STAFF`. SRS đã được cập nhật ở §7.4, §10.1 (`FR-IAM-05..06`) và §10.7 (`FR-EMP-*`).                                                                                                                                                       | Đã chốt                                                                                    |
 | ~~OQ-05~~ | **CHỐT (11/05/2026):** cổng thanh toán tích hợp đầu tiên là **VNPay Sandbox**. Thiết kế vẫn phải dùng adapter để có thể bổ sung provider khác sau này.                                                                                                                                                                          | Ảnh hưởng `05-API Specification`, schema Payment, callback flow                            |
 | ~~OQ-06~~ | **CHỐT (11/05/2026):** thời gian giữ ghế mặc định là **10 phút**, cấu hình ở cấp Platform cho v1. Không cấu hình riêng per Operator trong v1.                                                                                                                                                                                   | Ảnh hưởng Booking flow, UI timer, Redis / SeatHold TTL, test chống bán trùng ghế           |
@@ -2854,7 +3018,7 @@ Toàn bộ Open Questions (`OQ-*`) và Marketplace Questions (`MQ-*`) phát sinh
 | ~~OQ-13~~ | **CHỐT (11/05/2026):** chính sách hủy vé / hoàn tiền dùng **Platform default policy** làm nền; Admin có thể duyệt override theo Operator nếu được cấu hình. Booking luôn lưu policy snapshot tại thời điểm tạo booking.                                                                                                         | Ảnh hưởng `BR-07`, `FR-ADM-06`, `FR-BTP-12..13`, dispute / refund workflow                 |
 | ~~OQ-14~~ | **CHỐT (11/05/2026):** audit log lưu trong MongoDB cùng cluster ở v1, theo collection append-only và không xóa cứng. Tách storage / archive riêng là hướng mở rộng khi cần retention dài hoặc chi phí lưu trữ tăng.                                                                                                             | Ảnh hưởng NFR-AUDIT-01..04, Audit module, vận hành backup                                  |
 | ~~OQ-15~~ | **CHỐT (11/05/2026):** reporting v1 dùng MongoDB aggregation và job bất đồng bộ cho báo cáo lớn. Chưa tách data warehouse; read model chỉ thêm khi báo cáo ảnh hưởng hiệu năng giao dịch chính.                                                                                                                                 | Ảnh hưởng NFR-PERF-05, NFR-SCALE-04, Reporting module                                      |
-| ~~MQ-01~~ | **CHỐT (05/05/2026):** Payment flow = **escrow**. Platform giữ tiền trong escrow account và chuyển cho Operator theo chu kỳ T+N sau khi chuyến hoàn thành. Đã phản ánh trong §4.2, §6.1, §6.2.                                                                                                                                  | Chi tiết T+N / payout đã chốt tại `OQ-16`                                                  |
+| ~~MQ-01~~ | **CHỐT (05/05/2026):** Payment flow = **escrow**. Platform giữ tiền trong escrow account và chuyển cho Operator theo chu kỳ T+3 sau khi chuyến hoàn thành. Đã phản ánh trong §4.2, §6.1, §6.2 và chốt chi tiết tại `OQ-16`.                                                                                                      | Chi tiết payout đã chốt tại `OQ-16`                                                       |
 | ~~MQ-02~~ | **CHỐT (05/05/2026):** Operator tự định giá theo những gì đã kê khai với cơ quan nhà nước. Platform có quyền kiểm tra và áp khung giá trần / sàn theo quy định pháp luật vào các dịp quan trọng. Đã phản ánh trong §5.3, §6.2, §6.3.                                                                                            | Quy tắc cảnh báo / chặn đã chốt tại `OQ-17`                                                |
 | ~~MQ-03~~ | **CHỐT (05/05/2026):** Platform là **arbiter cuối cùng** trong tranh chấp. Có quyền refund đơn phương qua đầu Operator, có audit log và thông báo bắt buộc cho Operator. Đã phản ánh trong §4.2, §6.3, `FR-ADM-11`, `FR-DSP-*` và `UC-27`.                                                                                      | Đã chốt                                                                                    |
 | ~~MQ-04~~ | **CHỐT (05/05/2026):** mô hình thu phí = **commission % mặc định** trên mỗi giao dịch vé bán thành công, cấu hình per Operator hoặc theo tier. Service fee phụ thu khách và subsidy promotion chưa hỗ trợ ở v1. Đã phản ánh trong §4.3, §6.3.                                                                                   | Commission mặc định đã chốt tại `OQ-18`                                                    |
