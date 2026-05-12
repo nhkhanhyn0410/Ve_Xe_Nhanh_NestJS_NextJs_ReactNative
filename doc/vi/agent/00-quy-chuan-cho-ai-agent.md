@@ -36,7 +36,7 @@ KHÔNG ĐƯỢC tuyên bố dự án đạt chứng nhận ISO/IEC/IEEE.
 
 Thuật ngữ bắt buộc dùng thống nhất: `BẮT BUỘC`, `KHÔNG ĐƯỢC`, `NÊN`, `CÓ THỂ`, `TBD`, `ASSUMPTION`, `OPEN QUESTION`, `RISK`, `DECISION`.
 
-Xem danh mục tài liệu, trạng thái, metadata và quy chuẩn trình bày tại `00a-quy-chuan-cho-lap-trinh-vien.md` mục 3 và mục 4. AI agent BẮT BUỘC tuân theo cùng quy chuẩn đó khi tạo hoặc sửa bất kỳ tài liệu SDLC nào.
+Xem danh mục tài liệu, trạng thái, metadata và quy chuẩn trình bày tại `00-quy-chuan-cho-lap-trinh-vien.md` mục 3 và mục 4. AI agent BẮT BUỘC tuân theo cùng quy chuẩn đó khi tạo hoặc sửa bất kỳ tài liệu SDLC nào.
 
 ---
 

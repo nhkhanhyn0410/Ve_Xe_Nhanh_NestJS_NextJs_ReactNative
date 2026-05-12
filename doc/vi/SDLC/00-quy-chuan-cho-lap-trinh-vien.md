@@ -7,7 +7,7 @@
 | Thuộc tính   | Giá trị                                                      |
 | ------------ | ------------------------------------------------------------ |
 | Tên tài liệu | Quy chuẩn SDLC cho lập trình viên - Hệ thống đặt vé xe khách |
-| Mã tài liệu  | 00a-quy-chuan-cho-lap-trinh-vien                             |
+| Mã tài liệu  | 00-quy-chuan-cho-lap-trinh-vien                              |
 | Dự án        | Hệ thống đặt vé xe khách                                     |
 | Phiên bản    | v1.0                                                         |
 | Trạng thái   | Draft                                                        |
@@ -149,13 +149,13 @@ Lập trình viên BẮT BUỘC xem tài liệu SDLC là nguồn triển khai ch
 
 Thứ tự ưu tiên khi triển khai:
 
-| Ưu tiên | Nguồn                              | Quy định                                                 |
-| ------- | ---------------------------------- | -------------------------------------------------------- |
-| 1       | `00a-quy-chuan-cho-lap-trinh-vien` | Quy chuẩn cao nhất về tài liệu và cách sử dụng tài liệu  |
-| 2       | ADR đã Approved                    | Quyết định kỹ thuật có hiệu lực                          |
-| 3       | Tài liệu SDLC Approved             | Nguồn triển khai theo từng lĩnh vực                      |
-| 4       | Task đã được duyệt                 | Phạm vi công việc cụ thể                                 |
-| 5       | Draft / ghi chú / prompt           | Chỉ dùng tham khảo, không dùng làm nguồn code chính thức |
+| Ưu tiên | Nguồn                             | Quy định                                                 |
+| ------- | --------------------------------- | -------------------------------------------------------- |
+| 1       | `00-quy-chuan-cho-lap-trinh-vien` | Quy chuẩn cao nhất về tài liệu và cách sử dụng tài liệu  |
+| 2       | ADR đã Approved                   | Quyết định kỹ thuật có hiệu lực                          |
+| 3       | Tài liệu SDLC Approved            | Nguồn triển khai theo từng lĩnh vực                      |
+| 4       | Task đã được duyệt                | Phạm vi công việc cụ thể                                 |
+| 5       | Draft / ghi chú / prompt          | Chỉ dùng tham khảo, không dùng làm nguồn code chính thức |
 
 ### 5.2. Điều kiện được phép code
 
