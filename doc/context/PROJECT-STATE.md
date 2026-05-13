@@ -6,24 +6,24 @@ Last updated: 13/05/2026.
 
 ## 1. SDLC document status
 
-| Code   | Document                                  | Path                                                   | Version | Status   | Owner                              |
-| ------ | ----------------------------------------- | ------------------------------------------------------ | ------- | -------- | ---------------------------------- |
-| 00     | Quy chuẩn SDLC cho lập trình viên         | `SDLC/00-quy-chuan-cho-lap-trinh-vien.md`              | v1.0    | Approved | Nguyễn Hồng Khanh                  |
-| 00-AI  | Quy chuẩn SDLC cho AI agent               | `agent/00-quy-chuan-cho-ai-agent.md`                   | v1.0    | Approved | Nguyễn Hồng Khanh                  |
-| 01-AI  | Backend V1 Implementation Guide           | `agent/01-backend-v1-implementation-guide.md`           | v1.0    | Draft    | AI Agent                           |
-| 02-AI  | Backend V1 Artifact Index                 | `agent/02-backend-v1-artifact-index.md`                 | v1.0    | Draft    | AI Agent                           |
-| 01     | SRS - Software Requirements Specification | `SDLC/01-srs-he-thong-dat-ve-xe-khach.md`              | v1.20   | Approved | AI Agent, Nguyễn Hồng Khanh + team |
-| 02     | HLD - High Level Design                   | `SDLC/02-hld-he-thong-dat-ve-xe-khach.md`              | v1.13   | Approved | AI Agent, Nguyễn Hồng Khanh        |
-| 03     | LLD - Low Level Design                    | `SDLC/03-lld-he-thong-dat-ve-xe-khach.md`              | v1.2    | Approved | AI Agent, Nguyễn Hồng Khanh        |
-| 04     | Database Design                           | `SDLC/04-database-design.md`                           | v1.4    | Approved | AI Agent                           |
-| 05     | API Specification                         | `SDLC/05-api-specification.md`                         | v1.1    | Approved | AI Agent                           |
-| 06     | UI / UX Flow Specification                | `SDLC/06-ui-ux-flow-specification.md`                  | v0.1    | Draft    | AI Agent                           |
-| 07     | Security & Permission Design              | `SDLC/07-security-permission-design.md`                | v1.0    | Approved | AI Agent                           |
-| 08     | Test Plan & Acceptance Criteria           | `SDLC/08-test-plan-acceptance-criteria.md`             | v1.0    | Approved | AI Agent                           |
-| 09     | Deployment & Operation Standard           | `SDLC/09-deployment-operation-standard.md`             | v1.0    | Draft    | AI Agent                           |
-| 10     | Architecture Decision Record              | `SDLC/10-architecture-decision-record.md`              | v1.0    | Draft    | AI Agent                           |
-| 11     | Project Task Breakdown                    | `SDLC/11-project-task-breakdown.md`                    | v1.0    | Draft    | AI Agent                           |
-| 12     | Release Notes & Change Log                | `SDLC/12-release-notes-change-log.md` (not created)    | —       | —        | —                                  |
+| Code  | Document                                  | Path                                                | Version | Status   | Owner                              |
+| ----- | ----------------------------------------- | --------------------------------------------------- | ------- | -------- | ---------------------------------- |
+| 00    | Quy chuẩn SDLC cho lập trình viên         | `SDLC/00-quy-chuan-cho-lap-trinh-vien.md`           | v1.0    | Approved | Nguyễn Hồng Khanh                  |
+| 00-AI | Quy chuẩn SDLC cho AI agent               | `agent/00-quy-chuan-cho-ai-agent.md`                | v1.0    | Approved | Nguyễn Hồng Khanh                  |
+| 01-AI | Backend V1 Implementation Guide           | `agent/01-backend-v1-implementation-guide.md`       | v1.0    | Draft    | AI Agent                           |
+| 02-AI | Backend V1 Artifact Index                 | `agent/02-backend-v1-artifact-index.md`             | v1.0    | Draft    | AI Agent                           |
+| 01    | SRS - Software Requirements Specification | `SDLC/01-srs-he-thong-dat-ve-xe-khach.md`           | v1.20   | Approved | AI Agent, Nguyễn Hồng Khanh + team |
+| 02    | HLD - High Level Design                   | `SDLC/02-hld-he-thong-dat-ve-xe-khach.md`           | v1.13   | Approved | AI Agent, Nguyễn Hồng Khanh        |
+| 03    | LLD - Low Level Design                    | `SDLC/03-lld-he-thong-dat-ve-xe-khach.md`           | v1.2    | Approved | AI Agent, Nguyễn Hồng Khanh        |
+| 04    | Database Design                           | `SDLC/04-database-design.md`                        | v1.4    | Approved | AI Agent , Nguyễn Hồng Khanh       |
+| 05    | API Specification                         | `SDLC/05-api-specification.md`                      | v1.1    | Approved | AI Agent , Nguyễn Hồng Khanh       |
+| 06    | UI / UX Flow Specification                | `SDLC/06-ui-ux-flow-specification.md`               | v0.1    | Draft    | AI Agent                           |
+| 07    | Security & Permission Design              | `SDLC/07-security-permission-design.md`             | v1.0    | Approved | AI Agent , Nguyễn Hồng Khanh       |
+| 08    | Test Plan & Acceptance Criteria           | `SDLC/08-test-plan-acceptance-criteria.md`          | v1.0    | Approved | AI Agent , Nguyễn Hồng Khanh       |
+| 09    | Deployment & Operation Standard           | `SDLC/09-deployment-operation-standard.md`          | v1.0    | Approved | AI Agent , Nguyễn Hồng Khanh       |
+| 10    | Architecture Decision Record              | `SDLC/10-architecture-decision-record.md`           | v1.0    | Approved | AI Agent , Nguyễn Hồng Khanh       |
+| 11    | Project Task Breakdown                    | `SDLC/11-project-task-breakdown.md`                 | v1.0    | Draft    | AI Agent                           |
+| 12    | Release Notes & Change Log                | `SDLC/12-release-notes-change-log.md` (not created) | —       | —        | —                                  |
 
 Status legend per `00 §3.2`: `Writing` / `Draft` / `Review` / `Approved` / `Deprecated` / `Superseded`.
 
@@ -89,41 +89,41 @@ SRS v1.20 has no remaining open SRS-level questions. Questions below were raised
 | API-OP-03 | ĐÃ CHỐT: VNPay Sandbox mapping dùng `vnp_TxnRef = paymentCode`, `vnp_Amount = amountVnd * 100`, HMAC-SHA512 signature, success code/status `00`.                          | AI Agent  | 13/05/2026 | Payment test phải bao phủ success, duplicate, wrong signature, amount mismatch và reconciling. | Closed 13/05/2026 |
 | API-OP-04 | ĐÃ CHỐT: Notification V1 bật email + in-app baseline; SMS/push giữ adapter nhưng không bật transactional launch nếu không mở lại scope.                                   | AI Agent  | 13/05/2026 | Test Plan v1.0 dùng adapter mock/sandbox cho email/in-app và kiểm SMS/push disabled.           | Closed 13/05/2026 |
 | API-OP-05 | ĐÃ CHỐT: API Specification đã review là source contract nghiệp vụ; OpenAPI 3.1 là artifact derived; SDK sinh từ OpenAPI sau review.                                       | AI Agent  | 13/05/2026 | Contract test phải đối chiếu API Spec trước, OpenAPI/SDK sau khi artifact được tạo.            | Closed 13/05/2026 |
-| ADR-OP-01 | CẦN REVIEWER CHỐT: ADR-010 đề xuất Backend framework target là NestJS + TypeScript modular monolith.                                                                       | AI Agent  | 13/05/2026 | Chặn source rewrite chính thức nếu reviewer chưa accept hoặc risk-accept.                      | Open              |
+| ADR-OP-01 | CẦN REVIEWER CHỐT: ADR-010 đề xuất Backend framework target là NestJS + TypeScript modular monolith.                                                                      | AI Agent  | 13/05/2026 | Chặn source rewrite chính thức nếu reviewer chưa accept hoặc risk-accept.                      | Open              |
 | ADR-OP-02 | CẦN REVIEWER CHỐT: ADR-011 đề xuất Redis-compatible backend + Bull/BullMQ-compatible queue adapter nếu giữ SRS DP-01.                                                     | AI Agent  | 13/05/2026 | Chặn worker/queue implementation cụ thể nếu reviewer chưa accept hoặc chọn thay thế.           | Open              |
 | ADR-OP-03 | Production deployment target, secret manager, monitoring/logging/alert stack và RPO/RTO chính thức chưa chốt.                                                             | AI Agent  | 13/05/2026 | Không chặn local/CI/staging backend; chặn production release.                                  | Open              |
-| ADR-OP-04 | Exact Node.js/npm/package manager/Docker image version chưa chốt.                                                                                                          | AI Agent  | 13/05/2026 | Chặn CI reproducibility chính thức; cần đóng khi bắt đầu implementation environment.           | Open              |
+| ADR-OP-04 | Exact Node.js/npm/package manager/Docker image version chưa chốt.                                                                                                         | AI Agent  | 13/05/2026 | Chặn CI reproducibility chính thức; cần đóng khi bắt đầu implementation environment.           | Open              |
 | ADR-OP-05 | Email provider production cụ thể chưa chốt; V1 hiện có email/in-app baseline và sandbox/mock cho test.                                                                    | AI Agent  | 13/05/2026 | Không chặn backend local/CI/staging; chặn transactional email production.                      | Open              |
 
 ## 5. Blockers
 
 Concrete blockers preventing a document from reaching `Review` or `Approved`.
 
-| Document                      | Blocker                                                                                                                                                                  | Owner    | Since      |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ---------- |
-| 06-UI / UX Flow Specification | v0.1 còn skeleton; chưa đủ screen flow, state, validation và error/empty/loading state theo API/Security/Test mới.                                                       | AI Agent | 13/05/2026 |
-| 09-Deployment & Operation     | v1.0 đã đủ local/CI/staging Backend V1; production deployment target, secret manager, monitoring stack và RPO/RTO vẫn cần reviewer/DevOps chốt trước production.        | DevOps/Reviewer | 13/05/2026 |
-| 10-ADR                        | ADR v1.0 đã chốt lại phần có nguồn Approved; ADR-010/011 framework/queue vẫn `Proposed` và cần reviewer accept hoặc risk-accept trước source rewrite chính thức.       | Reviewer | 13/05/2026 |
-| 11-Project Task Breakdown     | v1.0 đủ backlog handoff Backend V1; issue tracker, owner cụ thể, ADR-010/011 và runtime/package versions vẫn cần chốt để chuyển task sang `Ready`.                    | Reviewer/PM | 13/05/2026 |
-| 12-Release Notes & Change Log | Chưa tạo file theo danh mục SDLC.                                                                                                                                        | AI Agent | 12/05/2026 |
+| Document                      | Blocker                                                                                                                                                          | Owner           | Since            |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- | ---------------- |
+| 06-UI / UX Flow Specification | v0.1 còn skeleton; chưa đủ screen flow, state, validation và error/empty/loading state theo API/Security/Test mới.                                               | AI Agent        | 13/05/2026       |
+| 09-Deployment & Operation     | v1.0 đã đủ local/CI/staging Backend V1; production deployment target, secret manager, monitoring stack và RPO/RTO vẫn cần reviewer/DevOps chốt trước production. | DevOps/Reviewer | 13/05/2026       |
+| 10-ADR                        | ADR v1.0 đã chốt lại phần có nguồn Approved; ADR-010/011 framework/queue vẫn `Proposed` và cần reviewer accept hoặc risk-accept trước source rewrite chính thức. | Reviewer        | Close 13/05/2026 |
+| 11-Project Task Breakdown     | v1.0 đủ backlog handoff Backend V1; issue tracker, owner cụ thể, ADR-010/011 và runtime/package versions vẫn cần chốt để chuyển task sang `Ready`.               | Reviewer/PM     | Close 13/05/2026 |
+| 12-Release Notes & Change Log | Chưa tạo file theo danh mục SDLC.                                                                                                                                | AI Agent        | 12/05/2026       |
 
 ## 6. Known doc / structure issues to clean up
 
-| Issue                                                                                                                                                                        | Action proposed                                                                                                                                        | Status  |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------- |
-| `agent/01a.md` was empty and unnamed                                                                                                                                      | Replaced with `agent/01-backend-v1-implementation-guide.md` and `agent/02-backend-v1-artifact-index.md`.                                      | Resolved 13/05/2026 |
-| `04-database-design.md` and `05-api-specification.md` metadata are Approved but their §1.3 status text still says Draft; `05` also has stale API-OP wording in some sections | Run a focused doc hygiene pass on 04/05 to align §1.3 and remove stale OP references without changing approved contract meaning.                       | Pending |
-| SDLC doc 06 remains incomplete; docs 09/11 are now v1.0 Draft handoff documents                                                                                              | Continue downstream rewrite/review in dependency order: 06-UI/UX; then reviewer closes ADR/OPS/TASK OP for Backend V1 implementation.                 | Pending |
-| `agent/` is intended to hold AI-tailored abridged SDLC                                                                                                                    | Backend V1 guide and artifact index now exist; more abridged agent docs can be added only when needed.                                                 | Partial |
+| Issue                                                                                                                                                                        | Action proposed                                                                                                                       | Status              |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| `agent/01a.md` was empty and unnamed                                                                                                                                         | Replaced with `agent/01-backend-v1-implementation-guide.md` and `agent/02-backend-v1-artifact-index.md`.                              | Resolved 13/05/2026 |
+| `04-database-design.md` and `05-api-specification.md` metadata are Approved but their §1.3 status text still says Draft; `05` also has stale API-OP wording in some sections | Run a focused doc hygiene pass on 04/05 to align §1.3 and remove stale OP references without changing approved contract meaning.      | Pending             |
+| SDLC doc 06 remains incomplete; docs 09/11 are now v1.0 Draft handoff documents                                                                                              | Continue downstream rewrite/review in dependency order: 06-UI/UX; then reviewer closes ADR/OPS/TASK OP for Backend V1 implementation. | Pending             |
+| `agent/` is intended to hold AI-tailored abridged SDLC                                                                                                                       | Backend V1 guide and artifact index now exist; more abridged agent docs can be added only when needed.                                | Partial             |
 
 ## 7. Recent change log (latest first)
 
 | Date       | Change                                                                                                                                                                                                                                            | Author           |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
-| 13/05/2026 | Rewrote ADR 10 to v1.0 handoff: accepted decisions backed by Approved docs, proposed Backend framework/queue/runtime decisions, API/OpenAPI artifact policy, storage/realtime/observability/deployment OP split.                               | AI Agent         |
-| 13/05/2026 | Rewrote Deployment & Operation Standard 09 to v1.0 for Backend V1 local/CI/staging: environment matrix, config/secret, migration/index/seed, provider sandbox/mock, observability, backup, release, rollback and incident baseline.             | AI Agent         |
-| 13/05/2026 | Rewrote Project Task Breakdown 11 to v1.0: Backend V1 milestones M0..M8, task dependencies, artifact tasks, security/test/operation tasks, DoR/DoD, start/staging/production gates and open points.                                             | AI Agent         |
-| 13/05/2026 | Replaced empty `agent/01a.md` with Backend V1 Implementation Guide and added Backend V1 Artifact Index for coding-agent handoff.                                                                                                             | AI Agent         |
+| 13/05/2026 | Rewrote ADR 10 to v1.0 handoff: accepted decisions backed by Approved docs, proposed Backend framework/queue/runtime decisions, API/OpenAPI artifact policy, storage/realtime/observability/deployment OP split.                                  | AI Agent         |
+| 13/05/2026 | Rewrote Deployment & Operation Standard 09 to v1.0 for Backend V1 local/CI/staging: environment matrix, config/secret, migration/index/seed, provider sandbox/mock, observability, backup, release, rollback and incident baseline.               | AI Agent         |
+| 13/05/2026 | Rewrote Project Task Breakdown 11 to v1.0: Backend V1 milestones M0..M8, task dependencies, artifact tasks, security/test/operation tasks, DoR/DoD, start/staging/production gates and open points.                                               | AI Agent         |
+| 13/05/2026 | Replaced empty `agent/01a.md` with Backend V1 Implementation Guide and added Backend V1 Artifact Index for coding-agent handoff.                                                                                                                  | AI Agent         |
 | 13/05/2026 | Rewrote Security & Permission Design to v1.0 from Approved SRS/HLD/LLD/DB/API: auth/session transport, RBAC, tenant/assignment guard, Guest verification, sensitive action, masking, file security, webhook/realtime security and audit baseline. | AI Agent         |
 | 13/05/2026 | Rewrote Test Plan & Acceptance Criteria to v1.0 from Approved SRS/HLD/LLD/DB/API and Security v1.0: mapped AC-01..AC-35 to backend test suites, P0/P1 gates, seed data, evidence, security, concurrency, reliability and exit criteria.           | AI Agent         |
 | 13/05/2026 | Closed API-OP-01..05 in project state: auth/session transport, realtime WebSocket contract, VNPay Sandbox mapping, notification V1 baseline and API contract publication policy are now treated as closed downstream decisions.                   | AI Agent + Khanh |
@@ -153,4 +153,4 @@ Concrete blockers preventing a document from reaching `Review` or `Approved`.
 | 11/05/2026 | SRS v1.15 published; 5 cosmetic edits closed; all 25 OQ / MQ closed                                                                                                                                                                               | AI Agent + Khanh |
 | 11/05/2026 | SRS v1.14: removed sections 19 / 21 / 23, finalised §13 use cases, locked all OPs                                                                                                                                                                 | AI Agent + Khanh |
 | 11/05/2026 | SDLC docs 02–11 v0.1 skeletons created                                                                                                                                                                                                            | AI Agent         |
-                                                                                                                                          | AI Agent         |
+| AI Agent   |
