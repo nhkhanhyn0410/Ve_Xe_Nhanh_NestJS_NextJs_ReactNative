@@ -36,7 +36,7 @@ KHÔNG ĐƯỢC tuyên bố dự án đạt chứng nhận ISO/IEC/IEEE.
 
 Thuật ngữ bắt buộc dùng thống nhất: `BẮT BUỘC`, `KHÔNG ĐƯỢC`, `NÊN`, `CÓ THỂ`, `TBD`, `ASSUMPTION`, `OPEN QUESTION`, `RISK`, `DECISION`.
 
-Xem danh mục tài liệu, trạng thái, metadata và quy chuẩn trình bày tại `00a-quy-chuan-cho-lap-trinh-vien.md` mục 3 và mục 4. AI agent BẮT BUỘC tuân theo cùng quy chuẩn đó khi tạo hoặc sửa bất kỳ tài liệu SDLC nào.
+Xem danh mục tài liệu, trạng thái, metadata và quy chuẩn trình bày tại `00-quy-chuan-cho-lap-trinh-vien.md` mục 3 và mục 4. AI agent BẮT BUỘC tuân theo cùng quy chuẩn đó khi tạo hoặc sửa bất kỳ tài liệu SDLC nào.
 
 ---
 
@@ -74,13 +74,13 @@ AI agent **KHÔNG ĐƯỢC**:
 
 Khi tạo hoặc sửa một tài liệu SDLC, AI agent thực hiện theo trình tự:
 
-1. Xác định mã tài liệu trong danh mục `00 #3.1`.
+1. Xác định mã tài liệu trong danh mục `@SDLC/00`.
 2. Xác định loại tài liệu theo 15289.
 3. Nếu tài liệu chứa yêu cầu, áp dụng 29148.
 4. Đọc tài liệu đầu vào: SRS, mô tả thô, file nền, yêu cầu mới của người dùng.
 5. **Kiểm tra phạm vi**: nếu nhiệm vụ vượt khung hiện tại, dừng và xin review trước khi viết.
 6. Chỉ viết nội dung có nguồn hoặc nội dung được đánh dấu giả định rõ ràng.
-7. Kiểm tra mâu thuẫn với `00` và các tài liệu SDLC đã có.
+7. Kiểm tra mâu thuẫn với `@SDLC/00` và các tài liệu SDLC đã có.
 8. Ghi phần còn thiếu bằng `TBD`, `OPEN QUESTION` hoặc `RISK`.
 9. Khi chỉnh tài liệu hiện tại, chỉ chỉnh đúng phần được yêu cầu, trừ khi cần tái cấu trúc để khắc phục lỗi tài liệu.
 10. Sau khi chỉnh, tóm tắt ngắn các thay đổi đã thực hiện.
@@ -99,3 +99,4 @@ Khi tạo hoặc sửa một tài liệu SDLC, AI agent thực hiện theo trìn
 6. Khi người dùng yêu cầu chỉnh tài liệu hiện tại nhưng lại tạo bản song song.
 7. **Mở rộng phạm vi tài liệu (thêm module/actor/luồng/công nghệ mới) mà không dừng để xin review.**
 8. Viết source code thay vì tài liệu thiết kế.
+.

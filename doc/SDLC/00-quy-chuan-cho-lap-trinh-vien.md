@@ -7,10 +7,10 @@
 | Thuộc tính   | Giá trị                                                      |
 | ------------ | ------------------------------------------------------------ |
 | Tên tài liệu | Quy chuẩn SDLC cho lập trình viên - Hệ thống đặt vé xe khách |
-| Mã tài liệu  | 00a-quy-chuan-cho-lap-trinh-vien                             |
+| Mã tài liệu  | 00-quy-chuan-cho-lap-trinh-vien                              |
 | Dự án        | Hệ thống đặt vé xe khách                                     |
 | Phiên bản    | v1.0                                                         |
-| Trạng thái   | Draft                                                        |
+| Trạng thái   | Approved                                                     |
 | Người viết   | AI Agent                                                     |
 | Người duyệt  | Nguyễn Hồng Khanh                                            |
 | Ngày tạo     | 04/05/2026                                                   |
@@ -56,22 +56,21 @@ Thuật ngữ bắt buộc dùng thống nhất trong toàn bộ tài liệu SDL
 
 ### 3.1. Danh mục tài liệu
 
-| Mã tài liệu             | Tên tài liệu                              | Loại theo ISO/IEC/IEEE 15289 | Tên file chuẩn                        | Vai trò                                                                       | Trạng thái tối thiểu trước khi code                         |
-| ----------------------- | ----------------------------------------- | ---------------------------- | ------------------------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------- | --- |
-| 00                      | Quy chuẩn SDLC cho lập trình viên         | Policy / Procedure           | `00-quy-chuan-cho-lap-trinh-vien.md`  | Quy định cách lập trình viên dùng tài liệu SDLC làm nguồn triển khai          | Approved                                                    |     |
-| 01                      | Software Requirements Specification - SRS | Specification                | `01-srs-he-thong-dat-ve-xe-khach.md`  | Mô tả yêu cầu hệ thống theo ISO/IEC/IEEE 29148                                | Approved đối với phần sẽ triển khai                         |
-| 02                      | High Level Design - HLD                   | Description / Specification  | `02-hld-he-thong-dat-ve-xe-khach.md`  | Mô tả kiến trúc tổng quan, boundary, module, integration, deployment overview | Approved đối với module sẽ triển khai                       |
-| 03                      | Low Level Design - LLD                    | Description / Specification  | `03-lld-he-thong-dat-ve-xe-khach.md`  | Thiết kế chi tiết module/service, logic, state, validation, error handling    | Approved đối với module sẽ code                             |
-| 04                      | Database Design                           | Description / Specification  | `04-database-design.md`               | Thiết kế dữ liệu, ERD, table, constraint, index, migration, transaction       | Approved trước khi tạo migration                            |
-| 05                      | API Specification                         | Specification                | `05-api-specification.md`             | API contract, auth, permission, request/response, error, idempotency          | Approved trước khi FE/BE tích hợp                           |
-| 06                      | UI/UX Flow Specification                  | Description / Specification  | `06-ui-ux-flow-specification.md`      | User flow, screen state, form state                                           |
-| validation, error state | Review hoặc Approved trước khi code UI    |
-| 07                      | Security & Permission Design              | Specification / Procedure    | `07-security-permission-design.md`    | Authentication, authorization, RBAC, ownership, audit, threat control         | Approved trước khi code chức năng có quyền/dữ liệu nhạy cảm |
-| 08                      | Test Plan & Acceptance Criteria           | Plan / Specification         | `08-test-plan-acceptance-criteria.md` | Test strategy, test case, acceptance criteria, traceability                   | Approved trước khi nghiệm thu                               |
-| 09                      | Deployment & Operation Standard           | Procedure / Plan             | `09-deployment-operation-standard.md` | Environment, build, deploy, logging, monitoring, backup, rollback             | Approved trước staging/production                           |
-| 10                      | Architecture Decision Record - ADR        | Record                       | `10-architecture-decision-record.md`  | Ghi quyết định kỹ thuật quan trọng, lý do, lựa chọn, hệ quả                   | Cập nhật liên tục                                           |
-| 11                      | Project Task Breakdown                    | Plan / Record                | `11-project-task-breakdown.md`        | Chia task từ tài liệu thành output, dependency, DoD                           | Cập nhật liên tục                                           |
-| 12                      | Release Notes & Change Log                | Report / Record              | `12-release-notes-change-log.md`      | Ghi nhận thay đổi theo phiên bản phát hành                                    | Cập nhật khi release                                        |
+| Mã tài liệu | Tên tài liệu                              | Loại theo ISO/IEC/IEEE 15289 | Tên file chuẩn                        | Vai trò                                                                       | Trạng thái tối thiểu trước khi code                         |
+| ----------- | ----------------------------------------- | ---------------------------- | ------------------------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| 00          | Quy chuẩn SDLC cho lập trình viên         | Policy / Procedure           | `00-quy-chuan-cho-lap-trinh-vien.md`  | Quy định cách lập trình viên dùng tài liệu SDLC làm nguồn triển khai          | Approved                                                    |
+| 01          | Software Requirements Specification - SRS | Specification                | `01-srs-he-thong-dat-ve-xe-khach.md`  | Mô tả yêu cầu hệ thống theo ISO/IEC/IEEE 29148                                | Approved đối với phần sẽ triển khai                         |
+| 02          | High Level Design - HLD                   | Description / Specification  | `02-hld-he-thong-dat-ve-xe-khach.md`  | Mô tả kiến trúc tổng quan, boundary, module, integration, deployment overview | Approved đối với module sẽ triển khai                       |
+| 03          | Low Level Design - LLD                    | Description / Specification  | `03-lld-he-thong-dat-ve-xe-khach.md`  | Thiết kế chi tiết module/service, logic, state, validation, error handling    | Approved đối với module sẽ code                             |
+| 04          | Database Design                           | Description / Specification  | `04-database-design.md`               | Thiết kế dữ liệu, ERD, table, constraint, index, migration, transaction       | Approved trước khi tạo migration                            |
+| 05          | API Specification                         | Specification                | `05-api-specification.md`             | API contract, auth, permission, request/response, error, idempotency          | Approved trước khi FE/BE tích hợp                           |
+| 06          | UI/UX Flow Specification                  | Description / Specification  | `06-ui-ux-flow-specification.md`      | User flow, screen state, form state validation, error state                   | Review hoặc Approved trước khi code UI                      |
+| 07          | Security & Permission Design              | Specification / Procedure    | `07-security-permission-design.md`    | Authentication, authorization, RBAC, ownership, audit, threat control         | Approved trước khi code chức năng có quyền/dữ liệu nhạy cảm |
+| 08          | Test Plan & Acceptance Criteria           | Plan / Specification         | `08-test-plan-acceptance-criteria.md` | Test strategy, test case, acceptance criteria, traceability                   | Approved trước khi nghiệm thu                               |
+| 09          | Deployment & Operation Standard           | Procedure / Plan             | `09-deployment-operation-standard.md` | Environment, build, deploy, logging, monitoring, backup, rollback             | Approved trước staging/production                           |
+| 10          | Architecture Decision Record - ADR        | Record                       | `10-architecture-decision-record.md`  | Ghi quyết định kỹ thuật quan trọng, lý do, lựa chọn, hệ quả                   | Cập nhật liên tục                                           |
+| 11          | Project Task Breakdown                    | Plan / Record                | `11-project-task-breakdown.md`        | Chia task từ tài liệu thành output, dependency, DoD                           | Cập nhật liên tục                                           |
+| 12          | Release Notes & Change Log                | Report / Record              | `12-release-notes-change-log.md`      | Ghi nhận thay đổi theo phiên bản phát hành                                    | Cập nhật khi release                                        |
 
 ### 3.2. Trạng thái tài liệu
 
@@ -150,13 +149,13 @@ Lập trình viên BẮT BUỘC xem tài liệu SDLC là nguồn triển khai ch
 
 Thứ tự ưu tiên khi triển khai:
 
-| Ưu tiên | Nguồn                              | Quy định                                                 |
-| ------- | ---------------------------------- | -------------------------------------------------------- |
-| 1       | `00a-quy-chuan-cho-lap-trinh-vien` | Quy chuẩn cao nhất về tài liệu và cách sử dụng tài liệu  |
-| 2       | ADR đã Approved                    | Quyết định kỹ thuật có hiệu lực                          |
-| 3       | Tài liệu SDLC Approved             | Nguồn triển khai theo từng lĩnh vực                      |
-| 4       | Task đã được duyệt                 | Phạm vi công việc cụ thể                                 |
-| 5       | Draft / ghi chú / prompt           | Chỉ dùng tham khảo, không dùng làm nguồn code chính thức |
+| Ưu tiên | Nguồn                             | Quy định                                                 |
+| ------- | --------------------------------- | -------------------------------------------------------- |
+| 1       | `00-quy-chuan-cho-lap-trinh-vien` | Quy chuẩn cao nhất về tài liệu và cách sử dụng tài liệu  |
+| 2       | ADR đã Approved                   | Quyết định kỹ thuật có hiệu lực                          |
+| 3       | Tài liệu SDLC Approved            | Nguồn triển khai theo từng lĩnh vực                      |
+| 4       | Task đã được duyệt                | Phạm vi công việc cụ thể                                 |
+| 5       | Draft / ghi chú / prompt          | Chỉ dùng tham khảo, không dùng làm nguồn code chính thức |
 
 ### 5.2. Điều kiện được phép code
 
