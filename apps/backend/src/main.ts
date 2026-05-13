@@ -16,7 +16,9 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const logger = new Logger('Bootstrap');
 
-  app.setGlobalPrefix('api/v1');
+  const apiBasePath = configService.get<string>('API_BASE_PATH', '/api/v1');
+  const globalPrefix = apiBasePath.replace(/^\/+/, '');
+  app.setGlobalPrefix(globalPrefix);
   // Validation
   app.useGlobalPipes(
     new ValidationPipe({
@@ -35,7 +37,7 @@ async function bootstrap() {
   // CORS
   const origins = configService.get<string>('ALLOWED_ORIGINS', '');
   app.enableCors({
-    origins: origins.split(','),
+    origin: origins.split(',').map((origin) => origin.trim()),
     credentials: true,
   });
 
@@ -51,7 +53,7 @@ async function bootstrap() {
 
   const port = configService.get<number>('PORT')!;
   await app.listen(port);
-  logger.log(`Server running on http://localhost:${port}`);
+  logger.log(`Server running on http://localhost:${port}/${globalPrefix}`);
   logger.log(`Swagger docs: http://localhost:${port}/api/docs`);
 }
 bootstrap().catch((err) => {

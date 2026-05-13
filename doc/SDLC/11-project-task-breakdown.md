@@ -169,8 +169,8 @@ flowchart TD
 
 | Task ID     | Task                                                                     | Output                                                       | Source                          | Dependency       | Owner              | Priority | Status   |
 | ----------- | ------------------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------- | ---------------- | ------------------ | -------- | -------- |
-| TASK-HO-001 | Reviewer xác nhận ADR-010 backend framework target hoặc mở lại lựa chọn. | Decision record update/risk accept.                          | ADR-OP-01                       | None             | Reviewer/Tech Lead | P0       | Blocked  |
-| TASK-HO-002 | Reviewer xác nhận ADR-011 cache/queue target hoặc mở lại lựa chọn.       | Decision record update/risk accept.                          | ADR-OP-02                       | None             | Reviewer/Tech Lead | P0       | Blocked  |
+| TASK-HO-001 | Reviewer xác nhận ADR-010 backend framework target hoặc mở lại lựa chọn. | Decision record update/risk accept.                          | ADR-OP-01                       | None             | Reviewer/Tech Lead | P0       | Approved |
+| TASK-HO-002 | Reviewer xác nhận ADR-011 cache/queue target hoặc mở lại lựa chọn.       | Decision record update/risk accept.                          | ADR-OP-02                       | None             | Reviewer/Tech Lead | P0       | Approved |
 | TASK-HO-003 | Pin runtime/package manager/Docker image cho implementation environment. | Runtime/version policy.                                      | ADR-OP-04, OPS-OP-05            | TASK-HO-001      | DevOps/BE          | P1       | Approved |
 | TASK-HO-004 | Tạo OpenAPI 3.1 artifact derived từ API Spec.                            | `openapi` artifact, contract check.                          | API-OP-05, API §6..§25          | TASK-HO-001      | BE/QA              | P0       | Approved |
 | TASK-HO-005 | Tạo shared enum/error code manifest.                                     | State enum, error prefix/code list, actor/surface constants. | SRS §17, API §8.5, Security §18 | TASK-HO-004      | BE                 | P0       | Approved |
@@ -185,18 +185,18 @@ flowchart TD
 
 ### 8.1. M1 - Foundation
 
-| Task ID      | Task                                                       | Output                                                 | Source                        | Dependency                 | Owner     | Priority | Status   |
-| ------------ | ---------------------------------------------------------- | ------------------------------------------------------ | ----------------------------- | -------------------------- | --------- | -------- | -------- |
-| TASK-FND-001 | Thiết lập application shell theo modular application core. | Module convention, request pipeline, health endpoint.  | ADR-002, LLD §6.1             | TASK-HO-001                | BE        | P0       | Approved |
-| TASK-FND-002 | Thiết lập environment validation.                          | Config validation fail-fast.                           | 09 §7.3, Security §6          | TASK-FND-001, TASK-HO-003  | BE/DevOps | P0       | Approved |
-| TASK-FND-003 | Thiết lập MongoDB connection và migration runner.          | Replica set check, migration log, schema version.      | DB-OP-01, DB §19              | TASK-HO-006                | BE/DB     | P0       | Approved |
-| TASK-FND-004 | Thiết lập index/constraint creation baseline.              | Index manifest execution + test.                       | DB §11, §12, §19              | TASK-FND-003               | BE/DB/QA  | P0       | Approved |
-| TASK-FND-005 | Thiết lập response/error envelope.                         | Success/error envelope, requestId, safe message.       | API §8                        | TASK-FND-001               | BE        | P0       | Approved |
-| TASK-FND-006 | Thiết lập idempotency base.                                | Idempotency records, digest, conflict behavior.        | API §9.2, DB §12.3            | TASK-FND-003               | BE        | P0       | Approved |
-| TASK-FND-007 | Thiết lập structured logging và redaction.                 | Request/job/provider log safe payload.                 | Security §11, 09 §14          | TASK-FND-005               | BE        | P0       | Approved |
-| TASK-FND-008 | Thiết lập audit log base.                                  | Append-only audit writer/query skeleton.               | Security §14, DB §18          | TASK-FND-003, TASK-FND-007 | BE        | P0       | Approved |
-| TASK-FND-009 | Thiết lập job/worker base.                                 | Job record, lock/checkpoint/retry/manual review state. | SRS BR-62, DB §17             | TASK-HO-002, TASK-FND-003  | BE        | P0       | Approved |
-| TASK-FND-010 | Thiết lập file storage adapter base.                       | S3-compatible port, MinIO/mock, signed URL skeleton.   | ADR-014, DB §16, Security §12 | TASK-FND-002               | BE        | P1       | Approved |
+| Task ID      | Task                                                       | Output                                                 | Source                        | Dependency                 | Owner     | Priority | Status   | Update |
+| ------------ | ---------------------------------------------------------- | ------------------------------------------------------ | ----------------------------- | -------------------------- | --------- | -------- | -------- | ------ |
+| TASK-FND-001 | Thiết lập application shell theo modular application core. | Module convention, request pipeline, health endpoint.  | ADR-002, LLD §6.1             | TASK-HO-001                | BE        | P0       | Approved |        |
+| TASK-FND-002 | Thiết lập environment validation.                          | Config validation fail-fast.                           | 09 §7.3, Security §6          | TASK-FND-001, TASK-HO-003  | BE/DevOps | P0       | Approved | Done   |
+| TASK-FND-003 | Thiết lập MongoDB connection và migration runner.          | Replica set check, migration log, schema version.      | DB-OP-01, DB §19              | TASK-HO-006                | BE/DB     | P0       | Approved |        |
+| TASK-FND-004 | Thiết lập index/constraint creation baseline.              | Index manifest execution + test.                       | DB §11, §12, §19              | TASK-FND-003               | BE/DB/QA  | P0       | Approved |        |
+| TASK-FND-005 | Thiết lập response/error envelope.                         | Success/error envelope, requestId, safe message.       | API §8                        | TASK-FND-001               | BE        | P0       | Approved |        |
+| TASK-FND-006 | Thiết lập idempotency base.                                | Idempotency records, digest, conflict behavior.        | API §9.2, DB §12.3            | TASK-FND-003               | BE        | P0       | Approved |        |
+| TASK-FND-007 | Thiết lập structured logging và redaction.                 | Request/job/provider log safe payload.                 | Security §11, 09 §14          | TASK-FND-005               | BE        | P0       | Approved |        |
+| TASK-FND-008 | Thiết lập audit log base.                                  | Append-only audit writer/query skeleton.               | Security §14, DB §18          | TASK-FND-003, TASK-FND-007 | BE        | P0       | Approved |        |
+| TASK-FND-009 | Thiết lập job/worker base.                                 | Job record, lock/checkpoint/retry/manual review state. | SRS BR-62, DB §17             | TASK-HO-002, TASK-FND-003  | BE        | P0       | Approved |        |
+| TASK-FND-010 | Thiết lập file storage adapter base.                       | S3-compatible port, MinIO/mock, signed URL skeleton.   | ADR-014, DB §16, Security §12 | TASK-FND-002               | BE        | P1       | Approved |        |
 
 ### 8.2. M2 - IAM, session và security
 

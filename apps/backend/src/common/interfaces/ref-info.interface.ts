@@ -26,7 +26,7 @@ export interface BusInfo {
 export function resolveId(ref: unknown): string {
   if (!ref) return '';
   if (typeof ref === 'object' && ref !== null && '_id' in ref) {
-    return String((ref as { _id: unknown })._id);
+    return String(ref._id);
   }
   // ref ở đây là ObjectId hoặc string — cả hai đều có toString() hợp lệ
   if (typeof ref === 'string') return ref;
@@ -41,7 +41,7 @@ export function resolveId(ref: unknown): string {
  */
 export function resolveName(ref: unknown): string {
   if (typeof ref === 'object' && ref !== null && 'name' in ref) {
-    return String((ref as { name: unknown }).name);
+    return String(ref.name);
   }
   return '';
 }

@@ -6,7 +6,8 @@ import {
   HttpException,
   Logger,
 } from '@nestjs/common';
-import { Response, Request } from 'express';
+import { Response } from 'express';
+import { RequestWithContext } from '../interfaces/request-context.interface';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -15,7 +16,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
+    const request = ctx.getRequest<RequestWithContext>();
+    const requestId = request.requestContext?.requestId;
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message: string | string[] = 'Lỗi máy chủ nội bộ';
@@ -32,7 +34,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
       ) {
         const resp = exceptionResponse as Record<string, unknown>;
         message = (resp.message as string | string[]) || exception.message;
-        error = (resp.error as string) || exception.name;
       }
       error = exception.name;
     } else if (exception instanceof Error) {
@@ -50,6 +51,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       statusCode: status,
       message: Array.isArray(message) ? message[0] : message,
       error,
+      ...(requestId ? { requestId } : {}),
       timeStamp: new Date().toString(),
       path: request.url,
     });

@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule as NestConfigModule } from '@nestjs/config';
 import { existsSync } from 'fs';
-import Joi from 'joi';
 import { config as loadEnv } from 'dotenv';
 import { join, resolve } from 'path';
+import { validateEnv } from './env.validation';
 
 // Resolve from this module's directory so env loading is stable in a monorepo.
 const backendRoot = resolve(__dirname, '..', '..', '..');
@@ -15,46 +15,21 @@ loadEnv({
   override: false,
 });
 
-const nodeEnv = process.env.NODE_ENV ?? 'development';
+const nodeEnv = process.env.NODE_ENV?.trim() || 'development';
 const environmentEnvPath = join(backendRoot, `.env.${nodeEnv}`);
 
 const envFilePaths = existsSync(environmentEnvPath)
   ? [environmentEnvPath, baseEnvPath]
   : [baseEnvPath];
 
-console.log('[Config] backendRoot:', backendRoot);
-console.log('[Config] baseEnvPath:', baseEnvPath, existsSync(baseEnvPath));
-console.log('[Config] NODE_ENV:', nodeEnv);
-console.log(
-  '[Config] environmentEnvPath:',
-  environmentEnvPath,
-  existsSync(environmentEnvPath),
-);
-console.log('[Config] envFilePaths:', envFilePaths);
-
 @Module({
   imports: [
     NestConfigModule.forRoot({
       isGlobal: true,
       envFilePath: envFilePaths,
-      validationSchema: Joi.object({
-        NODE_ENV: Joi.string()
-          .valid('development', 'production', 'test')
-          .default('development'),
-        PORT: Joi.number(),
-        MONGODB_URI: Joi.string().required(),
-        REDIS_HOST: Joi.string(),
-        REDIS_PORT: Joi.number(),
-        REDIS_USERNAME: Joi.string().allow(''),
-        REDIS_PASSWORD: Joi.string().allow(''),
-        JWT_SECRET: Joi.string().min(32).required(),
-        JWT_ACCESS_EXPIRES: Joi.string(),
-        JWT_REFRESH_EXPIRES: Joi.string(),
-        ALLOWED_ORIGINS: Joi.string(),
-        THROTTLE_TTL: Joi.number(),
-        THROTTLE_LIMIT: Joi.number(),
-        OSRM_URL: Joi.string().uri().default('http://localhost:5000'),
-      }),
+      cache: true,
+      expandVariables: true,
+      validate: validateEnv,
     }),
   ],
 })

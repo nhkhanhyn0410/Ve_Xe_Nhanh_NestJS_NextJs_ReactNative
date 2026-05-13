@@ -267,7 +267,7 @@ export class SubRouteStrategy {
     }
 
     if (typeof ref === 'object' && ref !== null && '_id' in ref) {
-      const id = (ref as { _id: unknown })._id;
+      const id = ref._id;
       return id instanceof Types.ObjectId ? id.toHexString() : String(id);
     }
 
@@ -277,7 +277,7 @@ export class SubRouteStrategy {
   /** Lấy name từ populated document, trả '' nếu chưa populate */
   private resolveName(ref: unknown): string {
     if (typeof ref === 'object' && ref !== null && 'name' in ref) {
-      return String((ref as { name: unknown }).name);
+      return String(ref.name);
     }
     return '';
   }
