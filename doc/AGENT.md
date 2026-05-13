@@ -91,6 +91,6 @@ When the user requests documentation work, edit files in `SDLC/` or `agent/` dir
 - Do not use diff after write a doc
 - Do not change document `status` to `Approved`.
 - Do not invent business rules, modules, actors, technologies. Mark gaps with `TBD`, `OPEN QUESTION`, or `ASSUMPTION`.
-- On conflict between `vi/` and `en/`, treat as `OPEN QUESTION` and surface to the user.
+- On conflict between different versions or languages of a document, treat as `OPEN QUESTION` and surface to the user.
 - On conflict between an assumption and `@context/PROJECT-STATE`, trust the file.
 - Update `@context/PROJECT-STATE` after documentation edits when it exists or when context maintenance is part of the task. Do not create context files unless requested or necessary for the task.
