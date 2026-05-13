@@ -4,7 +4,7 @@ Mapping between marketplace business concepts (SRS) and codebase artifacts (targ
 
 References:
 
-- `@vi/SDLC/01-srs-he-thong-dat-ve-xe-khach` — SRS v1.19, sections §4, §7, §9, §10, §13, §16, §17, §21
+- `@SDLC/01-srs-he-thong-dat-ve-xe-khach` — SRS v1.19, sections §4, §7, §9, §10, §13, §16, §17, §21
 - `@context/PROJECT-STRUCTURE` — current code layout snapshot
 - `@context/GLOSSARY` — terminology
 

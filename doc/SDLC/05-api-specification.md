@@ -4,17 +4,17 @@
 
 ### 1.1. Metadata
 
-| Thuộc tính        | Giá trị                  |
-| ----------------- | ------------------------ |
-| Tên tài liệu      | API Specification        |
-| Mã tài liệu       | 05-api-specification     |
-| Dự án             | Hệ thống đặt vé xe khách |
-| Phiên bản         | v1.1                     |
-| Trạng thái        | Draft                    |
-| Người viết        | AI Agent                 |
-| Người duyệt       | Nguyễn Hồng Khanh        |
-| Ngày tạo          | 11/05/2026               |
-| Cập nhật gần nhất | 13/05/2026               |
+| Thuộc tính        | Giá trị                     |
+| ----------------- | --------------------------- |
+| Tên tài liệu      | API Specification           |
+| Mã tài liệu       | 05-api-specification        |
+| Dự án             | Hệ thống đặt vé xe khách    |
+| Phiên bản         | v1.1                        |
+| Trạng thái        | Approved                    |
+| Người viết        | AI Agent, Nguyễn Hồng Khanh |
+| Người duyệt       | Nguyễn Hồng Khanh           |
+| Ngày tạo          | 11/05/2026                  |
+| Cập nhật gần nhất | 13/05/2026                  |
 
 ### 1.2. Lịch sử thay đổi
 

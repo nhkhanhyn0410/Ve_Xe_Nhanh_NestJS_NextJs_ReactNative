@@ -91,10 +91,10 @@ Tài liệu chốt ở mức Database Design:
 
 | Ưu tiên | Nguồn                                            | Trạng thái | Cách dùng trong tài liệu này                                                                       |
 | ------- | ------------------------------------------------ | ---------- | -------------------------------------------------------------------------------------------------- |
-| 1       | `@vi/SDLC/01-srs-he-thong-dat-ve-xe-khach` v1.20 | Approved   | Nguồn nghiệp vụ chính: entity, FR, NFR, UC, BR, AC, state và decisions log.                        |
-| 2       | `@vi/SDLC/02-hld-he-thong-dat-ve-xe-khach` v1.13 | Approved   | Nguồn ownership, consistency class, transaction boundary, handoff DB.                              |
-| 3       | `@vi/SDLC/03-lld-he-thong-dat-ve-xe-khach` v1.2  | Approved   | Nguồn service boundary, idempotency, state transition, job, adapter contract và handoff DB.        |
-| 4       | `@vi/SDLC/00-quy-chuan-cho-lap-trinh-vien` v1.0  | Approved   | Quy chuẩn trạng thái tài liệu, điều kiện dùng tài liệu để triển khai.                              |
+| 1       | `@SDLC/01-srs-he-thong-dat-ve-xe-khach` v1.20 | Approved   | Nguồn nghiệp vụ chính: entity, FR, NFR, UC, BR, AC, state và decisions log.                        |
+| 2       | `@SDLC/02-hld-he-thong-dat-ve-xe-khach` v1.13 | Approved   | Nguồn ownership, consistency class, transaction boundary, handoff DB.                              |
+| 3       | `@SDLC/03-lld-he-thong-dat-ve-xe-khach` v1.2  | Approved   | Nguồn service boundary, idempotency, state transition, job, adapter contract và handoff DB.        |
+| 4       | `@SDLC/00-quy-chuan-cho-lap-trinh-vien` v1.0  | Approved   | Quy chuẩn trạng thái tài liệu, điều kiện dùng tài liệu để triển khai.                              |
 | 5       | `@context/PROJECT-STATE`                         | Context    | Dùng để xác nhận trạng thái tài liệu và ghi OP/blocker sau chỉnh sửa.                              |
 | 6       | `@context/DOMAIN-MAP`                            | Context    | Dùng để định vị module/thuật ngữ; không dùng làm nguồn nghiệp vụ nếu không trace được về 01/02/03. |
 

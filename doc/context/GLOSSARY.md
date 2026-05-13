@@ -4,7 +4,7 @@ Bilingual (English ↔ Vietnamese) glossary for the managed marketplace project.
 
 Rules:
 
-- Vietnamese SDLC documents (`vi/SDLC/*`) use the Vietnamese term.
+- Vietnamese SDLC documents (`SDLC/*`) use the Vietnamese term.
 - Code, API and database identifiers use the English term.
 - When in doubt, the English term wins for technical artifacts.
 

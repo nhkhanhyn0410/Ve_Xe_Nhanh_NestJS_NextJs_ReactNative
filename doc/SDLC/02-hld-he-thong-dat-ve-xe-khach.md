@@ -117,9 +117,9 @@ Tài liệu này KHÔNG chốt schema, migration, DTO, endpoint, error catalog, 
 
 | Nguồn                                            | Vai trò trong HLD                                                            | Mức ưu tiên |
 | ------------------------------------------------ | ---------------------------------------------------------------------------- | ----------- |
-| `@vi/SDLC/01-srs-he-thong-dat-ve-xe-khach` v1.20 | Nguồn nghiệp vụ, phạm vi, FR / NFR / UC / BR / AC và quyết định đã chốt      | Cao nhất    |
+| `@SDLC/01-srs-he-thong-dat-ve-xe-khach` v1.20 | Nguồn nghiệp vụ, phạm vi, FR / NFR / UC / BR / AC và quyết định đã chốt      | Cao nhất    |
 | `@context/PROJECT-STATE`                         | Trạng thái tài liệu, blocker, quyết định mới và rủi ro đồng bộ               | Cao         |
-| `@vi/SDLC/00-quy-chuan-cho-lap-trinh-vien`       | Quy chuẩn SDLC, điều kiện dùng tài liệu để triển khai                        | Cao         |
+| `@SDLC/00-quy-chuan-cho-lap-trinh-vien`       | Quy chuẩn SDLC, điều kiện dùng tài liệu để triển khai                        | Cao         |
 | `@context/DOMAIN-MAP`                            | Bản đồ capability / module mục tiêu, hỗ trợ đặt boundary                     | Trung bình  |
 | `@context/PROJECT-STRUCTURE`                     | Snapshot cấu trúc repo hiện tại; dùng để nhận diện legacy và phạm vi rewrite | Tham khảo   |
 | `@context/TECH-STACK`                            | Ràng buộc kỹ thuật hiện có; KHÔNG phải nguồn mở rộng phạm vi nghiệp vụ       | Tham khảo   |
