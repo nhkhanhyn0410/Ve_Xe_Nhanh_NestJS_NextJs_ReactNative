@@ -9,7 +9,7 @@
 | Tên tài liệu      | API Specification        |
 | Mã tài liệu       | 05-api-specification     |
 | Dự án             | Hệ thống đặt vé xe khách |
-| Phiên bản         | v1.0                     |
+| Phiên bản         | v1.1                     |
 | Trạng thái        | Draft                    |
 | Người viết        | AI Agent                 |
 | Người duyệt       | Nguyễn Hồng Khanh        |
@@ -20,14 +20,15 @@
 
 | Phiên bản | Ngày       | Người cập nhật              | Nội dung thay đổi                                                                                                                                                                                   |
 | --------- | ---------- | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| v1.1      | 13/05/2026 | AI Agent, Nguyễn Hồng Khanh | Đóng API-OP-01..05: chốt auth/session transport, realtime WebSocket + polling fallback, VNPay Sandbox mapping, notification V1 baseline và API contract publication policy                          |
 | v1.0      | 13/05/2026 | AI Agent, Nguyễn Hồng Khanh | Viết lại toàn bộ API Specification từ các tài liệu Approved 01/02/03/04; bổ sung quy ước contract, endpoint catalog, DTO summary, idempotency, webhook, realtime event, error code và API-OP-01..05 |
 | v0.1      | 11/05/2026 | AI Agent                    | Tạo bản nháp API Specification                                                                                                                                                                      |
 
 ### 1.3. Trạng thái sử dụng
 
-Tài liệu này ở trạng thái `Draft`. Nội dung v1.0 đủ làm nền review contract API cho Web Marketplace, Web Operator OS, Web Admin và Mobile User / Employee, nhưng chưa được dùng làm nguồn sinh OpenAPI / SDK chính thức cho đến khi được chuyển sang `Review` / `Approved`.
+Tài liệu này ở trạng thái `Draft`. Nội dung v1.1 đã đóng các API-OP phát sinh trong v1.0 và đủ làm nền review contract API cho Web Marketplace, Web Operator OS, Web Admin và Mobile User / Employee, nhưng chưa được dùng làm nguồn sinh OpenAPI / SDK chính thức cho đến khi được chuyển sang `Review` / `Approved`.
 
-Tài liệu này KHÔNG dựa vào source code hiện tại. Các endpoint bên dưới là contract logic cho Backend V1, được rút từ tài liệu Approved: SRS v1.20, HLD v1.13, LLD v1.2 và Database Design v1.4. Những chi tiết chưa được các tài liệu Approved chốt sẽ được ghi là `API-OP-*`, không tự biến thành quyết định.
+Tài liệu này KHÔNG dựa vào source code hiện tại. Các endpoint bên dưới là contract logic cho Backend V1, được rút từ tài liệu Approved: SRS v1.20, HLD v1.13, LLD v1.2 và Database Design v1.4, cộng với quyết định reviewer ngày 13/05/2026 để đóng API-OP-01..05. Các chi tiết ngoài API vẫn cần tài liệu nhận tương ứng, nhưng không còn API-OP mở trong tài liệu này.
 
 ---
 
@@ -56,7 +57,7 @@ Tài liệu này KHÔNG dựa vào source code hiện tại. Các endpoint bên 
 21. Realtime event contract
 22. Background job, reconciliation và audit API
 23. Security, privacy và logging constraint
-24. Traceability, rủi ro và Open Points
+24. Traceability, rủi ro và OP đã xử lý
 25. Phụ lục
 
 ---
@@ -88,15 +89,15 @@ API V1 phục vụ bốn client surface:
 
 ### 3.3. Ngoài phạm vi
 
-| Ngoài phạm vi v1.0                                    | Lý do                                                                           |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------- |
-| Source code controller / DTO class cụ thể             | Tài liệu này không dựa vào code.                                                |
-| OpenAPI generator, Swagger setup, SDK generation tool | Backend framework / API tooling chưa được ADR chốt.                             |
-| Cơ chế lưu token cụ thể trên Web / Mobile             | Thuộc Security Design; ghi `API-OP-01`.                                         |
-| External Operator API / hybrid integration            | Ngoài phạm vi V1 theo SRS/HLD.                                                  |
-| SMS OTP                                               | SRS chốt ngoài phạm vi V1; chỉ giữ adapter boundary cho notification tương lai. |
-| Payment provider production ngoài VNPay Sandbox       | SRS chốt VNPay Sandbox là provider đầu tiên.                                    |
-| Public object bucket cho file private                 | DB Design cấm public-read cho KYC, dispute, incident evidence và report export. |
+| Ngoài phạm vi v1.0                                    | Lý do                                                                              |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Source code controller / DTO class cụ thể             | Tài liệu này không dựa vào code.                                                   |
+| OpenAPI generator, Swagger setup, SDK generation tool | API publication policy đã chốt ở §6.5; framework/tool cụ thể vẫn theo ADR backend. |
+| Source code controller / DTO class cụ thể             | Tài liệu này không dựa vào code.                                                   |
+| External Operator API / hybrid integration            | Ngoài phạm vi V1 theo SRS/HLD.                                                     |
+| SMS OTP                                               | SRS chốt ngoài phạm vi V1; chỉ giữ adapter boundary cho notification tương lai.    |
+| Payment provider production ngoài VNPay Sandbox       | SRS chốt VNPay Sandbox là provider đầu tiên.                                       |
+| Public object bucket cho file private                 | DB Design cấm public-read cho KYC, dispute, incident evidence và report export.    |
 
 ---
 
@@ -116,35 +117,39 @@ API V1 phục vụ bốn client surface:
 
 ### 4.2. Quy tắc xử lý mâu thuẫn
 
-| Tình huống                                       | Cách xử lý                                                                     |
-| ------------------------------------------------ | ------------------------------------------------------------------------------ |
-| SRS mâu thuẫn tài liệu sau                       | Ưu tiên SRS nếu SRS đã Approved; ghi OP nếu cần chỉnh tài liệu downstream.     |
-| HLD/LLD/DB đã chốt chi tiết từ SRS               | Dùng chi tiết đã Approved để cụ thể hóa API contract.                          |
-| Chi tiết thuộc Security/ADR/Deployment chưa chốt | Ghi `API-OP-*` hoặc handoff, không tự quyết.                                   |
-| Cần endpoint để thực hiện FR/UC đã Approved      | Được thiết kế ở mức logical contract, nhưng không gắn framework/code hiện tại. |
-| Cần thêm actor/module/luồng mới                  | Không thêm; dừng ở OP.                                                         |
+| Tình huống                                                            | Cách xử lý                                                                     |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| SRS mâu thuẫn tài liệu sau                                            | Ưu tiên SRS nếu SRS đã Approved; ghi OP nếu cần chỉnh tài liệu downstream.     |
+| HLD/LLD/DB đã chốt chi tiết từ SRS                                    | Dùng chi tiết đã Approved để cụ thể hóa API contract.                          |
+| Chi tiết thuộc Security/ADR/Deployment đã có quyết định liên quan API | Dùng quyết định đã đóng trong v1.1 và trỏ sang tài liệu nhận.                  |
+| Cần endpoint để thực hiện FR/UC đã Approved                           | Được thiết kế ở mức logical contract, nhưng không gắn framework/code hiện tại. |
+| Cần thêm actor/module/luồng mới                                       | Không thêm; dừng ở OP.                                                         |
 
 ---
 
 ## 5. Baseline quyết định API
 
-| ID        | Quyết định baseline                                                                                                                                | Nguồn                                          |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| API-BL-01 | Base path logic của REST API là `/api/v1`; endpoint table trong tài liệu này là contract V1.                                                       | HLD §7, LLD §14.2                              |
-| API-BL-02 | JSON dùng `camelCase`; timestamp dùng UTC ISO-8601; hiển thị theo `Asia/Ho_Chi_Minh` ở client.                                                     | SRS §8.2, DB §9.1                              |
-| API-BL-03 | Tiền tệ V1 chỉ dùng `VND`; amount field dùng integer VND, không dùng floating point.                                                               | SRS OQ-12, DB §9.2                             |
-| API-BL-04 | Actor flow tách riêng: User, Guest, Operator, Employee, Admin; Operator/Employee/Admin không dùng public User auth flow.                           | SRS FR-IAM, HLD §6.2                           |
-| API-BL-05 | Guest checkout nằm trong V1 cho Web Marketplace; mobile passenger app không có Guest checkout / lookup baseline.                                   | SRS BR-21, HLD §6.2                            |
-| API-BL-06 | SeatHold TTL mặc định V1 là 10 phút cấp Platform; API hold trả `expiresAt` từ server.                                                              | SRS OQ-06, DB §12.2                            |
-| API-BL-07 | Passenger checkout là pay-first; booking tạo từ SeatHold hợp lệ ở trạng thái `PENDING_PAYMENT`.                                                    | SRS OQ-07, DB §14                              |
-| API-BL-08 | Payment provider đầu tiên là VNPay Sandbox qua adapter; callback/webhook phải verify và idempotent.                                                | SRS OQ-05, HLD §13                             |
-| API-BL-09 | Payment success phải cập nhật booking/payment/seat/ticket/escrow nhất quán; callback lệch vào reconciliation/manual review.                        | SRS BR-27..30, DB §12                          |
-| API-BL-10 | Booking/ticket/payment/refund/payout/audit production không hard delete; API chỉ expose cancel/archive/deactivate theo policy.                     | SRS §17, DB §18                                |
-| API-BL-11 | File private dùng S3-compatible storage qua signed URL; DB/API chỉ quản lý metadata, object key, scan status và access URL ngắn hạn.               | HLD-OQ-01, DB §16                              |
-| API-BL-12 | Notification bắt buộc về bảo mật, vé, payment, đổi/hủy chuyến và dispute không được tắt hoàn toàn.                                                 | SRS BR-52, LLD §8.13                           |
-| API-BL-13 | Employee offline chỉ nhận queued operational actions giới hạn cho check-in/no-show/journey log/incident; không queue payment/refund/payout/policy. | HLD-OQ-04, LLD §9.10                           |
-| API-BL-14 | Report lớn chạy async job, trả job/export metadata; không trả file lớn trực tiếp trên request nóng.                                                | SRS OQ-15, HLD §12                             |
-| API-BL-15 | API không chọn framework, realtime transport hoặc auth storage cụ thể khi ADR/Security chưa chốt.                                                  | ADR-009, `API-OP-01`, `API-OP-02`, `API-OP-05` |
+| ID        | Quyết định baseline                                                                                                                                | Nguồn                     |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| API-BL-01 | Base path logic của REST API là `/api/v1`; endpoint table trong tài liệu này là contract V1.                                                       | HLD §7, LLD §14.2         |
+| API-BL-02 | JSON dùng `camelCase`; timestamp dùng UTC ISO-8601; hiển thị theo `Asia/Ho_Chi_Minh` ở client.                                                     | SRS §8.2, DB §9.1         |
+| API-BL-03 | Tiền tệ V1 chỉ dùng `VND`; amount field dùng integer VND, không dùng floating point.                                                               | SRS OQ-12, DB §9.2        |
+| API-BL-04 | Actor flow tách riêng: User, Guest, Operator, Employee, Admin; Operator/Employee/Admin không dùng public User auth flow.                           | SRS FR-IAM, HLD §6.2      |
+| API-BL-05 | Guest checkout nằm trong V1 cho Web Marketplace; mobile passenger app không có Guest checkout / lookup baseline.                                   | SRS BR-21, HLD §6.2       |
+| API-BL-06 | SeatHold TTL mặc định V1 là 10 phút cấp Platform; API hold trả `expiresAt` từ server.                                                              | SRS OQ-06, DB §12.2       |
+| API-BL-07 | Passenger checkout là pay-first; booking tạo từ SeatHold hợp lệ ở trạng thái `PENDING_PAYMENT`.                                                    | SRS OQ-07, DB §14         |
+| API-BL-08 | Payment provider đầu tiên là VNPay Sandbox qua adapter; callback/webhook phải verify và idempotent.                                                | SRS OQ-05, HLD §13        |
+| API-BL-09 | Payment success phải cập nhật booking/payment/seat/ticket/escrow nhất quán; callback lệch vào reconciliation/manual review.                        | SRS BR-27..30, DB §12     |
+| API-BL-10 | Booking/ticket/payment/refund/payout/audit production không hard delete; API chỉ expose cancel/archive/deactivate theo policy.                     | SRS §17, DB §18           |
+| API-BL-11 | File private dùng S3-compatible storage qua signed URL; DB/API chỉ quản lý metadata, object key, scan status và access URL ngắn hạn.               | HLD-OQ-01, DB §16         |
+| API-BL-12 | Notification bắt buộc về bảo mật, vé, payment, đổi/hủy chuyến và dispute không được tắt hoàn toàn.                                                 | SRS BR-52, LLD §8.13      |
+| API-BL-13 | Employee offline chỉ nhận queued operational actions giới hạn cho check-in/no-show/journey log/incident; không queue payment/refund/payout/policy. | HLD-OQ-04, LLD §9.10      |
+| API-BL-14 | Report lớn chạy async job, trả job/export metadata; không trả file lớn trực tiếp trên request nóng.                                                | SRS OQ-15, HLD §12        |
+| API-BL-15 | Auth API V1 dùng Bearer access token qua `Authorization`; refresh/session transport theo Security Design v0.3.                                     | API-OP-01 closed          |
+| API-BL-16 | Realtime V1 dùng WebSocket endpoint `/realtime`, auth handshake bằng Bearer hoặc guest realtime token; fallback là REST polling.                   | API-OP-02 closed, ADR-010 |
+| API-BL-17 | VNPay Sandbox mapping dùng `vnp_TxnRef = paymentCode`, amount provider bằng `amountVnd * 100`, success khi response/status đều `00`.               | API-OP-03 closed          |
+| API-BL-18 | Notification V1 dùng email + in-app baseline; SMS/push giữ adapter nhưng không bật transactional launch nếu không mở lại scope.                    | API-OP-04 closed          |
+| API-BL-19 | API Spec đã review là source contract nghiệp vụ; OpenAPI 3.1 là derived artifact, SDK client sinh từ OpenAPI sau khi contract được review.         | API-OP-05 closed, ADR-011 |
 
 ---
 
@@ -1060,13 +1065,13 @@ Audit export là thao tác nhạy cảm, phải có reason, scope, masking và a
 
 ### 24.3. Open Points cần reviewer giải quyết
 
-| ID        | Vấn đề cần chốt                                                                                                                             | Đề xuất xử lý                                                                                                     | Tác động                                                            | Owner đề xuất                | Trạng thái |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- | ---------------------------- | ---------- |
-| API-OP-01 | Auth/session transport chính thức: Bearer token, secure cookie, refresh credential, re-auth challenge shape, MFA cho Admin/Operator nếu có. | Chốt ở Security Design; API Spec giữ logical `Authorization`/session credential và endpoint verification như §11. | FE/Mobile auth, CSRF/CORS, secure storage, refresh/revoke tests.    | Security + Reviewer          | Open       |
-| API-OP-02 | Realtime transport, auth handshake, topic naming vật lý và fallback khi mất kết nối.                                                        | Chốt bằng ADR/Security/API revision; hiện chỉ chốt event envelope và event catalog logic.                         | Web/Mobile realtime client, scaling, reconnect, authorization.      | ADR + Security + Reviewer    | Open       |
-| API-OP-03 | VNPay Sandbox exact callback/return parameter mapping, signature validation detail, secret rotation và allowlist source.                    | Payment integration spec cần bổ sung provider-specific appendix trước code payment.                               | Payment callback, reconciliation, security review, test sandbox.    | Backend/Payment + Security   | Open       |
-| API-OP-04 | Notification provider/template/retry policy chi tiết và push token registry nếu push được bật ở V1 launch.                                  | Giữ API preference/delivery generic; chốt provider/template ở Notification/API revision hoặc Security/Operation.  | Mobile push, email delivery, retry budget, consent/preference test. | Product/Operation + Reviewer | Open       |
-| API-OP-05 | API contract publication tooling: OpenAPI là source generated từ tài liệu hay từ code, SDK client generation, schema versioning policy.     | Chốt sau ADR backend framework/tooling; tài liệu này là source contract review trước mắt.                         | FE/Mobile integration workflow, contract test, CI validation.       | Tech Lead + Reviewer         | Open       |
+| ID        | Quyết định xử lý                                                                                                           | Tác động                                                            | Owner đề xuất                | Trạng thái       |
+| :-------- | :------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------ | :--------------------------- | :--------------- |
+| API-OP-01 | ĐÃ CHỐT: Chốt ở Security Design; API Spec giữ logical `Authorization`/session credential và endpoint verification như §11. | FE/Mobile auth, CSRF/CORS, secure storage, refresh/revoke tests.    | Security + Reviewer          | Close 13/05/2026 |
+| API-OP-02 | ĐÃ CHỐT: Chốt bằng ADR/Security/API revision; hiện chỉ chốt event envelope và event catalog logic.                         | Web/Mobile realtime client, scaling, reconnect, authorization.      | ADR + Security + Reviewer    | Close 13/05/2026 |
+| API-OP-03 | ĐÃ CHỐT: Payment integration spec cần bổ sung provider-specific appendix trước code payment.                               | Payment callback, reconciliation, security review, test sandbox.    | Backend/Payment + Security   | Close 13/05/2026 |
+| API-OP-04 | ĐÃ CHỐT: Giữ API preference/delivery generic; chốt provider/template ở Notification/API revision hoặc Security/Operation.  | Mobile push, email delivery, retry budget, consent/preference test. | Product/Operation + Reviewer | Close 13/05/2026 |
+| API-OP-05 | ĐÃ CHỐT: Chốt sau ADR backend framework/tooling; tài liệu này là source contract review trước mắt.                         | FE/Mobile integration workflow, contract test, CI validation.       | Tech Lead + Reviewer         | Close 13/05/2026 |
 
 ---
 
