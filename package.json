@@ -2,6 +2,11 @@
   "name": "ve_xe_nhanh_ts",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "npm@11.14.1",
+  "engines": {
+    "node": "22.22.2",
+    "npm": "11.14.1"
+  },
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -29,6 +34,7 @@
     "typecheck:frontend": "npm run typecheck --workspace=apps/frontend",
     "typecheck:mobile": "npm run typecheck --workspace=apps/mobile",
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "docker:build:backend": "docker build -f docker/backend.Dockerfile -t ve-xe-nhanh-backend:node22.22.2-npm11.14.1 .",
     "docker:dev": "docker compose -f docker/docker-compose.yml up -d",
     "docker:down": "docker compose -f docker/docker-compose.yml down"
   },

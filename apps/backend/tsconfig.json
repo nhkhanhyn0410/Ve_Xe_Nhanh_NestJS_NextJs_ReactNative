@@ -6,6 +6,8 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "baseUrl": "./",
+    "ignoreDeprecations": ["5.0"],
+    "types": ["node", "jest"],
     "paths": {
       "@common/*": ["src/common/*"],
       "@config/*": ["src/config/*"],
