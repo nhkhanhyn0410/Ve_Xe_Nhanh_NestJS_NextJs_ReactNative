@@ -26,11 +26,9 @@ Full rules: use `@vi/agent/00-quy-chuan-cho-ai-agent` for Vietnamese documentati
 doc/
 ├── AGENT.md                                  ← entry (this file)
 ├── context/                                  ← codebase facts, language-agnostic
-│   ├── PROJECT-STRUCTURE.md
-│   ├── TECH-STACK.md
-│   ├── DOMAIN-MAP.md         (TBD)
-│   ├── GLOSSARY.md           (TBD)
-│   └── PROJECT-STATE.md      (TBD)
+│   ├── DOMAIN-MAP.md
+│   ├── GLOSSARY.md
+│   └── PROJECT-STATE.md
 ├── en/                                       ← English working area
 │   ├── agent/                                ← SDLC tailored for AI consumption in English
 │   └── SDLC/                                 ← SDLC for English-reading humans
@@ -83,11 +81,9 @@ If a document exists only in one language, it may be read as context for the oth
 2. `@context/GLOSSARY` if available — for consistent terminology across documents.
 3. `@vi/SDLC/01-srs-he-thong-dat-ve-xe-khach` for Vietnamese work, or the English SRS counterpart when requested.
 4. `@context/DOMAIN-MAP` if available — for module ↔ folder ↔ SDLC section mapping.
-5. `@context/PROJECT-STRUCTURE` and relevant `@context/STRUCTURE-*`
-6. `@context/TECH-STACK` for technical constraints.
-7. `@context/PROJECT-STATE` if available — for recent decisions, blockers and open questions raised during design.
-8. Create the new file under the requested SDLC language directory, defaulting to `@vi/SDLC/` for Vietnamese work.
-9. Update `@context/PROJECT-STATE` after creating / saving the document if it exists.
+5. `@context/PROJECT-STATE` if available — for recent decisions, blockers and open questions raised during design.
+6. Create the new file under the requested SDLC language directory, defaulting to `@vi/SDLC/` for Vietnamese work.
+7. Update `@context/PROJECT-STATE` after creating / saving the document if it exists.
 
 ### D. Reverse-engineer SRS from source code
 

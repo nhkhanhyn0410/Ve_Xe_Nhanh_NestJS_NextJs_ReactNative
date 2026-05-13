@@ -9,7 +9,7 @@
 | Tên tài liệu      | Low Level Design - Hệ thống đặt vé xe khách |
 | Mã tài liệu       | 03-lld-he-thong-dat-ve-xe-khach             |
 | Dự án             | Hệ thống đặt vé xe khách                    |
-| Phiên bản         | v1.1                                        |
+| Phiên bản         | v1.2                                        |
 | Trạng thái        | Approved                                    |
 | Người viết        | AI Agent, Nguyễn Hồng Khanh                 |
 | Người duyệt       | Nguyễn Hồng Khanh                           |
@@ -18,15 +18,16 @@
 
 ### 1.2. Lịch sử thay đổi
 
-| Phiên bản | Ngày       | Người cập nhật              | Nội dung thay đổi                                                                                        |
-| --------- | ---------- | --------------------------- | -------------------------------------------------------------------------------------------------------- |
-| v1.1      | 12/05/2026 | AI Agent                    | Chốt LLD-OP-02..04: SeatHold DB-authoritative hybrid, Employee offline giới hạn và S3-compatible storage |
-| v1.0      | 12/05/2026 | AI Agent, Nguyễn Hồng Khanh | Viết lại LLD theo SRS v1.19, HLD v1.11, DOMAIN-MAP và ADR-009; bỏ giả định tech stack đã chốt            |
-| v0.1      | 11/05/2026 | AI Agent                    | Tạo bản nháp LLD từ SRS, HLD và context repo                                                             |
+| Phiên bản | Ngày       | Người cập nhật              | Nội dung thay đổi                                                                                                              |
+| --------- | ---------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| v1.2      | 12/05/2026 | AI Agent, Nguyễn Hồng Khanh | Làm sạch trạng thái Approved: đồng bộ SRS v1.20 / HLD v1.13, đổi OP/TBD còn lại thành quyết định đã chốt và handoff downstream |
+| v1.1      | 12/05/2026 | AI Agent                    | Chốt LLD-OP-02..04: SeatHold DB-authoritative hybrid, Employee offline giới hạn và S3-compatible storage                       |
+| v1.0      | 12/05/2026 | AI Agent, Nguyễn Hồng Khanh | Viết lại LLD theo SRS v1.19, HLD v1.11, DOMAIN-MAP và ADR-009; bỏ giả định tech stack đã chốt                                  |
+| v0.1      | 11/05/2026 | AI Agent                    | Tạo bản nháp LLD từ SRS, HLD và context repo                                                                                   |
 
 ### 1.3. Trạng thái sử dụng
 
-Tài liệu này ở trạng thái `Draft`. LLD v1.1 mô tả thiết kế chi tiết theo capability và nghiệp vụ để chuẩn bị cho Backend V1. LLD đã chốt chiến lược SeatHold, phạm vi offline Employee và object storage target, nhưng KHÔNG tự chốt framework, database engine, queue engine hoặc deployment target. Các quyết định tech stack còn lại phải theo ADR-009, `PROJECT-STATE` và review của người duyệt trước khi code.
+Tài liệu này ở trạng thái `Approved` cho phạm vi LLD: application service, domain policy, repository boundary, state transition, idempotency, adapter contract và job behavior. LLD v1.2 đã chốt chiến lược SeatHold, phạm vi offline Employee và object storage target, nhưng KHÔNG tự chốt framework, database engine, queue engine hoặc deployment target. Các chi tiết schema, API, security, UI, test và deployment được chuyển thành handoff downstream cho tài liệu nhận tương ứng.
 
 ---
 
@@ -48,7 +49,7 @@ Tài liệu này ở trạng thái `Draft`. LLD v1.1 mô tả thiết kế chi t
 14. Handoff cho DB / API / Security / Test
 15. Thứ tự triển khai Backend V1
 16. Rủi ro thiết kế chi tiết
-17. Open Points / TBD
+17. Quyết định đã chốt và handoff downstream
 18. Phụ lục
 
 ---
@@ -57,28 +58,28 @@ Tài liệu này ở trạng thái `Draft`. LLD v1.1 mô tả thiết kế chi t
 
 ### 3.1. Mục đích
 
-Tài liệu này chuyển SRS v1.19 và HLD v1.12 thành thiết kế chi tiết mức application service, domain policy, repository boundary, state transition, idempotency, adapter contract và job behavior. LLD là đầu vào cho lập trình viên backend, Database Design, API Specification, Security Design và Test Plan.
+Tài liệu này chuyển SRS v1.20 và HLD v1.13 thành thiết kế chi tiết mức application service, domain policy, repository boundary, state transition, idempotency, adapter contract và job behavior. LLD là đầu vào cho lập trình viên backend, Database Design, API Specification, Security Design và Test Plan.
 
 ### 3.2. Cách đọc tài liệu
 
 - Tên module trong LLD là **logical module** theo capability, không phải cam kết framework hoặc folder cuối cùng.
 - Nếu ADR-009 sau này chốt giữ stack hiện tại, logical module có thể map sang module/controller/service/repository tương ứng của framework được chọn.
 - Nếu ADR-009 mở lại tech stack, LLD vẫn giữ nguyên rule nghiệp vụ, state transition, transaction boundary và adapter contract.
-- Nội dung chưa có đủ quyết định được ghi là `LLD-OP-*` hoặc `LLD-TBD-*`, không được biến thành code assumption.
+- Nội dung ngoài phạm vi LLD được ghi là handoff downstream cho tài liệu nhận; không được biến thành code assumption.
 
 ### 3.3. Tài liệu tham chiếu
 
-| Tài liệu                                   | Vai trò trong LLD                                                     |
-| ------------------------------------------ | --------------------------------------------------------------------- |
-| `01-srs-he-thong-dat-ve-xe-khach.md` v1.19 | Nguồn nghiệp vụ chính: FR, NFR, UC, BR, state và decisions log        |
-| `02-hld-he-thong-dat-ve-xe-khach.md` v1.12 | Boundary kiến trúc, capability, data ownership, integration và HLD-OQ |
-| `context/DOMAIN-MAP.md`                    | Mapping capability / entity / actor sang target module groups         |
-| `context/PROJECT-STATE.md`                 | Trạng thái quyết định mới nhất, blocker và Open Questions sau SRS     |
-| `10-architecture-decision-record.md` v0.4  | ADR-009 về khung đánh giá tech stack trong rebuild                    |
-| `04-database-design.md`                    | Handoff schema, index, transaction, lock, retention                   |
-| `05-api-specification.md`                  | Handoff endpoint, DTO, response, webhook, realtime                    |
-| `07-security-permission-design.md`         | Handoff auth, RBAC, tenant, masking, rate limit, threat control       |
-| `08-test-plan-acceptance-criteria.md`      | Handoff test case, dữ liệu test, concurrency và provider failure      |
+| Tài liệu                                   | Vai trò trong LLD                                                                     |
+| ------------------------------------------ | ------------------------------------------------------------------------------------- |
+| `01-srs-he-thong-dat-ve-xe-khach.md` v1.20 | Nguồn nghiệp vụ chính: FR, NFR, UC, BR, state và decisions log                        |
+| `02-hld-he-thong-dat-ve-xe-khach.md` v1.13 | Boundary kiến trúc, capability, data ownership, integration và HLD decision / handoff |
+| `context/DOMAIN-MAP.md`                    | Mapping capability / entity / actor sang target module groups                         |
+| `context/PROJECT-STATE.md`                 | Trạng thái quyết định mới nhất, handoff downstream và blocker sau SRS                 |
+| `10-architecture-decision-record.md` v0.4  | ADR-009 về khung đánh giá tech stack trong rebuild                                    |
+| `04-database-design.md`                    | Handoff schema, index, transaction, lock, retention                                   |
+| `05-api-specification.md`                  | Handoff endpoint, DTO, response, webhook, realtime                                    |
+| `07-security-permission-design.md`         | Handoff auth, RBAC, tenant, masking, rate limit, threat control                       |
+| `08-test-plan-acceptance-criteria.md`      | Handoff test case, dữ liệu test, concurrency và provider failure                      |
 
 ---
 
@@ -88,14 +89,14 @@ Tài liệu này chuyển SRS v1.19 và HLD v1.12 thành thiết kế chi tiết
 
 | Ưu tiên | Nguồn                        | Quy tắc áp dụng                                                                                  |
 | ------- | ---------------------------- | ------------------------------------------------------------------------------------------------ |
-| 1       | SRS v1.19                    | Không được thay đổi nghĩa FR / UC / BR / state đã chốt.                                          |
+| 1       | SRS v1.20                    | Không được thay đổi nghĩa FR / UC / BR / state đã chốt.                                          |
 | 2       | `PROJECT-STATE`              | Dùng để biết quyết định mới sau SRS; khi context mâu thuẫn, ưu tiên file này.                    |
-| 3       | HLD v1.12                    | Dùng để giữ capability boundary, data ownership, integration boundary và HLD-OQ.                 |
+| 3       | HLD v1.13                    | Dùng để giữ capability boundary, data ownership, integration boundary và HLD decision / handoff. |
 | 4       | ADR v0.4                     | Dùng để tránh chốt ngầm tech stack khi ADR còn `Deferred` / `Proposed`.                          |
 | 5       | `DOMAIN-MAP`                 | Dùng để đặt tên module target; nếu stale so với HLD / PROJECT-STATE thì ghi OP hoặc sửa context. |
 | 6       | DB / API / Security skeleton | Chỉ dùng làm nháp handoff, không coi là quyết định cuối.                                         |
 
-### 4.2. Phạm vi trong LLD v1.1
+### 4.2. Phạm vi trong LLD v1.2
 
 | Nhóm thiết kế              | Trong phạm vi | Ghi chú                                                                             |
 | -------------------------- | ------------- | ----------------------------------------------------------------------------------- |
@@ -132,12 +133,12 @@ Tài liệu này chuyển SRS v1.19 và HLD v1.12 thành thiết kế chi tiết
 
 ### 4.4. Ràng buộc và quyết định hạ tầng liên quan
 
-| ID        | Nội dung                                                                                                                  | Cách xử lý trong LLD                                                                       |
-| --------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| LLD-AS-01 | Backend V1 có một application backend trung tâm theo HLD-AS-01.                                                           | Thiết kế theo application core; không yêu cầu microservice.                                |
-| LLD-AS-02 | Framework / database / queue target chưa được ADR `Accepted`.                                                             | Dùng thuật ngữ logical, tránh hard-code `NestJS`, `MongoDB`, `Redis`, `Bull` như baseline. |
-| LLD-AS-03 | Object storage target đã chốt ở LLD-OP-04, còn lifecycle, scan policy và signed URL TTL chốt ở DB/API/Security/Operation. | Domain chỉ phụ thuộc `FileStorageProvider`; không public bucket/public-read.               |
-| LLD-AS-04 | Offline Employee đã chốt mức read cache + queued operational actions có giới hạn.                                         | Không hỗ trợ full offline sync; server vẫn là nguồn quyết định cuối.                       |
+| ID          | Nội dung                                                                                                                  | Cách xử lý trong LLD                                                                       |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| LLD-CSTR-01 | Backend V1 có một application backend trung tâm theo HLD-CSTR-01.                                                         | Thiết kế theo application core; không yêu cầu microservice.                                |
+| LLD-CSTR-02 | Framework / database / queue target chưa được ADR `Accepted`.                                                             | Dùng thuật ngữ logical, tránh hard-code `NestJS`, `MongoDB`, `Redis`, `Bull` như baseline. |
+| LLD-CSTR-03 | Object storage target đã chốt ở LLD-OP-04, còn lifecycle, scan policy và signed URL TTL chốt ở DB/API/Security/Operation. | Domain chỉ phụ thuộc `FileStorageProvider`; không public bucket/public-read.               |
+| LLD-CSTR-04 | Offline Employee đã chốt mức read cache + queued operational actions có giới hạn.                                         | Không hỗ trợ full offline sync; server vẫn là nguồn quyết định cuối.                       |
 
 ---
 
@@ -982,26 +983,26 @@ Không bắt đầu code transaction core trước khi `04-database-design.md` c
 
 ## 16. Rủi ro thiết kế chi tiết
 
-| ID          | Rủi ro                                                              | Mức độ     | Giảm thiểu trong LLD                                                               |
-| ----------- | ------------------------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------- |
-| LLD-RISK-01 | LLD bị hiểu là đã chốt tech stack dù ADR-009 còn mở.                | Cao        | Dùng logical module và ghi `LLD-OP-01`.                                            |
-| LLD-RISK-02 | DB Design cụ thể hóa sai DB-authoritative hybrid gây bán trùng ghế. | Rất cao    | Bắt buộc schema/index/conditional write và concurrency test theo `LLD-OP-02`.      |
-| LLD-RISK-03 | Payment callback idempotency thiếu làm phát hành vé/trừ tiền trùng. | Rất cao    | Callback digest, provider transaction, reconciliation path.                        |
-| LLD-RISK-04 | Guest lookup lộ vé/booking.                                         | Rất cao    | Match code + contact, rate limit, response không tiết lộ tồn tại.                  |
-| LLD-RISK-05 | Operator/Employee vượt tenant/assignment.                           | Rất cao    | Guard stack + repository scope + test tenant boundary.                             |
-| LLD-RISK-06 | Offline Employee queued write làm sai check-in khi conflict.        | Cao        | Giới hạn operation được queue, server authoritative reconcile, conflict log.       |
-| LLD-RISK-07 | File KYC/dispute bị public hoặc retention sai.                      | Cao        | S3-compatible private bucket, signed URL ngắn hạn, metadata-only DB, access audit. |
-| LLD-RISK-08 | Ledger/payout tính từ snapshot sai hoặc thiếu adjustment.           | Rất cao    | Ledger checkpoint, manual review, DB model phải chốt.                              |
-| LLD-RISK-09 | Notification lỗi bị coi là lỗi nghiệp vụ chính.                     | Trung bình | Eventual delivery; dữ liệu vẫn tra cứu được.                                       |
-| LLD-RISK-10 | Reporting query làm chậm checkout/check-in.                         | Trung bình | Async export/job threshold.                                                        |
+| ID          | Rủi ro                                                              | Mức độ     | Giảm thiểu trong LLD                                                                                            |
+| ----------- | ------------------------------------------------------------------- | ---------- | --------------------------------------------------------------------------------------------------------------- |
+| LLD-RISK-01 | LLD bị hiểu là đã chốt tech stack dù ADR-009 còn mở.                | Cao        | Dùng logical module và ghi rõ quyết định `LLD-OP-01` đã xử lý theo hướng mở lại tech stack sau downstream docs. |
+| LLD-RISK-02 | DB Design cụ thể hóa sai DB-authoritative hybrid gây bán trùng ghế. | Rất cao    | Bắt buộc schema/index/conditional write và concurrency test theo `LLD-OP-02`.                                   |
+| LLD-RISK-03 | Payment callback idempotency thiếu làm phát hành vé/trừ tiền trùng. | Rất cao    | Callback digest, provider transaction, reconciliation path.                                                     |
+| LLD-RISK-04 | Guest lookup lộ vé/booking.                                         | Rất cao    | Match code + contact, rate limit, response không tiết lộ tồn tại.                                               |
+| LLD-RISK-05 | Operator/Employee vượt tenant/assignment.                           | Rất cao    | Guard stack + repository scope + test tenant boundary.                                                          |
+| LLD-RISK-06 | Offline Employee queued write làm sai check-in khi conflict.        | Cao        | Giới hạn operation được queue, server authoritative reconcile, conflict log.                                    |
+| LLD-RISK-07 | File KYC/dispute bị public hoặc retention sai.                      | Cao        | S3-compatible private bucket, signed URL ngắn hạn, metadata-only DB, access audit.                              |
+| LLD-RISK-08 | Ledger/payout tính từ snapshot sai hoặc thiếu adjustment.           | Rất cao    | Ledger checkpoint, manual review, DB model phải chốt.                                                           |
+| LLD-RISK-09 | Notification lỗi bị coi là lỗi nghiệp vụ chính.                     | Trung bình | Eventual delivery; dữ liệu vẫn tra cứu được.                                                                    |
+| LLD-RISK-10 | Reporting query làm chậm checkout/check-in.                         | Trung bình | Async export/job threshold.                                                                                     |
 
 ---
 
-## 17. Open Points, quyết định đã chốt và TBD
+## 17. Quyết định đã chốt và handoff downstream
 
-### 17.1. Open Points đã xử lý
+### 17.1. Quyết định LLD đã xử lý
 
-| ID        | Open Point                                                                                                                                                               | Tác động                                                                  | Owner đề xuất      | Trạng thái        |
+| ID        | Quyết định                                                                                                                                                               | Tác động                                                                  | Owner đề xuất      | Trạng thái        |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- | ------------------ | ----------------- |
 | LLD-OP-01 | Đã chốt: mở lại lựa chọn tech stack sau khi DB/API/Security đủ rõ; hiện trạng repo không tự động là target implementation.                                               | Quyết định folder/file pattern, framework convention, test strategy.      | Owner + Tech Lead  | Closed 12/05/2026 |
 | LLD-OP-02 | Đã chốt: SeatHold dùng DB-authoritative hybrid; DB giữ invariant cuối cùng, lock service chỉ là lớp phụ trợ giảm contention.                                             | Chống bán trùng ghế, booking/payment consistency, concurrency test.       | Backend + DB       | Closed 12/05/2026 |
@@ -1010,16 +1011,16 @@ Không bắt đầu code transaction core trước khi `04-database-design.md` c
 | LLD-OP-05 | Đã chốt: session/token/re-auth/rate limit chi tiết chốt ở Security Design theo actor, không mở thêm actor/flow ở LLD.                                                    | Security Design, API contract, mobile secure storage.                     | Security + Backend | Closed 12/05/2026 |
 | LLD-OP-06 | Đã chốt: email provider và template workflow chốt ở Notification/API; SMS/push giữ adapter theo HLD-OQ-02, không bật transactional ở V1 nếu reviewer không mở lại scope. | Notification API, retry, template, consent/preference.                    | Product + Backend  | Closed 12/05/2026 |
 
-### 17.2. TBD chuyển xuống tài liệu sau
+### 17.2. Handoff downstream
 
-| ID         | TBD                                                                               | Tài liệu nhận                         |
-| ---------- | --------------------------------------------------------------------------------- | ------------------------------------- |
-| LLD-TBD-01 | Field schema, index, TTL, unique constraint, transaction, lock, migration.        | `04-database-design.md`               |
-| LLD-TBD-02 | Endpoint path, DTO, pagination, webhook, realtime event payload, error response.  | `05-api-specification.md`             |
-| LLD-TBD-03 | Permission matrix chi tiết, token storage, CSRF/XSS/IDOR/NoSQL injection control. | `07-security-permission-design.md`    |
-| LLD-TBD-04 | UI state, empty/error/recovery flow, mobile offline UX.                           | `06-ui-ux-flow-specification.md`      |
-| LLD-TBD-05 | Test case, test data, concurrency, provider outage, security negative test.       | `08-test-plan-acceptance-criteria.md` |
-| LLD-TBD-06 | Monitoring stack, alert rule, runbook, backup/restore, deployment target.         | `09-deployment-operation-standard.md` |
+| ID        | Handoff                                                                           | Tài liệu nhận                         |
+| --------- | --------------------------------------------------------------------------------- | ------------------------------------- |
+| LLD-HO-01 | Field schema, index, TTL, unique constraint, transaction, lock, migration.        | `04-database-design.md`               |
+| LLD-HO-02 | Endpoint path, DTO, pagination, webhook, realtime event payload, error response.  | `05-api-specification.md`             |
+| LLD-HO-03 | Permission matrix chi tiết, token storage, CSRF/XSS/IDOR/NoSQL injection control. | `07-security-permission-design.md`    |
+| LLD-HO-04 | UI state, empty/error/recovery flow, mobile offline UX.                           | `06-ui-ux-flow-specification.md`      |
+| LLD-HO-05 | Test case, test data, concurrency, provider outage, security negative test.       | `08-test-plan-acceptance-criteria.md` |
+| LLD-HO-06 | Monitoring stack, alert rule, runbook, backup/restore, deployment target.         | `09-deployment-operation-standard.md` |
 
 ---
 
@@ -1028,9 +1029,9 @@ Không bắt đầu code transaction core trước khi `04-database-design.md` c
 ### 18.1. Quy ước mã trong LLD
 
 - `LLD-PRIN-NN`: Nguyên tắc thiết kế chi tiết.
-- `LLD-AS-NN`: Giả định thiết kế chi tiết.
-- `LLD-OP-NN`: Open Point cần người duyệt hoặc tài liệu sau chốt.
-- `LLD-TBD-NN`: Nội dung còn phải đặc tả ở tài liệu downstream.
+- `LLD-CSTR-NN`: Ràng buộc thiết kế chi tiết.
+- `LLD-OP-NN`: Open Point / quyết định LLD đã xử lý.
+- `LLD-HO-NN`: Handoff cần đặc tả ở tài liệu downstream.
 - `LLD-RISK-NN`: Rủi ro thiết kế chi tiết.
 
 ### 18.2. Traceability nhanh

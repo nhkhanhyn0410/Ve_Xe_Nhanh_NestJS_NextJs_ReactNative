@@ -9,7 +9,7 @@
 | Tên tài liệu      | Software Requirements Specification - Hệ thống đặt vé xe khách |
 | Mã tài liệu       | 01-srs-he-thong-dat-ve-xe-khach                                |
 | Dự án             | Hệ thống đặt vé xe khách                                       |
-| Phiên bản         | v1.19                                                          |
+| Phiên bản         | v1.20                                                          |
 | Trạng thái        | Approved                                                       |
 | Người viết        | Nguyễn Hồng Khanh, Nguyễn Xuân Trường, Lê Võ Thanh Uy          |
 | Người duyệt       | Nguyễn Hồng Khanh                                              |
@@ -20,6 +20,7 @@
 
 | Phiên bản | Ngày | Người cập nhật | Nội dung thay đổi |
 | :--- | :--- | :--- | :--- |
+| **v1.20** | 12/05/2026 | AI Agent, Nguyễn Hồng Khanh | Làm sạch SRS sau khi HLD/LLD được duyệt: đồng bộ SeatHold theo hướng DB-authoritative hybrid thay vì khóa cứng Redis, cập nhật Employee offline giới hạn, object storage S3-compatible đã chốt ở HLD/LLD, và chỉnh phụ lục trạng thái tài liệu. |
 | **v1.19** | 12/05/2026 | AI Agent, Nguyễn Hồng Khanh | Viết lại §17..§20 để tiến tới hoàn thiện SRS: chuẩn hóa state model nghiệp vụ, catalog thông báo bắt buộc / không bắt buộc, tiêu chí nghiệm thu có truy vết và risk register theo managed marketplace, Guest checkout, VNPay Sandbox, escrow / payout T+3, dispute, audit và job nền; cập nhật tham chiếu §21 liên quan state model / payout. |
 | **v1.18** | 12/05/2026 | AI Agent, Nguyễn Hồng Khanh | Viết mới toàn bộ §16 Luồng nghiệp vụ chính: bổ sung danh mục luồng end-to-end, luồng thiết lập nhà xe trước mở bán, đặt vé User / Guest, payment lỗi / đối soát, tra cứu vé Guest, hủy / hoàn tiền, thay đổi chuyến, check-in / vận hành chuyến, support / complaint / dispute, escrow / payout T+3 và luồng notification / audit / job nền. |
 | **v1.17** | 12/05/2026 | AI Agent, Nguyễn Hồng Khanh | Xử lý các điểm rà soát 15 mục đầu: sửa tham chiếu file quy chuẩn lập trình viên, làm sạch phạm vi tài liệu, đồng bộ SeatHold 10 phút và VNPay Sandbox, cập nhật `FR-MKT-10`, `FR-NSR-06`, `FR-DSP-03..04`, sơ đồ use case và bảng UC-09 cho Guest support / complaint, sửa lỗi chính tả `UC-01`. |
@@ -441,7 +442,7 @@ Các external actor không có quyền truy cập tài khoản nội bộ; mọi
 | AS-04 | Một tuyến có điểm đầu, điểm cuối và có thể có nhiều điểm đón / trả trung gian như bến xe, văn phòng, trạm dừng, điểm dọc đường.                       | Search và booking phải cho khách chọn đúng điểm đón / trả hợp lệ theo chuyến.                                                                |
 | AS-05 | Hành khách có thể đặt một hoặc nhiều ghế / giường trong cùng một booking; mỗi ghế / giường phát hành một ticket riêng hoặc một ticket item riêng.     | Booking là đơn giao dịch; Ticket là quyền lên xe của từng hành khách / từng ghế.                                                             |
 | AS-06 | Chọn ghế là chức năng bắt buộc trong luồng đặt vé online, tương tự các hệ thống nhà xe lớn.                                                           | Không nên chỉ đặt theo số lượng khách nếu hệ thống muốn tránh tranh chấp vị trí ghế.                                                         |
-| AS-07 | Ghế được giữ tạm thời trước khi thanh toán thành công; v1 dùng thời gian giữ ghế mặc định 10 phút ở cấp Platform và chưa cấu hình riêng per Operator. | Cần Redis lock / TTL để chống bán trùng ghế và tự giải phóng ghế khi khách bỏ dở thanh toán.                                                 |
+| AS-07 | Ghế được giữ tạm thời trước khi thanh toán thành công; v1 dùng thời gian giữ ghế mặc định 10 phút ở cấp Platform và chưa cấu hình riêng per Operator. | Cần cơ chế SeatHold atomic có TTL để chống bán trùng ghế và tự giải phóng ghế khi khách bỏ dở thanh toán; lock/cache service nếu dùng chỉ là lớp phụ trợ triển khai. |
 | AS-08 | V1 dùng VNPay Sandbox làm cổng thanh toán tích hợp đầu tiên và phải có callback / webhook xác nhận kết quả.                                           | Thiết kế payment vẫn phải đi qua adapter để có thể bổ sung provider khác sau này mà không khóa cứng vào một nhà cung cấp.                    |
 | AS-09 | Vé điện tử được phát hành sau khi thanh toán thành công hoặc sau khi nhà xe xác nhận nếu có luồng thanh toán sau.                                     | Vé phải có mã vé / QR code, thông tin chuyến, ghế, điểm đón / trả và trạng thái hiện tại.                                                    |
 | AS-10 | Hệ thống cần hỗ trợ khách không đăng nhập tra cứu vé bằng mã vé / số điện thoại / email, nhưng thao tác nhạy cảm vẫn cần xác minh.                    | Phù hợp hành vi thực tế của khách mua vé nhanh nhưng vẫn bảo vệ dữ liệu cá nhân.                                                             |
@@ -499,7 +500,7 @@ Các external actor không có quyền truy cập tài khoản nội bộ; mọi
 | DP-01 | Backend NestJS, MongoDB, Redis, Bull queue, Socket.IO, JWT, Helmet.                                               | Lõi API, lưu dữ liệu, khóa ghế, queue xử lý callback / notification, realtime vận hành.       |
 | DP-02 | Frontend Next.js, React, Ant Design, Tailwind, React Query, Zustand.                                              | Web hành khách, operator portal, admin portal.                                                |
 | DP-03 | Mobile Expo / React Native.                                                                                       | App hành khách và app / portal nhân viên cho check-in, nhật trình, báo sự cố.                 |
-| DP-04 | Redis hoặc lock service tương đương.                                                                              | Bắt buộc cho seat locking, chống double booking và chống spam thanh toán.                     |
+| DP-04 | Cơ chế atomic SeatHold, TTL và chống spam thanh toán.                                                             | Bắt buộc bảo đảm không double booking; chi tiết DB-authoritative/lock/cache thuộc HLD/LLD và Database Design. |
 | DP-05 | Payment gateway.                                                                                                  | Bắt buộc cho thanh toán online, callback, tra soát giao dịch và hoàn tiền.                    |
 | DP-06 | Email / SMS / push notification provider.                                                                         | Bắt buộc để gửi vé điện tử, OTP, nhắc giờ đi, thông báo đổi / hủy chuyến.                     |
 | DP-07 | OSRM hoặc dịch vụ bản đồ / routing.                                                                               | Phục vụ tính khoảng cách, thời gian hành trình, gợi ý điểm đón / trả và tuyến trung chuyển.   |
@@ -507,7 +508,7 @@ Các external actor không có quyền truy cập tài khoản nội bộ; mọi
 | DP-09 | Quy trình KYC và hợp đồng với nhà xe.                                                                             | Bắt buộc để xác định nhà xe được bán vé, nhận payout và chịu trách nhiệm vận tải.             |
 | DP-10 | Chính sách hủy / đổi / hoàn tiền của Platform và từng Operator.                                                   | Bắt buộc trước khi mở bán vì ảnh hưởng số tiền hoàn, dispute và chăm sóc khách hàng.          |
 | DP-11 | Cơ chế đối soát, escrow và payout.                                                                                | Bắt buộc để vận hành marketplace có thu commission và trả tiền cho nhà xe.                    |
-| DP-12 | Dịch vụ lưu file / object storage.                                                                                | Cần cho giấy tờ KYC, ảnh sự cố, minh chứng khiếu nại, file báo cáo nếu có.                    |
+| DP-12 | Dịch vụ lưu file / object storage qua adapter.                                                                    | Cần cho giấy tờ KYC, ảnh sự cố, minh chứng khiếu nại, file báo cáo nếu có; provider cụ thể do HLD/LLD/infra chốt. |
 | DP-13 | Công cụ logging, monitoring, alerting.                                                                            | Cần để phát hiện lỗi thanh toán, lỗi giữ ghế, lỗi gửi vé và sự cố vận hành.                   |
 | DP-14 | Hạ tầng bảo mật: HTTPS, secret management, backup, phân quyền môi trường.                                         | Bắt buộc trước production để bảo vệ dữ liệu cá nhân và giao dịch tài chính.                   |
 | DP-15 | Nội dung pháp lý và vận hành: điều khoản sử dụng, chính sách riêng tư, chính sách hủy đổi, hotline / kênh hỗ trợ. | Bắt buộc để website có thể bán vé thật và xử lý tranh chấp.                                   |
@@ -589,7 +590,7 @@ Phần này mô tả mô hình dữ liệu **mức khái niệm** để làm n�
 - `04-database-design.md` BẮT BUỘC xác định cơ chế chống bán trùng ghế: transaction, atomic update, distributed lock, unique constraint hoặc kết hợp các cơ chế này.
 - `04-database-design.md` BẮT BUỘC làm rõ mô hình ledger cho escrow, commission, refund và payout trước khi triển khai giao dịch tiền thật.
 - `04-database-design.md` BẮT BUỘC định nghĩa rõ dữ liệu nào là dữ liệu chuẩn Platform quản lý và dữ liệu nào là dữ liệu riêng của từng Operator.
-- Cổng thanh toán v1 đã chốt VNPay Sandbox ở mức yêu cầu; provider SMS / email / push và object storage cụ thể vẫn chưa chốt ở SRS, vì mục 9 chỉ xác định nhu cầu dữ liệu và ràng buộc thiết kế.
+- Cổng thanh toán v1 đã chốt VNPay Sandbox ở mức yêu cầu; provider SMS / email / push không chốt ở SRS, còn object storage cụ thể đã được chuyển cho HLD / LLD / infra chốt theo adapter boundary vì mục 9 chỉ xác định nhu cầu dữ liệu và ràng buộc thiết kế.
 
 ---
 
@@ -2941,7 +2942,7 @@ Mục này xác định tiêu chí nghiệm thu cấp SRS cho v1. Test Plan chi 
 | Traceability   | FR, UC, BR, BF và AC có thể truy vết lẫn nhau ở mức đủ để viết HLD, DB Design, API Spec và Test Plan.                                          | Không yêu cầu tạo traceability matrix riêng trong SRS.             |
 | Open decision  | Không còn Open Question chưa chốt trong phạm vi SRS v1; quyết định mới nếu phát sinh ở HLD / LLD phải ghi nhận riêng.                          | §21 hiện là Decisions Log, không phải backlog câu hỏi mở.          |
 | Risk readiness | Các rủi ro mức cao / rất cao đã có biện pháp giảm thiểu tối thiểu trước khi vào thiết kế.                                                      | Xem §20.                                                           |
-| Versioning     | Metadata và lịch sử thay đổi phản ánh các chỉnh sửa lớn.                                                                                       | Tài liệu giữ trạng thái `Draft` cho đến khi người duyệt phê duyệt. |
+| Versioning     | Metadata và lịch sử thay đổi phản ánh các chỉnh sửa lớn.                                                                                       | Tài liệu hiện ở trạng thái `Approved`; chỉnh sửa sau phê duyệt phải tăng phiên bản và ghi lịch sử thay đổi. |
 
 ---
 
@@ -2974,14 +2975,14 @@ Mục này ghi nhận các rủi ro cấp SRS cần được theo dõi khi chuy�
 | RSK-10 | Thay đổi tài khoản nhận tiền Operator không được kiểm soát.                    | Rất cao    | Chuyển tiền nhầm / gian lận payout.                                    | Xác minh bổ sung, audit log, cảnh báo thay đổi gần kỳ payout, Admin rà soát payout.                | `BR-37`, `BR-57`, `AC-26..27`                |
 | RSK-11 | Employee xem quá nhiều dữ liệu cá nhân hành khách.                             | Cao        | Vi phạm quyền riêng tư, lộ số điện thoại / lịch sử chuyến.             | Mask số điện thoại mặc định, chỉ mở đầy đủ theo quyền và lý do vận hành, log truy cập / export.    | `BR-19`, `BR-60`, `AC-22`, `AC-34`           |
 | RSK-12 | QR ticket bị đoán, sao chép hoặc check-in nhiều lần.                           | Cao        | Vé giả, check-in sai người, tranh chấp tại bến.                        | QR token không đoán được, xác thực server-side, chặn vé đã hủy / hoàn / check-in.                  | `BR-29`, `AC-11`, `AC-23`                    |
-| RSK-13 | Employee mất mạng khi check-in / cập nhật chuyến.                              | Trung bình | Check-in chậm, manifest không cập nhật, khó xử lý tại hiện trường.     | Thiết kế retry / đồng bộ khi có mạng; nếu chưa có offline mode thì chặn thao tác cần server-side.  | `NFR-UX-06`, `BF-07`, `AC-23..24`            |
+| RSK-13 | Employee mất mạng khi check-in / cập nhật chuyến.                              | Trung bình | Check-in chậm, manifest không cập nhật, khó xử lý tại hiện trường.     | Thiết kế read cache manifest, queue giới hạn cho check-in / no-show / journey log / incident và server reconcile khi có mạng. | `NFR-UX-06`, `BF-07`, `AC-23..24`            |
 | RSK-14 | Notification gửi lỗi hoặc gửi trùng.                                           | Cao        | Khách không nhận vé / thông báo hủy chuyến, khiếu nại tăng.            | NotificationDelivery state, retry idempotent, dữ liệu vẫn tra cứu được trong hệ thống.             | `BR-52..54`, `AC-32`                         |
 | RSK-15 | Job nền chạy trùng hoặc retry không an toàn.                                   | Cao        | Gửi trùng thông báo, xử lý trùng refund / payout, lệch báo cáo.        | Job lock, checkpoint, idempotency, trạng thái `MANUAL_REVIEW` khi vượt ngưỡng.                     | `BR-62`, `AC-33`                             |
 | RSK-16 | Hệ thống quá tải dịp lễ / Tết.                                                 | Cao        | Search chậm, giữ ghế lỗi, payment timeout, UX kém.                     | Cache / index search, queue cho callback / notification, rate limit, test tải peak.                | `CO-19`, `NFR-PERF-*`, `NFR-SCALE-*`         |
 | RSK-17 | Báo cáo lớn làm chậm luồng đặt vé / thanh toán.                                | Trung bình | Ảnh hưởng giao dịch chính và vận hành Admin / Operator.                | Reporting job bất đồng bộ, MongoDB aggregation có kiểm soát, export theo job.                      | `OQ-15`, `NFR-PERF-05`, `AC-30`              |
 | RSK-18 | Dữ liệu audit / backup không đủ để điều tra tranh chấp.                        | Rất cao    | Không chứng minh được thao tác tiền / vé / policy / KYC.               | Append-only audit log, backup / restore định kỳ, không xóa cứng dữ liệu tài chính / KYC / dispute. | `BR-58..59`, `NFR-AUDIT-*`, `AC-31`, `AC-35` |
 | RSK-19 | Chính sách hủy / hoàn / commission thay đổi nhưng áp nhầm vào booking cũ.      | Cao        | Sai quyền lợi khách hàng, sai payout Operator.                         | Policy versioning, snapshot vào booking, chặn áp ngược, test regression policy.                    | `BR-07`, `BR-24`, `BR-31`, `AC-07`, `AC-13`  |
-| RSK-20 | Provider chưa chốt cho SMS / push / object storage làm chậm thiết kế chi tiết. | Trung bình | Chậm API / hạ tầng file KYC, attachment dispute, notification đa kênh. | Dùng adapter contract ở thiết kế, giữ provider cụ thể là quyết định HLD / infra sau.               | `DP-06`, `DP-12`, `BR-63`                    |
+| RSK-20 | Provider SMS / push chưa chốt có thể làm chậm thiết kế notification đa kênh.   | Trung bình | Chậm API notification, template, consent/preference và mobile token.   | Dùng adapter contract ở thiết kế; object storage đã chốt ở HLD/LLD theo S3-compatible adapter.     | `DP-06`, `DP-12`, `BR-63`                    |
 | RSK-21 | Rủi ro pháp lý về vận tải, dữ liệu cá nhân, hóa đơn / thuế.                    | Cao        | Không đủ điều kiện production hoặc phải sửa policy sau triển khai.     | Rà soát pháp chế trước production; SRS chỉ là yêu cầu phần mềm, không thay thế tư vấn pháp lý.     | `CO-20`, `NFR-AUDIT-06`                      |
 
 ### 20.3. Điều kiện kiểm soát trước production
@@ -3008,7 +3009,7 @@ Toàn bộ Open Questions (`OQ-*`) và Marketplace Questions (`MQ-*`) phát sinh
 | ~~OQ-03~~ | **CHỐT (05/05/2026):** Payment status chuẩn hóa tên `SUCCESS`. Code phải đổi `COMPLETED` → `SUCCESS` và bổ sung `INITIATED`, `EXPIRED`, `CANCELLED`, `RECONCILING` theo §17.8.                                                                                                                                                  | Đã chốt                                                                                    |
 | ~~OQ-04~~ | **CHỐT (05/05/2026):** dùng `Employee` với hệ role `TICKET_STAFF`, `DRIVER`, `SUPPORT_STAFF`. SRS đã được cập nhật ở §7.4, §10.1 (`FR-IAM-05..06`) và §10.7 (`FR-EMP-*`).                                                                                                                                                       | Đã chốt                                                                                    |
 | ~~OQ-05~~ | **CHỐT (11/05/2026):** cổng thanh toán tích hợp đầu tiên là **VNPay Sandbox**. Thiết kế vẫn phải dùng adapter để có thể bổ sung provider khác sau này.                                                                                                                                                                          | Ảnh hưởng `05-API Specification`, schema Payment, callback flow                            |
-| ~~OQ-06~~ | **CHỐT (11/05/2026):** thời gian giữ ghế mặc định là **10 phút**, cấu hình ở cấp Platform cho v1. Không cấu hình riêng per Operator trong v1.                                                                                                                                                                                   | Ảnh hưởng Booking flow, UI timer, Redis / SeatHold TTL, test chống bán trùng ghế           |
+| ~~OQ-06~~ | **CHỐT (11/05/2026):** thời gian giữ ghế mặc định là **10 phút**, cấu hình ở cấp Platform cho v1. Không cấu hình riêng per Operator trong v1.                                                                                                                                                                                   | Ảnh hưởng Booking flow, UI timer, SeatHold TTL, cơ chế atomic chống bán trùng ghế           |
 | ~~OQ-07~~ | **CHỐT (11/05/2026):** v1 ưu tiên luồng **thanh toán trước** cho Marketplace. `PENDING_CONFIRMATION` vẫn giữ trong enum để hỗ trợ vận hành / thanh toán sau ở phase sau, nhưng không mở mặc định cho passenger checkout v1.                                                                                                     | Ảnh hưởng `06-UI/UX Flow`, `FR-BTP-07..10`, `FR-OPS-14`                                    |
 | ~~OQ-08~~ | **CHỐT (11/05/2026):** `Fare` / `FareRule` là bảng / collection riêng. `Trip` tham chiếu rule đang hiệu lực và booking phải lưu fare snapshot. Giá theo chặng (`segment-based fare`) chưa hỗ trợ trong v1.                                                                                                                      | Ảnh hưởng `04-Database Design`, Pricing service, Booking snapshot                          |
 | ~~OQ-09~~ | **CHỐT (11/05/2026):** v1 dùng **email OTP** cho đăng ký / đăng nhập / xác minh thao tác nhạy cảm. SMS OTP chưa thuộc phạm vi v1; hệ thống giữ notification adapter để bổ sung SMS provider sau.                                                                                                                                | Ảnh hưởng `FR-IAM-01`, `FR-IAM-02a`, `FR-IAM-03a`, Notification Service                    |
@@ -3036,13 +3037,13 @@ Toàn bộ Open Questions (`OQ-*`) và Marketplace Questions (`MQ-*`) phát sinh
 ### 22.1. Tài liệu liên quan
 
 - `00-quy-chuan-cho-lap-trinh-vien.md` — Quy chuẩn SDLC.
-- `02-hld-he-thong-dat-ve-xe-khach.md` — HLD (sẽ viết).
-- `03-lld-he-thong-dat-ve-xe-khach.md` — LLD (sẽ viết).
-- `04-database-design.md` — Database Design (sẽ viết).
-- `05-api-specification.md` — API Specification (sẽ viết).
-- `06-ui-ux-flow-specification.md` — UI/UX Flow (sẽ viết).
-- `07-security-permission-design.md` — Security Design (sẽ viết).
-- `08-test-plan-acceptance-criteria.md` — Test Plan (sẽ viết).
+- `02-hld-he-thong-dat-ve-xe-khach.md` — HLD.
+- `03-lld-he-thong-dat-ve-xe-khach.md` — LLD.
+- `04-database-design.md` — Database Design.
+- `05-api-specification.md` — API Specification.
+- `06-ui-ux-flow-specification.md` — UI/UX Flow.
+- `07-security-permission-design.md` — Security Design.
+- `08-test-plan-acceptance-criteria.md` — Test Plan.
 
 ### 22.2. Quy ước đặt mã
 

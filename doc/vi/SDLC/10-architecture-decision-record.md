@@ -9,7 +9,7 @@
 | Tên tài liệu | Architecture Decision Record - ADR |
 | Mã tài liệu  | 10-architecture-decision-record  |
 | Dự án        | Hệ thống đặt vé xe khách         |
-| Phiên bản    | v0.4                             |
+| Phiên bản    | v0.5                             |
 | Trạng thái   | Draft                            |
 | Người viết   | AI Agent                         |
 | Người duyệt  | Nguyễn Hồng Khanh                |
@@ -19,6 +19,7 @@
 
 | Phiên bản | Ngày       | Người cập nhật | Nội dung thay đổi                         |
 | --------- | ---------- | -------------- | ----------------------------------------- |
+| v0.5      | 13/05/2026 | AI Agent, Nguyễn Hồng Khanh | Chốt ADR-003 theo DB-OP-01: operational database target V1 dùng MongoDB replica set |
 | v0.4      | 12/05/2026 | AI Agent       | Đồng bộ quyết định LLD/HLD: SeatHold DB-authoritative hybrid, S3-compatible storage và offline Employee giới hạn |
 | v0.3      | 12/05/2026 | AI Agent       | Chuyển ADR-009 thành khung đánh giá tech stack cho rebuild; hạ ADR-002..004 về Deferred |
 | v0.2      | 12/05/2026 | AI Agent       | Bổ sung ADR-009 cho bảng tech stack đề xuất |
@@ -58,7 +59,7 @@ AI Agent không tự chuyển ADR sang `Accepted` nếu chưa có người duy�
 | -- | ------- | ---------- | ----- |
 | ADR-001 | Managed marketplace là mô hình sản phẩm v1 | Proposed | SRS MQ-05 |
 | ADR-002 | Backend framework / architecture target cho rebuild | Deferred | SRS DP-01, HLD-DEC-01, ADR-OQ-05 |
-| ADR-003 | Operational database target cho rebuild | Deferred | SRS DP-01, OQ-14..15, ADR-OQ-05 |
+| ADR-003 | Operational database target cho rebuild | Accepted | SRS DP-01, OQ-14..15, DB-OP-01 |
 | ADR-004 | Cache / queue / lock target cho rebuild | Deferred | SRS DP-04, ADR-OQ-05 |
 | ADR-005 | Payment flow dùng escrow trước payout Operator | Proposed | SRS MQ-01 |
 | ADR-006 | Payment/notification/storage dùng adapter boundary | Proposed | HLD-DEC-04, HLD-DEC-05, HLD-DEC-14 |
@@ -94,11 +95,11 @@ AI Agent không tự chuyển ADR sang `Accepted` nếu chưa có người duy�
 
 | Trường | Nội dung |
 | ------ | -------- |
-| Trạng thái | Deferred |
-| Bối cảnh | Repo hiện dùng Mongoose + MongoDB; SRS DP-01, OQ-14 và OQ-15 đang ghi MongoDB cho operational data, audit và reporting. Trong rebuild cần xác nhận giữ quyết định này hay mở lại lựa chọn dữ liệu. |
-| Quyết định | Chưa chốt target operational database ở ADR. MongoDB là hiện trạng / candidate có nguồn từ SRS và repo, cần reviewer xác nhận theo ADR-OQ-05. |
-| Hệ quả | DB Design phải giữ `TBD` ở các chi tiết phụ thuộc engine nếu target database chưa được xác nhận, đặc biệt transaction, atomic update, index, TTL, migration và reporting. |
-| Nguồn | SRS DP-01, OQ-14, OQ-15, `TECH-STACK.md`, ADR-OQ-05 |
+| Trạng thái | Accepted |
+| Bối cảnh | SRS DP-01, OQ-14 và OQ-15 đã ghi MongoDB cho operational data, audit và reporting; DB-OP-01 được reviewer yêu cầu xử lý ngày 13/05/2026. |
+| Quyết định | Operational database target cho Backend V1 là MongoDB replica set. DB Design được phép chốt transaction, conditional update, unique index, partial index, TTL index và migration rule theo MongoDB. |
+| Hệ quả | Transaction core phải chạy trên môi trường hỗ trợ MongoDB transaction; migration phải tạo/kiểm index trước khi bật luồng ghi rủi ro cao. Quyết định này chỉ chốt operational database, không tự chốt backend framework, queue engine, deployment target hoặc observability stack. |
+| Nguồn | SRS DP-01, OQ-14, OQ-15, DB-OP-01, `04-database-design.md` v1.4 |
 
 ### ADR-004. Cache / queue / lock target cho rebuild
 
@@ -157,7 +158,7 @@ AI Agent không tự chuyển ADR sang `Accepted` nếu chưa có người duy�
 | Trạng thái | Proposed |
 | Bối cảnh | Rebuild tài liệu đang diễn ra trước khi code Backend V1. `TECH-STACK.md` mô tả hiện trạng repo, SRS DP-01..04 mô tả dependency đang được ghi trong SRS, còn target tech stack cho implementation cần người duyệt xác nhận sau khi HLD / LLD / DB / API / Security đủ rõ. |
 | Quyết định | ADR này KHÔNG chọn tech stack target. ADR này chỉ định cách ghi nhận hiện trạng, candidate, tiêu chí đánh giá và câu hỏi mở để reviewer chốt bằng ADR riêng hoặc cập nhật ADR này sang `Accepted`. |
-| Hệ quả | Tránh biến hiện trạng repo thành quyết định V1 một cách ngầm định. Các tài liệu downstream được phép tham chiếu capability cần có, nhưng không được coi framework / database / queue / deployment target là đã chốt nếu chưa có quyết định `Accepted` hoặc SRS đã chốt rõ. |
+| Hệ quả | Tránh biến hiện trạng repo thành quyết định V1 một cách ngầm định. Các tài liệu downstream được phép tham chiếu capability cần có, nhưng chỉ được coi một target stack là đã chốt khi có quyết định `Accepted` hoặc SRS đã chốt rõ; hiện tại mới chốt operational database qua ADR-003. |
 | Nguồn | SRS DP-01..04, `TECH-STACK.md`, HLD §14, PROJECT-STATE §4-7 |
 
 #### Quy tắc ghi nhận tech stack trong giai đoạn rebuild
@@ -176,7 +177,7 @@ AI Agent không tự chuyển ADR sang `Accepted` nếu chưa có người duy�
 | ---- | ------------------------------- | ----------------- | ------------------------------ |
 | Monorepo | npm workspaces, TypeScript shared config trong `TECH-STACK.md` | Chưa tái xác nhận target | Giữ npm workspaces hay đổi package manager; pin Node.js, npm và `packageManager`. |
 | Backend framework | Repo hiện có NestJS + TypeScript; SRS DP-01 đang ghi Backend NestJS | Chưa tái xác nhận target | Giữ NestJS hay mở lại lựa chọn; nếu giữ, chốt version policy, module convention và test strategy. |
-| Backend data access | Repo hiện có Mongoose + MongoDB; SRS DP-01 / OQ-14 / OQ-15 đang ghi MongoDB cho audit/reporting | Cần reviewer xác nhận có giữ quyết định SRS hay mở lại | DB Design phải chốt schema, index, transaction / atomic update, migration, retention và reporting strategy. |
+| Backend data access | MongoDB replica set theo ADR-003 / DB-OP-01 | Đã chốt operational database target cho V1 | DB Design chốt schema, index, transaction / atomic update, migration, retention và reporting strategy; data access library cụ thể vẫn theo backend framework decision. |
 | Cache / lock / queue | Repo hiện có Redis + Bull; SRS DP-04 yêu cầu Redis hoặc lock service tương đương | SeatHold strategy đã chốt DB-authoritative hybrid; cache / queue engine target chưa tái xác nhận | DB Design cụ thể hóa conditional write / unique active invariant / TTL / optional lock service; chốt queue engine và retry model. |
 | Realtime | Repo hiện có Socket.IO | Chưa tái xác nhận target | Chốt realtime transport, event scope, auth handshake và fallback khi mất kết nối. |
 | Auth / session | Repo hiện có Passport/JWT; SRS chốt email OTP cho User | Chưa chốt chi tiết | Chốt Bearer token hay cookie, TTL, refresh, revoke, re-auth, Admin/Operator MFA và secure storage. |
